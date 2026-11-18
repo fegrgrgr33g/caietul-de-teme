@@ -47,12 +47,36 @@ function schimbaPagina() {
 }
 addEventListener("hashchange", () => { if (/^#demo/.test(location.hash)) return; schimbaPagina(); });
 
+/* ---------------- iconițe: același stil peste tot (linie de 1,8px, colțuri rotunjite) ---------------- */
+const ICONITE = {
+  acasa: "M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z",
+  teme: "M6 3h9l4 4v14H6z M15 3v4h4 M9 12h7 M9 16h5",
+  calendar: "M4 6h16v15H4z M4 10h16 M8 3v4 M16 3v4",
+  clasament: "M8 4h8v5a4 4 0 0 1-8 0z M8 6H5a3 3 0 0 0 3 4 M16 6h3a3 3 0 0 1-3 4 M12 13v4 M8 21h8 M10 17h4",
+  bac: "M2 9l10-5 10 5-10 5z M6 11v5c3 2 9 2 12 0v-5 M22 9v5",
+  opere: "M2 5h7a3 3 0 0 1 3 3v12a2 2 0 0 0-2-2H2z M22 5h-7a3 3 0 0 0-3 3v12a2 2 0 0 1 2-2h7z",
+  limba: "M4 20l6-15h1l6 15 M6.5 14h8 M17 3l-2.5 2.5",
+  jocuri: "M4 4h16v16H4z M9 9h.01 M15 15h.01 M15 9h.01 M9 15h.01 M12 12h.01",
+  profil: "M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8z M4 21a8 8 0 0 1 16 0",
+  elevi: "M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z M2 21a7 7 0 0 1 14 0 M16 3.5a4 4 0 0 1 0 7.5 M18 14a6 6 0 0 1 4 7",
+  plan: "M10 6h10 M10 12h10 M10 18h10 M3.5 6l1.5 1.5 2.5-3 M3.5 12l1.5 1.5 2.5-3 M3.5 18l1.5 1.5 2.5-3",
+  banca: "M3 4h18v4H3z M5 8v12h14V8 M10 12h4",
+  clase: "M12 3l9 5-9 5-9-5z M3 13l9 5 9-5 M3 17.5l9 5 9-5",
+  mai: "M5 12h.01 M12 12h.01 M19 12h.01",
+};
+function iconita(k) {
+  const d = ICONITE[k]; if (!d) return null;
+  const s = h("span", { class: "ic-svg", "aria-hidden": "true" });
+  s.innerHTML = `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="${d}"/></svg>`;
+  return s;
+}
+
 /* ---------------- cadrul: meniu + pagină ---------------- */
 function linkNav(p, extra) {
   const activ = S.pag === p.k || (p.k === "teme" && (S.pag === "tema" || S.pag === "tema-noua")) || (p.k === "elevi" && S.pag === "elev");
   return h("a", { href: "#/" + p.k, class: "nav-item" + (activ ? " on" : "") + (extra || ""), "aria-current": activ ? "page" : null,
     style: "--ic:" + p.c, onclick: () => sunetClic() },
-    h("span", { class: "nav-ic", "aria-hidden": "true" }, p.i), h("span", { class: "nav-n" }, p.n),
+    h("span", { class: "nav-ic", "aria-hidden": "true" }, iconita(p.k) || p.i), h("span", { class: "nav-n" }, p.n),
     p.badge ? h("span", { class: "nav-badge", "aria-label": p.badge + " noi" }, p.badge) : null);
 }
 function cadru(pagini, mobil, continut, susMeniu) {
@@ -74,7 +98,7 @@ function cadru(pagini, mobil, continut, susMeniu) {
     deJos.map(p => linkNav(p)),
     h("button", { type: "button", class: "nav-item" + (restActiv || S.meniuMai ? " on" : ""), style: "--ic:var(--c5)", "aria-expanded": S.meniuMai ? "true" : "false",
       onclick: () => { S.meniuMai = !S.meniuMai; draw(); } },
-      h("span", { class: "nav-ic", "aria-hidden": "true" }, "⋯"), h("span", { class: "nav-n" }, "Mai mult")));
+      h("span", { class: "nav-ic", "aria-hidden": "true" }, iconita("mai")), h("span", { class: "nav-n" }, "Mai mult")));
   const foaie = S.meniuMai ? h("div", { class: "meniu-mai", onclick: e => { if (e.target === e.currentTarget) { S.meniuMai = false; draw(); } } },
     h("div", { class: "meniu-mai-in" }, susMeniu ? h("div", { class: "meniu-mai-sus" }, susMeniu.cloneNode(true)) : null,
       h("div", { class: "meniu-mai-grila" }, restul.map(p => linkNav(p, " mare"))))) : null;
@@ -133,9 +157,7 @@ function drawElev() {
   else if (pag === "teme") c = paginaTemeElev();
   else if (pag === "calendar") c = [capPagina("Calendar", "Termenele temelor, pe zile. Apasă pe o temă ca s-o deschizi."), ...calendarView("elev")];
   else if (pag === "clasament") c = paginaClasamentElev();
-  else if (pag === "bac") c = [capPagina("Pregătire pentru BAC", "Simulări în stilul modelului oficial, planuri de eseu și un corector pentru textele tale."),
-    subFile([["sim", "Simulare"], ["plan", "Plan de eseu"], ["corector", "Corector"]], "subBac"),
-    ...(S.subBac === "plan" ? [planEseuView()] : S.subBac === "corector" ? [corectorView()] : [antrenamentView(), istoricBac()])];
+  else if (pag === "bac") c = paginaBac();
   else if (pag === "opere") c = [capPagina("Opere", "Fișele operelor din programă și harta curentelor literare."),
     subFile([["bib", "Biblioteca"], ["cur", "Curente literare"]], "subOpere"),
     ...(S.subOpere === "cur" ? [curenteView()] : opereView().slice(0, 2))];
@@ -201,43 +223,103 @@ function paginaAcasaElev() {
   const media = note.length ? note.reduce((a, b) => a + b, 0) / note.length : null;
   const deFacut = S.temeElev.filter(t => !lucrari.some(p => p.tema_id === t.id))
     .sort((a, b) => String(a.termen || "9999").localeCompare(String(b.termen || "9999")));
-  const recente = lucrari.filter(p => notaFinala(p) != null).sort((a, b) => String(b.trimis_la).localeCompare(String(a.trimis_la))).slice(0, 3);
   const lista = Object.values(S.clasamente || {})[0] || [];
   const loc = lista.findIndex(r => r.eu) + 1;
-  const urm = deFacut[0];
-  const curand = deFacut.filter(t => { const z = zileRamase(t.termen); return z != null && z >= 0 && z <= 3; }).length;
-  const out = [
-    erouAcasa("Jurnalul tău de învățare", [`Salut, ${nume}! `, h("em", null, deFacut.length ? "Fiecare pagină are o poveste." : "Ești la zi.")],
-      deFacut.length ? `Ai ${deFacut.length} ${deFacut.length === 1 ? "temă" : "teme"} de făcut. Temele, lecturile și pregătirea pentru BAC sunt aici, organizate pentru tine.` : "Ai trimis toate temele. Profită de timp pentru o simulare BAC sau o lectură nouă.",
-      urm ? ["Continuă de unde ai rămas", "#/tema/" + encodeURIComponent(urm.id)] : ["Fă o simulare BAC", "#/bac"]),
-    h("div", { class: "cifre" },
-      cifra("Teme de făcut", deFacut.length, curand ? `${curand} cu termen apropiat` : "niciun termen apropiat", "▤", "var(--c1)", "#/teme"),
-      cifra("Media ta", media == null ? "–" : fmtNota(media), `${lucrari.length} ${lucrari.length === 1 ? "temă trimisă" : "teme trimise"}`, "✓", "var(--c3)", "#/profil"),
-      cifra("Nivel", nivel, `${xp} XP · încă ${100 - xp % 100} până la nivelul ${nivel + 1}`, "◔", "var(--c4)", "#/profil"),
-      cifra("Locul în clasă", loc ? `${loc}/${lista.length}` : "–", "după puncte XP", "✧", "var(--c2)", "#/clasament"))];
-  out.push(...anunturiElev());
-  out.push(h("div", { class: "grid-acasa" }, obiectivSaptamana(), serieSiSugestie()));
-  const notif = notificariElev(); if (notif) out.push(notif);
-  const necitite = firePrimiteElev();
-  if (necitite.length) out.push(h("div", { class: "sheet", style: "--acc:var(--c4)" }, h("h3", null, "Răspunsuri de la profesor"),
-    h("div", { class: "stack", style: "gap:8px;margin-top:10px" }, necitite.map(m => {
-      const t = S.temeElev.find(x => x.id === m.tema_id);
-      return h("a", { class: "rand-verif", href: "#/tema/" + encodeURIComponent(m.tema_id), onclick: () => { S.msgDeschis = "msg-" + m.tema_id + "-" + S.user.id; } },
-        h("span", { class: "nume" }, t ? t.titlu : "Temă"), h("span", { class: "small", style: "flex:1;text-align:left" }, "„" + m.text.slice(0, 90) + (m.text.length > 90 ? "…" : "") + "”"));
-    }))));
-  out.push(h("div", { class: "grid-acasa" },
-    h("section", { class: "sheet stack", style: "--acc:var(--c2)" },
-      h("div", { class: "row", style: "justify-content:space-between" }, h("h3", null, "De făcut"), h("a", { href: "#/teme", class: "link-btn" }, "Toate temele ›")),
-      deFacut.length ? h("div", { class: "stack", style: "gap:8px" }, deFacut.slice(0, 4).map(randTemaElev)) : h("p", { class: "muted small" }, "Nimic de făcut acum.")),
-    h("section", { class: "sheet stack", style: "--acc:var(--c3)" },
-      h("div", { class: "row", style: "justify-content:space-between" }, h("h3", null, "Ultimele note"), h("a", { href: "#/profil", class: "link-btn" }, "Profilul meu ›")),
-      recente.length ? h("div", { class: "stack", style: "gap:8px" }, recente.map(p => {
-        const t = S.temeElev.find(x => x.id === p.tema_id); return t ? randTemaElev(t, S.temeElev.indexOf(t)) : null;
-      })) : h("p", { class: "muted small" }, "Notele apar aici după ce trimiți temele."))));
-  out.push(h("div", { class: "scurtaturi" }, PAGINI_ELEV.filter(p => p.g === "Învăț").map(p =>
-    h("a", { href: "#/" + p.k, class: "scurtatura", style: "--ic:" + p.c }, h("span", { class: "nav-ic", "aria-hidden": "true" }, p.i), h("b", null, p.n),
-      h("span", { class: "muted small" }, { bac: "Simulări și eseuri", opere: "Fișe de lectură", limba: "DOOM și termeni", jocuri: "Figuri de stil" }[p.k])))));
-  return out;
+  notificariElev(); // calculează temele noi și trimite notificările browserului (fără să mai deseneze un card separat)
+  return [eroulTemei(deFacut), h("div", { class: "grid-acasa" }, deFacutAzi(deFacut), noutatiElev()),
+    progresulTau({ media, nivel, xp, loc, lista, lucrari, deFacut })];
+}
+
+/* 1. Următoarea temă: cea mai vizibilă informație de pe pagină */
+function eroulTemei(deFacut) {
+  const t = deFacut[0];
+  if (!t) return erouAcasa("Ești la zi", ["Toate temele sunt trimise. ", h("em", null, "Bravo!")],
+    "Profită de timp: o simulare BAC, o fișă de operă sau câteva minute de DOOM te țin în formă.", ["Fă o simulare BAC", "#/bac"]);
+  const z = zileRamase(t.termen), areCiorna = Object.values({ ...((S.ciorne || {})[t.id] || {}), ...(citesteJSON("ciorna-" + t.id, {}) || {}) }).some(v => String(v ?? "").trim());
+  const cand = z == null ? "fără termen" : z < 0 ? "termenul a trecut" : z === 0 ? "termen azi" : z === 1 ? "termen mâine" : `termen în ${z} zile (${fmtZi(t.termen)})`;
+  const alte = deFacut.length - 1;
+  return h("section", { class: "erou-acasa erou-tema", "aria-label": "Următoarea temă" },
+    h("div", { class: "erou-text" },
+      h("div", { class: "erou-supra" }, "✦ Următoarea temă"),
+      h("h2", null, t.titlu),
+      h("div", { class: "erou-meta" },
+        h("span", { class: "erou-chip" + (z != null && z <= 1 ? " urgent" : "") }, cand),
+        h("span", { class: "erou-chip" }, `${(t.exercitii || []).length} exerciții`),
+        t.minute ? h("span", { class: "erou-chip" }, `timp de lucru: ${minuteText(t.minute)}`) : null,
+        areCiorna ? h("span", { class: "erou-chip" }, "ai o ciornă salvată") : null),
+      h("div", { class: "row", style: "gap:14px;margin-top:18px" },
+        h("a", { class: "erou-btn", href: "#/tema/" + encodeURIComponent(t.id) }, areCiorna ? "Continuă tema" : "Începe tema", h("span", { "aria-hidden": "true" }, "↗")),
+        alte > 0 ? h("a", { class: "erou-link", href: "#/teme" }, `+ încă ${alte} ${alte === 1 ? "temă" : "teme"} de făcut`) : null)),
+    h("div", { class: "erou-arta", "aria-hidden": "true" }, h("div", { class: "orb" }),
+      h("div", { class: "fila-st" }, h("div", { class: "randuri" })), h("div", { class: "fila-dr" }, h("div", { class: "randuri" })),
+      h("span", { class: "ornament" }, "❦"), h("span", { class: "sc a" }, "✧"), h("span", { class: "sc b" }, "✦")));
+}
+
+/* 2. De făcut astăzi: o listă scurtă, bifată automat */
+function deFacutAzi(deFacut) {
+  const azi = ziISO(Date.now()), aLucratAzi = zileActive().includes(azi) || S.demo;
+  const iteme = [];
+  for (const t of deFacut.filter(t => { const z = zileRamase(t.termen); return z != null && z <= 1; }).slice(0, 3)) {
+    const z = zileRamase(t.termen);
+    iteme.push({ gata: false, titlu: t.titlu, sub: z < 0 ? "Termenul a trecut: trimite-o cât poți de repede" : z === 0 ? "Termen azi" : "Termen mâine", href: "#/tema/" + encodeURIComponent(t.id), urgent: true });
+  }
+  const trimiseAzi = S.predariElev.filter(p => String(p.trimis_la).slice(0, 10) === azi);
+  for (const p of trimiseAzi.slice(0, 2)) { const t = S.temeElev.find(x => x.id === p.tema_id); if (t) iteme.push({ gata: true, titlu: t.titlu, sub: "Trimisă azi", href: "#/tema/" + encodeURIComponent(t.id) }); }
+  const g = Object.values(citesteJSON(cheieElev("gram-greseli"), {})).reduce((a, b) => a + b, 0) + Object.values(citesteJSON(cheieElev("doom-greseli"), {})).reduce((a, b) => a + b, 0);
+  iteme.push({ gata: aLucratAzi && !!citesteLocal(cheieElev("exersat-" + azi), ""), titlu: "5 minute de exercițiu", sub: g ? "DOOM și gramatică: revin exact greșelile tale" : "DOOM, punctuație și gramatică", href: "#/limba",
+    la: () => scrieLocal(cheieElev("exersat-" + azi), "1") });
+  const [titluS, corp, raspuns] = sugestiaZilei();
+  const facute = iteme.filter(x => x.gata).length;
+  return h("section", { class: "sheet stack panou-azi", style: "--acc:var(--c3)" },
+    h("div", { class: "row", style: "justify-content:space-between" }, h("h3", null, "De făcut astăzi"), h("span", { class: "muted small" }, `${facute} din ${iteme.length}`)),
+    h("div", { class: "xp" + (facute === iteme.length ? " plin" : ""), style: "margin:0" }, h("span", { style: `width:${Math.round(facute / iteme.length * 100)}%` })),
+    h("ul", { class: "lista-azi" }, iteme.map(x => h("li", { class: x.gata ? "gata" : x.urgent ? "urgent" : "" },
+      h("a", { href: x.href, onclick: x.la || null }, h("span", { class: "bifa", "aria-hidden": "true" }, x.gata ? "✓" : ""),
+        h("span", { class: "azi-text" }, h("b", null, x.titlu), h("small", null, x.sub)), h("span", { class: "rt-sageata", "aria-hidden": "true" }, "›"))))),
+    h("details", { class: "sugestie" }, h("summary", null, h("span", { class: "label" }, "Sugestia zilei · " + titluS)), corp, h("p", { class: "small", style: "margin:6px 0 0" }, h("b", null, "Răspuns: "), raspuns)));
+}
+
+/* 3. Noutăți: anunțuri, mesaje de la profesor, teme noi și termene, într-un singur loc */
+function noutatiElev() {
+  const vaz = citesteJSON(cheieElev("anunturi"), {});
+  const iteme = [];
+  for (const c of S.claseElev || []) if (c.anunt && vaz[c.id] !== String(c.anunt_la || c.anunt))
+    iteme.push(h("li", { class: "nou anunt-li" }, h("span", { class: "tip-nou", style: "--ic:var(--c2)" }, "Anunț"),
+      h("div", { class: "nou-corp" }, h("p", { class: "pre" }, c.anunt), h("small", { class: "muted" }, c.nume + (c.anunt_la ? " · " + fmtData(c.anunt_la) : ""))),
+      h("button", { type: "button", class: "link-btn small", onclick: () => { const v = citesteJSON(cheieElev("anunturi"), {}); v[c.id] = String(c.anunt_la || c.anunt); scrieLocal(cheieElev("anunturi"), JSON.stringify(v)); draw(); } }, "Am citit")));
+  for (const m of firePrimiteElev()) { const t = S.temeElev.find(x => x.id === m.tema_id);
+    iteme.push(h("li", { class: "nou" }, h("span", { class: "tip-nou", style: "--ic:var(--c4)" }, "Mesaj"),
+      h("a", { class: "nou-corp", href: "#/tema/" + encodeURIComponent(m.tema_id), onclick: () => { S.msgDeschis = "msg-" + m.tema_id + "-" + S.user.id; } },
+        h("p", null, "„" + m.text.slice(0, 110) + (m.text.length > 110 ? "…" : "") + "”"), h("small", { class: "muted" }, "Profesorul, la " + (t ? `„${t.titlu}”` : "o temă") + " · " + fmtData(m.creat_la))))); }
+  for (const t of S.notifNoi || []) iteme.push(h("li", { class: "nou" }, h("span", { class: "tip-nou", style: "--ic:var(--c3)" }, "Temă nouă"),
+    h("a", { class: "nou-corp", href: "#/tema/" + encodeURIComponent(t.id) }, h("p", null, t.titlu), h("small", { class: "muted" }, t.termen ? "Termen " + fmtZi(t.termen) : "Fără termen"))));
+  const permisiune = "Notification" in window && Notification.permission === "default";
+  return h("section", { class: "sheet stack panou-noutati", style: "--acc:var(--c4)" },
+    h("div", { class: "row", style: "justify-content:space-between" }, h("h3", null, "Noutăți"), iteme.length ? h("span", { class: "chip none" }, iteme.length) : null),
+    iteme.length ? h("ul", { class: "lista-noutati" }, iteme) : h("p", { class: "muted small" }, "Nimic nou. Anunțurile, mesajele de la profesor și temele noi apar aici."),
+    permisiune ? h("button", { class: "link-btn small", type: "button", style: "align-self:flex-start", onclick: async () => {
+      const r = await Notification.requestPermission(); toast(r === "granted" ? "Vei primi notificări pentru termenele apropiate." : "Notificările au rămas oprite."); draw();
+    } }, "Primește notificări pe telefon pentru termene") : null);
+}
+
+/* 4. Progresul tău: nota, nivelul, locul și obiectivul săptămânii, într-un singur card */
+function progresulTau({ media, nivel, xp, loc, lista, lucrari }) {
+  const recente = lucrari.filter(p => notaFinala(p) != null).sort((a, b) => String(b.trimis_la).localeCompare(String(a.trimis_la))).slice(0, 3);
+  const luni = luniSaptamanii().getTime();
+  const tinta = Math.max(1, Math.min(3, S.temeElev.length));
+  const temeSapt = lucrari.filter(p => new Date(p.trimis_la).getTime() >= luni).length;
+  const serie = serieZile();
+  return h("section", { class: "sheet stack", style: "--acc:var(--c5)" },
+    h("div", { class: "row", style: "justify-content:space-between" }, h("h3", null, "Progresul tău"), h("a", { class: "link-btn small", href: "#/profil" }, "Profil și insigne ›")),
+    h("div", { class: "progres-rand" },
+      h("a", { class: "pr", href: "#/profil" }, h("small", null, "Media"), h("b", { class: media != null && media < 5 ? "fail" : "" }, media == null ? "–" : fmtNota(media))),
+      h("a", { class: "pr", href: "#/profil" }, h("small", null, "Nivel " + nivel), h("b", null, xp + " XP"),
+        h("div", { class: "xp", style: "margin:4px 0 0;height:6px" }, h("span", { style: `width:${xp % 100}%` }))),
+      h("a", { class: "pr", href: "#/clasament" }, h("small", null, "Clasament"), h("b", null, loc ? `locul ${loc}` : "–"), h("small", null, loc ? `din ${lista.length}` : "")),
+      h("div", { class: "pr" }, h("small", null, "Serie"), h("b", null, `${serie} ${serie === 1 ? "zi" : "zile"}`), h("small", null, `${Math.min(temeSapt, tinta)}/${tinta} teme săptămâna asta`))),
+    recente.length ? h("div", { class: "stack", style: "gap:6px" }, h("div", { class: "label" }, "Ultimele note"),
+      h("ul", { class: "note-recente" }, recente.map(p => { const t = S.temeElev.find(x => x.id === p.tema_id), n = notaFinala(p);
+        return t ? h("li", null, h("a", { href: "#/tema/" + encodeURIComponent(t.id) }, h("span", null, t.titlu), h("b", { class: "nota" + (n < 5 ? " fail" : "") }, fmtNota(n)))) : null; }))) : null);
 }
 
 function paginaTemeElev() {
@@ -337,8 +419,7 @@ function drawProfesor() {
   else if (pag === "elev") c = fisaElev(S.pagId);
   else if (pag === "tema-noua") { S.newTema = true; c = [capPagina("Temă nouă", "Pentru " + clasa.nume + ". Grila și răspunsurile scurte se corectează pe loc; compunerile le corectează AI-ul după baremul tău.", null, ["teme", "Teme"]), formularTema()]; }
   else if (pag === "teme") c = paginaTemeProf(clasa);
-  else if (pag === "elevi") c = [capPagina("Elevii clasei", `${S.membri.length} elevi în ${clasa.nume}`),
-    ...(S.membri.length ? [eleviView(true), clasamentProfView()].filter(Boolean) : [gol("Niciun elev încă", "Dă-le elevilor codul clasei: " + clasa.cod)])];
+  else if (pag === "elevi") c = S.membri.length ? paginaElevi(clasa) : [capPagina("Elevii clasei", clasa.nume), gol("Niciun elev încă", "Dă-le elevilor codul clasei: " + clasa.cod)];
   else if (pag === "calendar") c = [capPagina("Calendar", "Termenele temelor din " + clasa.nume + " și câți elevi au trimis."), ...calendarView("profesor")];
   else c = paginaClasa(clasa);
   return cadru(paginiProf(), MOBIL_PROF, c, selectorClasa());

@@ -59,6 +59,7 @@
     <button type="button" class="sari" id="sari-intro">Sari peste ›</button>
   </div>
 
+  <a class="sari-continut" href="#app">Sari la conținut</a>
   <canvas id="stele" aria-hidden="true"></canvas>
   <div class="wrap">
     <header class="top">
@@ -75,7 +76,7 @@
       <div class="sheet empty"><h2>Se deschide caietul…</h2></div>
     </main>
   </div>
-  <div class="toast" id="toast" hidden></div>
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js"></script>
   <script src="config.js"></script>
@@ -84,6 +85,8 @@
   <script src="extra.js"></script>
   <script src="nav.js"></script>
   <script src="plus.js"></script>
+  <script src="elevi.js"></script>
+  <script src="bac.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
