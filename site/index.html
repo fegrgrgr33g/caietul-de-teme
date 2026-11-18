@@ -13,7 +13,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Alegreya:ital,wght@0,400;0,600;0,700;1,500;1,700&family=Caveat:wght@600;700&display=swap">
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="atelier.css">
   <script>
+    // tema de culori se aplică înainte de desen, ca să nu clipească pagina
+    try { document.documentElement.dataset.paleta = localStorage.getItem("paleta-v2") || "atelier"; } catch (e) { document.documentElement.dataset.paleta = "atelier"; }
     // cartea apare doar la prima deschidere din sesiune; la refresh site-ul apare direct
     try {
       var faraIntro = sessionStorage.getItem("intro") === "1" || matchMedia("(prefers-reduced-motion: reduce)").matches || location.hash.indexOf("#demo") === 0;

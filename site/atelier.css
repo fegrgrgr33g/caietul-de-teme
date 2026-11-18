@@ -1,0 +1,192 @@
+/* =====================================================================
+   Caietul de teme — tema „Atelier literar”
+   Hârtie caldă, meniu albastru de noapte, accente vișinii și aurii, titluri cu literă de carte.
+   Se aplică atunci când <html data-paleta="atelier"> (tema implicită). Celelalte palete rămân neschimbate.
+   ===================================================================== */
+:root[data-paleta="atelier"] {
+  --bg: #f7f4ed; --bg-2: #fffefa;
+  --glass: rgba(23, 33, 57, .04); --glass-2: rgba(23, 33, 57, .075); --edge: #e5e0d6;
+  --text: #172139; --muted: #6a7284;
+  --c1: #8f2948; --c2: #b0761f; --c3: #3e8169; --c4: #4d76aa; --c5: #7a4f8f;
+  --good: #2f7a57; --warn: #9a6a1c; --bad: #a3314a;
+  --acc: var(--c1);
+  --sunk: #f5f1e9; --line-soft: #ece7dd; --on-acc: #fff;
+  --night: #101b30; --night-2: #182740; --wine: #8f2948; --wine-2: #81304a; --gold: #daa95c; --gold-light: #f3d7a8;
+  --f-ui: system-ui, -apple-system, "Segoe UI", "Inter", Arial, sans-serif;
+  --f-disp: Georgia, "Times New Roman", serif;
+  --umbra: 0 7px 24px rgba(30, 25, 15, .045);
+  color-scheme: light;
+}
+[data-paleta="atelier"] body { background: var(--bg); }
+[data-paleta="atelier"] body::before, [data-paleta="atelier"] #stele { display: none; }
+[data-paleta="atelier"] ::selection { background: #f3d7a8; color: #172139; }
+
+/* ---------- antet ---------- */
+[data-paleta="atelier"] .logo { background: var(--night); color: #efcb8a; border: 1px solid #bb8d4f; box-shadow: inset 0 0 0 4px rgba(255,255,255,.04); transform: none; font-family: var(--f-disp); font-weight: 400; }
+[data-paleta="atelier"] .brand h1 { font-family: var(--f-disp); font-weight: 700; letter-spacing: -.5px; }
+[data-paleta="atelier"] .brand h1 em { background: none; color: var(--wine); font-style: italic; font-weight: 500; }
+[data-paleta="atelier"] .badge { background: #e7edf7; color: var(--c4); border-color: #cfdcef; }
+[data-paleta="atelier"] .badge.prof { background: #f9edda; color: #8a5c14; border-color: #efd8ae; }
+[data-paleta="atelier"] .palete { background: #fff; }
+[data-paleta="atelier"] .paleta-btn.on { border-color: var(--wine); }
+[data-paleta="atelier"] .sunet-btn, [data-paleta="atelier"] .clopot { background: #fff; }
+
+/* ---------- carduri ---------- */
+[data-paleta="atelier"] .sheet { background: var(--bg-2); border: 1px solid var(--edge); box-shadow: var(--umbra); border-radius: 20px; }
+[data-paleta="atelier"] section.sheet { border-top: 3px solid color-mix(in srgb, var(--acc) 75%, transparent); }
+[data-paleta="atelier"] section.sheet::after { display: none; }
+[data-paleta="atelier"] section.sheet > .tema-head h2::before { box-shadow: none; border-radius: 3px; }
+[data-paleta="atelier"] h2, [data-paleta="atelier"] h3 { font-family: var(--f-disp); font-weight: 600; letter-spacing: -.3px; }
+[data-paleta="atelier"] h2 { font-size: 23px; }
+[data-paleta="atelier"] .titlu-pagina { background: none; color: var(--text); -webkit-text-fill-color: currentColor; font-weight: 600; font-size: clamp(25px, 3vw, 32px); letter-spacing: -.6px; }
+[data-paleta="atelier"] .nav-titlu, [data-paleta="atelier"] .label { color: #8a8f9c; }
+[data-paleta="atelier"] .text-suport { color: var(--text); background: #fbf8f1; border-color: #ebe3d4; }
+[data-paleta="atelier"] .text-suport::before { background: linear-gradient(var(--wine), var(--gold)); }
+[data-paleta="atelier"] .citat { background: #f7ebdd; border-left-color: #b58754; color: #694d36; }
+[data-paleta="atelier"] .note { background: #fff4dc; color: #7d5512; border-color: #f0dba9; }
+[data-paleta="atelier"] .note.err { background: #fbe7e6; color: #8f2a3b; border-color: #f1c9cc; }
+[data-paleta="atelier"] .comentariu-prof { background: #fbf3e6; border-color: #ecd8b6; }
+[data-paleta="atelier"] .toast { background: var(--night-2); color: #fff; border: 0; box-shadow: 0 14px 34px rgba(0,0,0,.2); }
+[data-paleta="atelier"] .schelet .bloc { background: linear-gradient(90deg, rgba(23,33,57,.05), rgba(23,33,57,.1), rgba(23,33,57,.05)); background-size: 200% 100%; }
+
+/* ---------- formulare și butoane ---------- */
+[data-paleta="atelier"] input[type=text], [data-paleta="atelier"] input[type=email], [data-paleta="atelier"] input[type=password], [data-paleta="atelier"] input[type=date],
+[data-paleta="atelier"] input[type=number], [data-paleta="atelier"] input[type=search], [data-paleta="atelier"] input[type=datetime-local], [data-paleta="atelier"] textarea, [data-paleta="atelier"] select {
+  background: #fff; color: var(--text); border-color: #ddd7cc; }
+[data-paleta="atelier"] input[type=search] { font: inherit; border: 1px solid #ddd7cc; border-radius: 12px; padding: 10px 13px; }
+[data-paleta="atelier"] select option { background: #fff; color: var(--text); }
+[data-paleta="atelier"] input:focus, [data-paleta="atelier"] textarea:focus, [data-paleta="atelier"] select:focus { border-color: var(--wine); box-shadow: 0 0 0 4px rgba(143, 41, 72, .12); }
+[data-paleta="atelier"] ::placeholder { color: #9ba1ad; }
+[data-paleta="atelier"] input[type=radio], [data-paleta="atelier"] input[type=checkbox] { accent-color: var(--c3); }
+[data-paleta="atelier"] button:focus-visible, [data-paleta="atelier"] a:focus-visible { outline-color: #c4914b; }
+[data-paleta="atelier"] .btn, [data-paleta="atelier"] a.btn { background: var(--wine); color: #fff; box-shadow: 0 3px 0 #681b36; border-color: transparent; }
+[data-paleta="atelier"] .btn:hover { background: #7d2240; box-shadow: 0 5px 0 #681b36; }
+[data-paleta="atelier"] .btn:active { box-shadow: 0 1px 0 #681b36; transform: translateY(2px); }
+[data-paleta="atelier"] .btn.ghost, [data-paleta="atelier"] a.btn.ghost { background: #fff; color: var(--text); border-color: #ddd5c8; box-shadow: none; }
+[data-paleta="atelier"] .btn.ghost:hover { background: #fff6ef; border-color: #d4b9a6; }
+[data-paleta="atelier"] .btn.danger { background: #fff; color: var(--bad); border-color: #ecc4ca; box-shadow: none; }
+[data-paleta="atelier"] .btn.danger.sure { background: var(--bad); color: #fff; }
+[data-paleta="atelier"] .seg { background: #f1ede5; border-color: var(--edge); }
+[data-paleta="atelier"] .seg button { color: #657084; }
+[data-paleta="atelier"] .seg button.on { background: #fff; color: var(--wine); box-shadow: 0 1px 3px rgba(23,33,57,.12); }
+[data-paleta="atelier"] .link-btn { color: var(--wine); font-weight: 650; }
+[data-paleta="atelier"] .optiune:has(input:checked) { box-shadow: none; }
+
+/* ---------- etichete de stare ---------- */
+[data-paleta="atelier"] .chip.ok, [data-paleta="atelier"] .ev.ok { background: #e6f3e9; color: #2f7351; border-color: #cbe5d3; }
+[data-paleta="atelier"] .chip.wait, [data-paleta="atelier"] .ev.wait { background: #fff1cf; color: #8a5f16; border-color: #f0dca5; }
+[data-paleta="atelier"] .chip.err, [data-paleta="atelier"] .ev.err { background: #fbe7e6; color: #93303d; border-color: #f1c7cb; }
+[data-paleta="atelier"] .chip.none { background: #f3f0ea; color: #5f6778; border-color: #e5e0d6; }
+[data-paleta="atelier"] .doom-opt.bine { background: #e6f3e9; }
+[data-paleta="atelier"] .doom-opt.rau { background: #fbe7e6; }
+[data-paleta="atelier"] .nota { font-family: var(--f-disp); }
+[data-paleta="atelier"] .inel .arc { filter: none; }
+
+/* ---------- tabele, liste, statistici ---------- */
+[data-paleta="atelier"] .stat { background: #fff; border-color: var(--edge); border-radius: 18px; box-shadow: 0 4px 12px rgba(29,26,27,.025); }
+[data-paleta="atelier"] .stat .v { font-family: var(--f-disp); font-weight: 600; letter-spacing: -1px; }
+[data-paleta="atelier"] th { border-bottom-color: var(--edge); }
+[data-paleta="atelier"] tr.clk:hover td { background: #faf6ef; }
+[data-paleta="atelier"] td.detail { background: #fbf8f2; }
+[data-paleta="atelier"] .rand-tema { background: #fff; border-color: var(--edge); box-shadow: 0 2px 8px rgba(29,26,20,.025); }
+[data-paleta="atelier"] .rand-tema:hover { box-shadow: 0 12px 26px -16px rgba(29,26,20,.35); }
+[data-paleta="atelier"] .rt-bara { box-shadow: none; }
+[data-paleta="atelier"] .rt-titlu { font-family: var(--f-disp); font-weight: 600; }
+[data-paleta="atelier"] .rand-verif { background: #fff; }
+[data-paleta="atelier"] .rand-verif:hover { border-color: #d4b9a6; }
+[data-paleta="atelier"] .loc.eu { background: #eef3fa; }
+[data-paleta="atelier"] .bula.a-mea { background: #f5e4e8; border-color: #ebcdd5; }
+[data-paleta="atelier"] .fata-card { background: linear-gradient(135deg, #f7ebdd, #f5e4e8); }
+[data-paleta="atelier"] .spate-card { background: #fffaf2; border: 1px solid var(--edge); }
+[data-paleta="atelier"] .punct-nou, [data-paleta="atelier"] .punct-clopot { box-shadow: none; }
+[data-paleta="atelier"] .scurtatura { background: #fff; box-shadow: var(--umbra); }
+[data-paleta="atelier"] .scurtatura:hover { border-color: var(--ic); }
+[data-paleta="atelier"] .opera-titlu, [data-paleta="atelier"] .doom-prop { color: var(--text); }
+[data-paleta="atelier"] .grafic-medii .grila-g { stroke: #ece7dd; }
+[data-paleta="atelier"] .explicatie { background: #eef3fa; border-color: #cfdcef; }
+[data-paleta="atelier"] .clopot-panou, [data-paleta="atelier"] .meniu-mai-in { background: #fff; box-shadow: 0 24px 50px -18px rgba(23,33,57,.35); }
+[data-paleta="atelier"] .curent .punct, [data-paleta="atelier"] .insigna i { box-shadow: none; }
+
+/* ---------- meniul lateral: albastru de noapte ---------- */
+[data-paleta="atelier"] .sidenav { background: var(--night); border: 0; border-radius: 22px; padding: 20px 14px; box-shadow: 0 18px 40px -20px rgba(16,27,48,.55); color: #f9f6ef; }
+[data-paleta="atelier"] .sidenav .nav-titlu { color: #8694ae; letter-spacing: .15em; }
+[data-paleta="atelier"] .sidenav .nav-item, [data-paleta="atelier"] .bottomnav .nav-item { color: #c6cedc; }
+[data-paleta="atelier"] .sidenav .nav-item:hover, [data-paleta="atelier"] .bottomnav .nav-item:hover { background: rgba(255,255,255,.06); color: #fff; }
+[data-paleta="atelier"] .sidenav .nav-item.on, [data-paleta="atelier"] .bottomnav .nav-item.on { background: var(--wine-2); border-color: transparent; color: #fff; }
+[data-paleta="atelier"] .sidenav .nav-item.on::before { display: none; }
+[data-paleta="atelier"] .sidenav .nav-ic, [data-paleta="atelier"] .bottomnav .nav-ic { color: #e7c58c; background: rgba(255,255,255,.05); border-color: rgba(255,255,255,.08); }
+[data-paleta="atelier"] .sidenav .nav-item.on .nav-ic, [data-paleta="atelier"] .bottomnav .nav-item.on .nav-ic { color: #fff; background: rgba(255,255,255,.14); box-shadow: none; }
+[data-paleta="atelier"] .sidenav .nav-badge, [data-paleta="atelier"] .bottomnav .nav-badge { background: #30415d; }
+[data-paleta="atelier"] .sidenav .nav-item.on .nav-badge { background: #b05972; }
+[data-paleta="atelier"] .sidenav .alege-clasa { border-bottom-color: rgba(255,255,255,.11); }
+[data-paleta="atelier"] .sidenav .alege-clasa select { background: var(--night-2); color: #f3eee2; border-color: rgba(255,255,255,.16); }
+[data-paleta="atelier"] .sidenav .alege-clasa select option { background: var(--night-2); color: #f3eee2; }
+[data-paleta="atelier"] .bottomnav { background: var(--night); border: 0; box-shadow: 0 18px 40px -12px rgba(16,27,48,.6); }
+[data-paleta="atelier"] .meniu-mai-grila .nav-item { color: var(--text); background: #fff; }
+[data-paleta="atelier"] .meniu-mai-grila .nav-item.on { background: #f5e4e8; color: var(--wine); }
+[data-paleta="atelier"] .meniu-mai-grila .nav-ic { color: var(--wine); background: #f7efe6; border-color: #ecdcc8; }
+
+/* marca din meniu și nota de jos (apar doar în tema Atelier) */
+.nav-marca, .nota-meniu { display: none; }
+[data-paleta="atelier"] .nav-marca { display: flex; align-items: center; gap: 12px; padding: 2px 6px 18px; border-bottom: 1px solid rgba(255,255,255,.11); }
+[data-paleta="atelier"] .nav-marca .semn { width: 42px; height: 42px; flex: none; border: 1px solid #bb8d4f; border-radius: 13px; display: grid; place-items: center; background: rgba(235,197,124,.08);
+  font: 24px Georgia, serif; color: #efcb8a; box-shadow: inset 0 0 0 4px rgba(255,255,255,.03); }
+[data-paleta="atelier"] .nav-marca strong { display: block; font: 700 17px/1.15 Georgia, serif; letter-spacing: -.4px; color: #f9f6ef; }
+[data-paleta="atelier"] .nav-marca small { display: block; font-size: 10px; color: #b9c4d8; letter-spacing: .14em; margin-top: 3px; }
+[data-paleta="atelier"] .nota-meniu { display: block; margin-top: 6px; padding: 15px 13px; border: 1px solid rgba(218,169,92,.36); border-radius: 15px;
+  background: linear-gradient(145deg, rgba(243,187,104,.07), rgba(243,187,104,.01)); }
+[data-paleta="atelier"] .nota-meniu strong { font: 700 15px Georgia, serif; color: #f3d7a8; }
+[data-paleta="atelier"] .nota-meniu p { font-size: 12px; color: #b9c6d9; margin: 5px 0 10px; }
+[data-paleta="atelier"] .nota-meniu a { font-size: 12px; color: #f3d7a8; font-weight: 700; text-decoration: none; }
+@media (min-width: 861px) {
+  /* numele site-ului e deja în meniul lateral; pe pagina de intrare (fără meniu) rămâne sus */
+  [data-paleta="atelier"] body:has(.sidenav) header.top .brand { display: none; }
+  [data-paleta="atelier"] body:has(.sidenav) header.top { justify-content: flex-end; margin-bottom: 18px; }
+}
+
+/* ---------- pagina Acasă: banda de sus și cardurile cu cifre ---------- */
+.erou-acasa { position: relative; overflow: hidden; border-radius: 23px; min-height: 230px; padding: 32px 36px; color: #fff;
+  background: linear-gradient(113deg, #101b30 0%, #1b2b44 60%, #433047 100%); display: grid; grid-template-columns: minmax(0, 1fr) 240px; align-items: center;
+  box-shadow: 0 14px 48px rgba(26,31,46,.12); }
+.erou-acasa::before { content: ""; position: absolute; inset: 0; pointer-events: none; background-image: radial-gradient(#eeca85 1px, transparent 1px); background-size: 32px 32px; opacity: .08; }
+.erou-acasa::after { content: ""; position: absolute; inset: auto -140px -170px auto; width: 480px; height: 390px; border-radius: 50%; border: 1px solid rgba(255,222,174,.2);
+  box-shadow: 0 0 0 45px rgba(255,213,164,.025), 0 0 0 90px rgba(255,213,164,.02); pointer-events: none; }
+.erou-text { position: relative; z-index: 2; }
+.erou-supra { font-size: 11px; text-transform: uppercase; font-weight: 800; letter-spacing: 2px; color: #e2ba78; margin: 0 0 12px; }
+.erou-acasa h2 { font: 500 clamp(28px, 3vw, 42px)/1.08 Georgia, "Times New Roman", serif; letter-spacing: -1px; margin: 0 0 10px; color: #fff; }
+.erou-acasa h2 em { color: #f3cc8c; font-style: italic; }
+.erou-acasa p { color: #cbd3dd; font-size: 14px; max-width: 540px; margin: 0 0 20px; }
+.erou-acasa .erou-btn { background: #f4d49b; color: #30241e; border: 0; padding: 11px 20px; border-radius: 11px; font-weight: 800; box-shadow: 0 4px 0 #b0854f;
+  display: inline-flex; gap: 10px; align-items: center; text-decoration: none; }
+.erou-acasa .erou-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 0 #b0854f; }
+.erou-arta { position: relative; height: 190px; z-index: 2; display: grid; place-items: center; }
+.erou-arta .orb { position: absolute; border-radius: 50%; width: 225px; height: 225px; border: 1px solid rgba(245,211,157,.15); }
+.erou-arta .fila-st, .erou-arta .fila-dr { position: absolute; bottom: 24px; width: 112px; height: 128px; background: #f4dec1; border: 3px solid #d4ad72;
+  box-shadow: inset 0 0 14px #c9a87e, 0 18px 34px rgba(0,0,0,.24); }
+.erou-arta .fila-st { left: 8px; border-radius: 12px 0 3px 19px; transform: skewY(-8deg) rotate(-7deg); }
+.erou-arta .fila-dr { right: 8px; border-radius: 0 12px 19px 3px; transform: skewY(8deg) rotate(7deg); }
+.erou-arta .randuri { position: absolute; left: 18px; right: 15px; top: 20px; bottom: 19px; background: repeating-linear-gradient(180deg, transparent 0 13px, #ad906d 13px 14px); opacity: .6; }
+.erou-arta .ornament { font: 48px Georgia, serif; position: relative; z-index: 5; color: #7e3d42; text-shadow: 0 2px 0 #ebd1a9; transform: translateY(-4px); }
+.erou-arta .sc { position: absolute; color: #f0cf91; font-size: 26px; }
+.erou-arta .sc.a { top: 4px; left: 22px; } .erou-arta .sc.b { right: 16px; top: 32px; font-size: 18px; } .erou-arta .sc.c { bottom: 22px; right: 22px; font-size: 15px; }
+.cifre { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+.cifra { background: var(--bg-2); border: 1px solid var(--edge); border-radius: 18px; padding: 16px 18px; min-height: 112px; text-decoration: none; color: inherit; display: block; transition: transform .15s, box-shadow .15s; }
+a.cifra:hover { transform: translateY(-2px); box-shadow: 0 12px 26px -16px rgba(29,26,20,.35); }
+.cifra-sus { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.cifra-et { font-size: 12px; color: var(--muted); }
+.cifra-ic { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; font-size: 16px; background: color-mix(in srgb, var(--ci) 14%, transparent); color: var(--ci); }
+.cifra strong { font: 600 29px/1 Georgia, serif; letter-spacing: -1px; display: block; }
+.cifra small { display: block; font-size: 11px; color: var(--muted); margin-top: 6px; }
+@media (max-width: 1000px) { .erou-acasa { grid-template-columns: minmax(0, 1fr) 170px; } .erou-arta { transform: scale(.8); } }
+@media (max-width: 730px) {
+  .erou-acasa { grid-template-columns: 1fr; padding: 24px; min-height: 240px; }
+  .erou-text { max-width: 86%; }
+  .erou-acasa h2 { font-size: 31px; }
+  .erou-arta { position: absolute; right: -70px; bottom: -34px; transform: scale(.6); opacity: .55; }
+  .cifre { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .cifra { min-height: 96px; padding: 13px; }
+}
+@media (max-width: 420px) { .erou-arta { opacity: .28; } .erou-text { max-width: 96%; } .erou-acasa p { font-size: 13px; } }
+
+/* paleta Atelier în selectorul de culori */
+.paleta-btn[data-p="atelier"] { background: conic-gradient(#8f2948 0 33%, #f7f4ed 0 66%, #101b30 0); box-shadow: inset 0 0 0 1px rgba(0,0,0,.15); }

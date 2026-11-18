@@ -58,8 +58,15 @@ function linkNav(p, extra) {
 function cadru(pagini, mobil, continut, susMeniu) {
   const grupe = [];
   for (const p of pagini) { let g = grupe.find(x => x.n === p.g); if (!g) grupe.push(g = { n: p.g, l: [] }); g.l.push(p); }
-  const side = h("nav", { class: "sidenav", "aria-label": "Meniu" }, susMeniu || null,
-    grupe.map(g => h("div", { class: "nav-grup" }, h("div", { class: "nav-titlu" }, g.n), g.l.map(p => linkNav(p)))));
+  const elev = S.profil && S.profil.rol === "elev";
+  const side = h("nav", { class: "sidenav", "aria-label": "Meniu" },
+    h("a", { href: "#/acasa", class: "nav-marca", "aria-label": "Caietul de teme, acasă", style: "text-decoration:none" },
+      h("span", { class: "semn", "aria-hidden": "true" }, "✦"), h("span", null, h("strong", null, "Caietul de teme"), h("small", null, elev ? "ATELIER LITERAR" : "CATEDRA DE ROMÂNĂ"))),
+    susMeniu || null,
+    grupe.map(g => h("div", { class: "nav-grup" }, h("div", { class: "nav-titlu" }, g.n), g.l.map(p => linkNav(p)))),
+    h("div", { class: "nota-meniu" }, h("strong", null, elev ? "În ritmul tău." : "La catedră."),
+      h("p", null, elev ? "Un loc pentru idei, lecturi și progresul tău la limba română." : "Teme, corecturi și progresul clasei, într-un singur caiet."),
+      elev ? h("a", { href: "#/opere" }, "Explorează biblioteca ↗") : h("a", { href: "#/tema-noua" }, "Pregătește o temă nouă ↗")));
   const deJos = pagini.filter(p => mobil.includes(p.k));
   const restul = pagini.filter(p => !mobil.includes(p.k));
   const restActiv = restul.some(p => p.k === S.pag);
@@ -94,6 +101,21 @@ function subFile(lista, cheie) {
 }
 function gol(titlu, text, buton) {
   return h("div", { class: "sheet empty" }, h("h2", null, titlu), h("p", { class: "muted" }, text), buton || null);
+}
+
+/* banda de sus de pe pagina Acasă (carte deschisă, stele aurii) și cardurile cu cifre */
+function erouAcasa(supra, titlu, text, buton) {
+  return h("section", { class: "erou-acasa", "aria-label": "Bun venit" },
+    h("div", { class: "erou-text" }, h("div", { class: "erou-supra" }, "✦ " + supra), h("h2", null, titlu), h("p", null, text),
+      buton ? h("a", { class: "erou-btn", href: buton[1] }, buton[0], h("span", { "aria-hidden": "true" }, "↗")) : null),
+    h("div", { class: "erou-arta", "aria-hidden": "true" }, h("div", { class: "orb" }),
+      h("div", { class: "fila-st" }, h("div", { class: "randuri" })), h("div", { class: "fila-dr" }, h("div", { class: "randuri" })),
+      h("span", { class: "ornament" }, "❦"), h("span", { class: "sc a" }, "✧"), h("span", { class: "sc b" }, "✦"), h("span", { class: "sc c" }, "✧")));
+}
+function cifra(eticheta, valoare, mic, ic, culoare, href) {
+  return h(href ? "a" : "div", { class: "cifra", href: href || null, style: "--ci:" + culoare },
+    h("div", { class: "cifra-sus" }, h("span", { class: "cifra-et" }, eticheta), h("span", { class: "cifra-ic", "aria-hidden": "true" }, ic)),
+    h("strong", null, valoare), h("small", null, mic));
 }
 
 /* ---------------- ELEV ---------------- */
@@ -182,17 +204,17 @@ function paginaAcasaElev() {
   const recente = lucrari.filter(p => notaFinala(p) != null).sort((a, b) => String(b.trimis_la).localeCompare(String(a.trimis_la))).slice(0, 3);
   const lista = Object.values(S.clasamente || {})[0] || [];
   const loc = lista.findIndex(r => r.eu) + 1;
+  const urm = deFacut[0];
+  const curand = deFacut.filter(t => { const z = zileRamase(t.termen); return z != null && z >= 0 && z <= 3; }).length;
   const out = [
-    h("div", { class: "sheet bun-venit" },
-      h("a", { href: "#/profil", class: "av-mare", "aria-label": "Profilul meu" }, avatar(S.profil.avatar, S.profil.nume, 64), h("span", { class: "nivel-mic" }, "Nv. " + nivel)),
-      h("div", { style: "flex:1;min-width:0" },
-        h("h2", null, `Salut, ${nume}!`),
-        h("p", { class: "muted small" }, deFacut.length ? `Ai ${deFacut.length} ${deFacut.length === 1 ? "temă" : "teme"} de făcut.` : "Ai trimis toate temele. Bravo!"),
-        h("div", { class: "xp", role: "progressbar", "aria-valuenow": xp % 100, "aria-valuemin": 0, "aria-valuemax": 100 }, h("span", { style: `width:${xp % 100}%` }))),
-      h("div", { class: "mini-stats" },
-        h("div", null, h("b", null, media == null ? "–" : fmtNota(media)), h("span", null, "media")),
-        h("div", null, h("b", null, lucrari.length), h("span", null, "trimise")),
-        h("div", null, h("b", null, loc ? `${loc}/${lista.length}` : "–"), h("span", null, "loc"))))];
+    erouAcasa("Jurnalul tău de învățare", [`Salut, ${nume}! `, h("em", null, deFacut.length ? "Fiecare pagină are o poveste." : "Ești la zi.")],
+      deFacut.length ? `Ai ${deFacut.length} ${deFacut.length === 1 ? "temă" : "teme"} de făcut. Temele, lecturile și pregătirea pentru BAC sunt aici, organizate pentru tine.` : "Ai trimis toate temele. Profită de timp pentru o simulare BAC sau o lectură nouă.",
+      urm ? ["Continuă de unde ai rămas", "#/tema/" + encodeURIComponent(urm.id)] : ["Fă o simulare BAC", "#/bac"]),
+    h("div", { class: "cifre" },
+      cifra("Teme de făcut", deFacut.length, curand ? `${curand} cu termen apropiat` : "niciun termen apropiat", "▤", "var(--c1)", "#/teme"),
+      cifra("Media ta", media == null ? "–" : fmtNota(media), `${lucrari.length} ${lucrari.length === 1 ? "temă trimisă" : "teme trimise"}`, "✓", "var(--c3)", "#/profil"),
+      cifra("Nivel", nivel, `${xp} XP · încă ${100 - xp % 100} până la nivelul ${nivel + 1}`, "◔", "var(--c4)", "#/profil"),
+      cifra("Locul în clasă", loc ? `${loc}/${lista.length}` : "–", "după puncte XP", "✧", "var(--c2)", "#/clasament"))];
   out.push(...anunturiElev());
   out.push(h("div", { class: "grid-acasa" }, obiectivSaptamana(), serieSiSugestie()));
   const notif = notificariElev(); if (notif) out.push(notif);
@@ -354,7 +376,11 @@ function paginaClasa(clasa) {
   const note = S.predari.map(notaFinala).filter(n => n != null);
   const media = note.length ? note.reduce((a, b) => a + b, 0) / note.length : null;
   const nVerif = deVerificatLista().length;
+  const prenume = (S.profil.nume || "").replace(/\s*\(.*\)$/, "");
   const out = [
+    erouAcasa("Catedra ta · " + clasa.nume, [`Bună ziua, ${prenume}. `, h("em", null, nVerif ? "Ai lucrări de citit." : "Clasa e la zi.")],
+      nVerif ? `${nVerif} ${nVerif === 1 ? "lucrare așteaptă" : "lucrări așteaptă"} privirea ta. Restul s-au corectat singure.` : `${S.membri.length} elevi și ${S.teme.length} teme în această clasă. Toate lucrările sunt corectate.`,
+      ["+ Temă nouă", "#/tema-noua"]),
     h("div", { class: "sheet stack", style: "--acc:var(--c1)" },
       h("div", { class: "tema-head" },
         h("div", null, h("div", { class: "nav-titlu" }, "Clasa"), h("h2", { class: "titlu-pagina" }, clasa.nume), h("div", { class: "muted small" }, `${S.membri.length} elevi · ${S.teme.length} teme`)),
