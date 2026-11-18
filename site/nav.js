@@ -110,8 +110,10 @@ function cadru(pagini, mobil, continut, susMeniu) {
 
 /* titlul paginii, cu link înapoi când e o pagină „de detaliu” */
 function capPagina(titlu, sub, actiuni, inapoi) {
+  const st = supratitlu();
   return h("div", { class: "cap-pagina" },
     inapoi ? h("a", { href: "#/" + inapoi[0], class: "inapoi" }, "‹ " + inapoi[1]) : null,
+    st ? h("div", { class: "eyebrow" }, st) : null,
     h("div", { class: "cap-rand" },
       h("div", null, h("h2", { class: "titlu-pagina" }, titlu), sub ? h("p", { class: "muted small" }, sub) : null),
       actiuni || null));
@@ -203,7 +205,10 @@ function randTemaElev(t, i) {
   const p = S.predariElev.find(x => x.tema_id === t.id);
   const fin = p ? notaFinala(p) : null;
   const nMsg = (S.mesaje || []).filter(m => m.tema_id === t.id).length;
-  return h("a", { href: "#/tema/" + encodeURIComponent(t.id), class: "rand-tema", style: "--acc:" + CULORI[i % 5] },
+  // starea vizuală: finalizată (are notă), în evaluare (trimisă, fără notă încă), restantă (termen trecut) sau de făcut
+  const z = zileRamase(t.termen);
+  const stare = p ? (fin != null ? "gata" : "evaluare") : z != null && z < 0 ? "restanta" : "de-facut";
+  return h("a", { href: "#/tema/" + encodeURIComponent(t.id), class: "rand-tema st-" + stare, "data-stare": { gata: "Finalizată", evaluare: "În evaluare", restanta: "Restantă", "de-facut": "De făcut" }[stare], style: "--acc:" + CULORI[i % 5] },
     h("span", { class: "rt-bara", "aria-hidden": "true" }),
     h("span", { class: "rt-text" }, h("span", { class: "rt-titlu" }, t.titlu),
       h("span", { class: "muted small" }, [numeClasaElev(t.clasa_id), `${(t.exercitii || []).length} exerciții`, nMsg ? `${nMsg} mesaje` : ""].filter(Boolean).join(" · "))),

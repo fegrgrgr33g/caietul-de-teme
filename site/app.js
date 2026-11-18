@@ -41,7 +41,13 @@ const fmtZi = d => d ? new Date(d + "T12:00:00").toLocaleDateString("ro-RO", { d
 const notaFinala = p => p == null ? null : (p.nota_profesor != null ? Number(p.nota_profesor) : (p.nota != null ? Number(p.nota) : null));
 function toast(msg) {
   if (S.demo && /nu a putut|nu au putut|Nu am putut|nu a reușit/i.test(msg)) msg = "Aceasta e o demonstrație: nimic nu se salvează.";
-  const t = document.getElementById("toast"); t.textContent = msg; t.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => t.hidden = true, 5000); }
+  const t = document.getElementById("toast");
+  // tipul mesajului (succes / eroare / informație) dă culoarea și iconița
+  const tip = /nu a putut|nu au putut|nu am putut|nu a reușit|eroare|greșit|expirat|nu ai conexiune|pierdut/i.test(msg) ? "eroare"
+    : /salvat|trimis|publicat|creat|confirmat|bravo|felicit|schimbat|copiat|șters|ai intrat|gata/i.test(msg) ? "succes" : "info";
+  t.dataset.tip = tip; t.textContent = msg; t.hidden = false;
+  t.classList.remove("vizibil"); void t.offsetWidth; t.classList.add("vizibil");
+  clearTimeout(toast.t); toast.t = setTimeout(() => { t.classList.remove("vizibil"); setTimeout(() => { if (!t.classList.contains("vizibil")) t.hidden = true; }, 350); }, 4600); }
 function eroareDb(e, implicit) {
   const m = (e && e.message) || "";
   if (/Invalid login credentials/i.test(m)) return "Email sau parolă greșită.";
@@ -593,6 +599,7 @@ function draw() {
   const cheie = S.profil.rol + "|" + (S.clasaSel || "") + "|" + S.pag + "|" + (S.pagId || "");
   if (cheie !== S.ultimaCheie) { S.ultimaCheie = cheie; app.classList.remove("intra"); void app.offsetWidth; app.classList.add("intra"); }
   else app.classList.remove("intra"); // la o simplă re-desenare (filtru, salvare) pagina nu mai „reintră”
+  dupaDesen();
 }
 
 /* ---------------- comun ---------------- */
@@ -935,6 +942,7 @@ async function trimite(t) {
   if (!t.exercitii.some(areRaspuns)) { toast("Nu ai răspuns la niciun exercițiu."); return; }
   if (S.demo) { trimiteDemo(t, R); return; }
   S.busy[t.id] = "Se trimit răspunsurile…"; render();
+  let trimisaCuSucces = false;
   try {
     for (const ex of t.exercitii) {
       const poze = pozeDe(t.id, ex.id);
@@ -958,13 +966,14 @@ async function trimite(t) {
       S.busy[t.id] = "Se corectează răspunsurile libere… poate dura un minut."; render();
       try { await cereCorectareAI(predareId); } catch (e) { toast(e.message); }
     }
-    toast("Tema a fost trimisă și corectată.");
+    trimisaCuSucces = true;
   } catch (e) { toast(e.message); }
   finally {
     delete S.busy[t.id]; await reincarca();
     const p = S.predariElev.find(x => x.tema_id === t.id);
     if (p && notaFinala(p) != null) sunetNota(notaFinala(p));
     if (p && notaFinala(p) >= 9) confetti();
+    if (trimisaCuSucces) confirmareTrimitere(p ? notaFinala(p) : null);
   }
 }
 
@@ -998,7 +1007,7 @@ function trimiteDemo(t, R) {
       prima: vechi ? { nota: notaFinala(vechi), punctaj: vechi.punctaj } : null,
       feedback: { rezumat: nota >= 9 ? "Excelent! Ai stăpânit tema." : "Ai făcut progrese; uită-te la greșelile de mai jos." } }]);
     delete S.busy[t.id]; delete S.raspunsuri[t.id]; delete (S.reia || {})[t.id]; render();
-    toast(`Nota ta: ${fmtNota(nota)} (demonstrație)`);
+    confirmareTrimitere(nota);
     sunetNota(nota);
     if (nota >= 9) confetti();
     // în demonstrație, clasamentul se actualizează și el
@@ -1583,7 +1592,7 @@ function cardProfesor(t) {
         h("div", { class: "meta" }, h("span", null, "Publicată " + fmtData(t.creat_la)), t.termen ? h("span", null, "Termen: " + fmtZi(t.termen)) : null,
           h("span", null, `${exercitii.length} exerciții · ${fmtNr(exercitii.reduce((a, e) => a + Number(e.puncte), 0))}p`))),
       h("button", { class: "btn danger" + (sure ? " sure" : ""), onclick: async () => {
-        if (!sure) { S.confirm = t.id; render(); setTimeout(() => { if (S.confirm === t.id) { S.confirm = null; render(); } }, 5000); return; }
+        if (!(await confirmDialog({ titlu: "Ștergi tema?", text: `„${t.titlu}” și toate lucrările trimise de elevi vor fi șterse definitiv. Nu se poate anula.`, da: "Șterge tema", pericol: true }))) return;
         S.confirm = null;
         const { error } = await S.sb.from("teme").delete().eq("id", t.id);
         if (error) toast("Tema nu a putut fi ștearsă."); else { toast("Tema și lucrările ei au fost șterse."); await reincarca(); mergi("teme"); }
@@ -1672,7 +1681,7 @@ function detaliuProfesor(p, t, exercitii, corecte) {
       finally { delete S.busy[p.id]; reincarca(); }
     } }, "Corectează răspunsurile libere cu AI") : null,
     h("button", { class: "btn danger" + (sureRetrim ? " sure" : ""), onclick: async () => {
-      if (!sureRetrim) { S.confirm = "re-" + p.id; render(); setTimeout(() => { if (S.confirm === "re-" + p.id) { S.confirm = null; render(); } }, 5000); return; }
+      if (!(await confirmDialog({ titlu: "Permiți retrimiterea?", text: "Lucrarea actuală a elevului se șterge, iar elevul poate trimite tema din nou. Nota de acum se pierde.", da: "Șterge lucrarea", pericol: true }))) return;
       S.confirm = null;
       const { error } = await S.sb.from("predari").delete().eq("id", p.id);
       if (error) toast("Nu am putut șterge lucrarea."); else { toast("Lucrarea a fost ștearsă; elevul poate trimite din nou."); reincarca(); }
