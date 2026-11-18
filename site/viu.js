@@ -33,6 +33,10 @@ function pozitioneazaIndicator() {
   indicatorTop = sus;
 }
 
+// fonturile se încarcă după primul desen și schimbă înălțimea rândurilor: indicatorul se reașază
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { indicatorTop = null; pozitioneazaIndicator(); });
+addEventListener("resize", () => { indicatorTop = null; pozitioneazaIndicator(); });
+
 /* ---------- dialog modern de confirmare (înlocuiește „apasă de două ori”) ---------- */
 function confirmDialog({ titlu, text, da = "Confirmă", nu = "Renunță", pericol = false }) {
   return new Promise(rezolva => {
