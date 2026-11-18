@@ -7,6 +7,7 @@ const MISCARE_REDUSA = () => matchMedia("(prefers-reduced-motion: reduce)").matc
 
 /* apelat la finalul fiecărui draw() */
 function dupaDesen() {
+  if (typeof asiguraScena === "function") asiguraScena();
   const app = document.getElementById("app");
   if (app && S.profil) { app.dataset.pag = S.pag || "acasa"; app.dataset.rol = S.profil.rol; }
   else if (app) { delete app.dataset.pag; delete app.dataset.rol; }
@@ -74,7 +75,7 @@ function confirmareTrimitere(nota) {
 /* ---------- eticheta mică de deasupra titlului, diferită pe fiecare pagină ---------- */
 const SUPRATITLURI = {
   elev: { acasa: "Spațiul tău de învățare", teme: "Caietul cu teme", tema: "La masa de lucru", calendar: "Agenda termenelor", clasament: "Clasa ta", bac: "Sala de examen",
-    opere: "Biblioteca digitală", limba: "Atelier de limbă", jocuri: "Pauză activă", profil: "Rezultate și progres" },
+    opere: "Biblioteca digitală", limba: "Atelier de limbă", jocuri: "Pauză activă", profil: "Profilul tău", rezultate: "Jurnalul progresului" },
   profesor: { acasa: "Catedra", teme: "Temele clasei", tema: "Lucrările elevilor", "tema-noua": "Pregătește o temă", elevi: "Catalogul clasei", elev: "Fișa elevului",
     calendar: "Agenda clasei", plan: "Planificare", banca: "Arhiva de subiecte", clase: "Clasele tale" },
 };
