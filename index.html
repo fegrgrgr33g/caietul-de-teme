@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="ro">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#0a0f1f">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icon.svg">
+  <title>Caietul de teme</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Alegreya:ital,wght@0,400;0,600;0,700;1,500;1,700&family=Caveat:wght@600;700&display=swap">
+  <link rel="stylesheet" href="style.css">
+  <script>
+    // cartea apare doar la prima deschidere din sesiune; la refresh site-ul apare direct
+    try {
+      var faraIntro = sessionStorage.getItem("intro") === "1" || matchMedia("(prefers-reduced-motion: reduce)").matches || location.hash.indexOf("#demo") === 0;
+      document.documentElement.classList.add(faraIntro ? "fara-intro" : "cu-intro");
+    } catch (e) { document.documentElement.classList.add("fara-intro"); }
+  </script>
+</head>
+<body>
+  <!-- deschiderea: o carte pe o masă de lemn, sub un spot; camera se apropie, coperta se deschide, intrăm în pagină -->
+  <div id="intro" class="intro" role="status" aria-label="Se deschide Caietul de teme">
+    <div class="camera">
+      <div class="masa"></div>
+      <div class="umbra-carte"></div>
+      <div class="carte3d">
+        <div class="c-spate"></div>
+        <div class="c-bloc"><span class="c-muchie-dr"></span><span class="c-muchie-jos"></span><span class="c-muchie-sus"></span></div>
+        <div class="c-panglica"></div>
+        <div class="c-pagina">
+          <div class="c-logo">Ș</div>
+          <svg class="c-scris" viewBox="0 0 300 130" aria-hidden="true">
+            <text x="150" y="56">Caietul</text>
+            <text x="150" y="112" class="rosu">de teme</text>
+          </svg>
+          <div class="c-linie"></div>
+          <div class="c-sub">Limba și literatura română</div>
+          <div class="c-mic">liceu · BAC</div>
+        </div>
+        <div class="c-foaie f3"><div class="ff"></div><div class="fd"></div></div>
+        <div class="c-foaie f2"><div class="ff"></div><div class="fd"></div></div>
+        <div class="c-foaie f1"><div class="ff"></div><div class="fd"></div></div>
+        <div class="c-coperta">
+          <div class="c-fata"><span class="c-cotor"></span><span class="c-emblema">Ș</span><span class="c-nume">Caietul<br>de teme</span><span class="c-an">Limba și literatura română</span></div>
+          <div class="c-dos"><span class="ex-libris">Ex libris</span><span class="c-elev">Clasele IX – XII</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="con-lumina"></div>
+    <div class="praf" id="praf"></div>
+    <div class="lumina"></div>
+    <button type="button" class="sari" id="sari-intro">Sari peste ›</button>
+  </div>
+
+  <canvas id="stele" aria-hidden="true"></canvas>
+  <div class="wrap">
+    <header class="top">
+      <div class="brand">
+        <div class="logo" aria-hidden="true">Ș</div>
+        <div>
+          <h1>Caietul <em>de teme</em></h1>
+          <span class="sub">Limba și literatura română · corectare pe loc</span>
+        </div>
+      </div>
+      <div class="role" id="role"></div>
+    </header>
+    <main id="app" class="stack">
+      <div class="sheet empty"><h2>Se deschide caietul…</h2></div>
+    </main>
+  </div>
+  <div class="toast" id="toast" hidden></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js"></script>
+  <script src="config.js"></script>
+  <script src="continut.js"></script>
+  <script src="liceu.js"></script>
+  <script src="extra.js"></script>
+  <script src="nav.js"></script>
+  <script src="plus.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
