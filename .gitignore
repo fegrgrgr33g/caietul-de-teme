@@ -1,0 +1,10 @@
+# setări locale ale editorului / ale lui Claude
+.claude/
+# fișiere temporare și ale sistemului
+Thumbs.db
+desktop.ini
+.DS_Store
+*.log
+# chei secrete (nu le pune niciodată în repo)
+.env
+.env.*
