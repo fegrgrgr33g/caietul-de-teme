@@ -1,0 +1,372 @@
+/* =====================================================================
+   Caietul de teme — „Povestea Cunoașterii”
+   O lume ilustrată la apus: castel, terasă, bibliotecă, felinare, glicină, o carte deschisă.
+   Se aplică peste sistemul de design Atelier (html[data-paleta="atelier"][data-tema="poveste"]).
+   ===================================================================== */
+:root[data-tema="poveste"] {
+  --night: #2a1636; --night-2: #3a2148; --violet: #2a1636; --violet-2: #1d0f27;
+  --wine: #8a2f45; --wine-2: #73243a; --gold: #d8b06a; --gold-light: #f3d9a6;
+  --bg: #2a1838; --bg-2: #fbf3e2; --sunk: #f5ead3; --edge: #e4cfa9; --line-soft: #efe3cb;
+  --text: #3a2a36; --muted: #6e5d66;
+  --c1: #8a2f45; --c2: #a8742f; --c3: #3f7b5c; --c4: #5a6fa8; --c5: #7a52a8;
+  --f-disp: "Cormorant Garamond", "DM Serif Display", Georgia, serif;
+  --umbra: 0 2px 4px rgba(42, 22, 54, .08), 0 14px 32px -16px rgba(42, 22, 54, .45);
+  --umbra-sus: 0 4px 10px rgba(42, 22, 54, .12), 0 22px 40px -18px rgba(42, 22, 54, .55);
+  --hartie: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .45 0 0 0 0 .32 0 0 0 0 .18 0 0 0 .07 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  /* loc pentru o ilustrație pictată a scenei (vezi site/img/README.md); implicit se folosește desenul vectorial */
+  --ilustratie-scena: none;
+}
+[data-tema="poveste"] body { background: var(--bg); }
+[data-tema="poveste"] h2, [data-tema="poveste"] h3, [data-tema="poveste"] .titlu-pagina { font-family: var(--f-disp); font-weight: 600; letter-spacing: 0; }
+[data-tema="poveste"] .sheet h2, [data-tema="poveste"] .sheet h3 { color: #2f1a3a; }
+
+/* ---------- scena ---------- */
+#scena { display: none; }
+[data-tema="poveste"] #scena { display: block; position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+[data-tema="poveste"] .wrap { position: relative; z-index: 1; }
+#scena .scena-fundal, #scena .scena-ilustratie { position: absolute; inset: 0; width: 100%; height: 100%; }
+#scena .scena-ilustratie { background: var(--ilustratie-scena) center / cover no-repeat; z-index: 1; }
+#scena .voal { position: absolute; inset: 0; z-index: 2; transition: background-color .6s var(--ease); background: rgba(28, 14, 38, .18); }
+#scena .decor { position: absolute; z-index: 3; }
+#scena .glicina { top: -6px; left: 300px; width: 230px; }
+#scena .flori { right: -10px; bottom: -14px; width: 300px; }
+#scena .felinar { left: 318px; bottom: 26px; width: 58px; }
+#scena .felinar .felinar-svg { width: 100%; position: relative; z-index: 1; }
+#scena .felinar .halou { position: absolute; left: 50%; top: 52%; width: 260px; height: 260px; transform: translate(-50%, -50%); border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 196, 110, .45), rgba(255, 170, 90, .12) 45%, transparent 70%); }
+#scena .particule i { position: absolute; left: var(--x); top: var(--y); width: var(--s); height: var(--s); border-radius: 50%; background: #ffe2a0;
+  box-shadow: 0 0 8px 2px rgba(255, 210, 130, .55); opacity: 0; z-index: 4; }
+/* pe paginile de lucru, scena se estompează ca textul să rămână ușor de citit */
+[data-tema="poveste"] body:has(#app:not([data-pag="acasa"])) #scena .voal { background: rgba(28, 14, 38, .62); }
+[data-tema="poveste"] body:has(#app:not([data-pag="acasa"])) #scena :is(.glicina, .flori, .felinar) { opacity: .45; }
+[data-tema="poveste"] body:has(#app[data-rol="profesor"]) #scena .voal { background: rgba(28, 14, 38, .8); }
+[data-tema="poveste"] body:has(#app[data-rol="profesor"]) #scena :is(.decor, .particule) { display: none; }
+[data-tema="poveste"] body:has(.intrare) #scena .voal { background: rgba(28, 14, 38, .35); }
+
+/* animațiile ambientale: lente, discrete, se opresc la „mișcare redusă” */
+[data-tema="poveste"] #scena .fereastra { animation: lumina-castel 5s ease-in-out infinite; }
+[data-tema="poveste"] #scena .fereastra.f1 { animation-delay: -1.6s; } [data-tema="poveste"] #scena .fereastra.f2 { animation-delay: -3.1s; }
+[data-tema="poveste"] #scena .halou { animation: palpaie 4.2s ease-in-out infinite; }
+[data-tema="poveste"] #scena .flacara { animation: palpaie 2.6s ease-in-out infinite; transform-origin: 40px 86px; }
+[data-tema="poveste"] #scena .ciorchine { animation: leagana 7s ease-in-out infinite; }
+[data-tema="poveste"] #scena .ciorchine.c1 { animation-duration: 8.5s; animation-delay: -2s; } [data-tema="poveste"] #scena .ciorchine.c2 { animation-duration: 9.5s; animation-delay: -4s; }
+[data-tema="poveste"] #scena .floare { animation: leagana-floare 6s ease-in-out infinite; transform-box: fill-box; transform-origin: 50% 100%; }
+[data-tema="poveste"] #scena .floare.f1 { animation-delay: -2s; } [data-tema="poveste"] #scena .floare.f2 { animation-delay: -4s; }
+[data-tema="poveste"] #scena .particule i { animation: pluteste-praf var(--d) ease-in-out var(--w) infinite; }
+[data-tema="poveste"] #scena .nori { animation: nori 60s linear infinite alternate; }
+[data-tema="poveste"] #scena .steag { animation: palpaie 3s ease-in-out infinite; }
+@keyframes lumina-castel { 0%, 100% { opacity: .75; } 50% { opacity: 1; filter: drop-shadow(0 0 4px #ffcf7a); } }
+@keyframes palpaie { 0%, 100% { opacity: .9; } 30% { opacity: 1; } 55% { opacity: .82; } 75% { opacity: .97; } }
+@keyframes leagana { 0%, 100% { transform: rotate(-1.2deg); } 50% { transform: rotate(1.4deg); } }
+@keyframes leagana-floare { 0%, 100% { transform: rotate(-3deg); } 50% { transform: rotate(3deg); } }
+@keyframes pluteste-praf { 0% { opacity: 0; transform: translate(0, 10px); } 25% { opacity: .9; } 70% { opacity: .6; } 100% { opacity: 0; transform: translate(14px, -60px); } }
+@keyframes nori { to { transform: translateX(-60px); } }
+
+/* ---------- antetul de sus, peste scenă ---------- */
+[data-tema="poveste"] header.top .muted { color: #efe2ee; }
+[data-tema="poveste"] .palete, [data-tema="poveste"] .sunet-btn, [data-tema="poveste"] .clopot { background: rgba(255, 250, 240, .9); }
+.paleta-btn[data-p="poveste"] { background: conic-gradient(#2a1636 0 30%, #d8b06a 0 52%, #b0608a 0 78%, #f5c28c 0); box-shadow: inset 0 0 0 1px rgba(0,0,0,.15); }
+
+/* ---------- meniul lateral: violet foarte închis, auriu, decorațiuni discrete ---------- */
+[data-tema="poveste"] .sidenav { background: linear-gradient(180deg, #2c1838, #1d0f27 70%); border: 1px solid rgba(216, 176, 106, .28); border-radius: 22px;
+  box-shadow: inset 0 0 0 4px rgba(216, 176, 106, .05), 0 24px 50px -20px rgba(10, 4, 18, .8); padding-top: 22px; }
+[data-tema="poveste"] .nav-marca { border-bottom: 0; padding-bottom: 10px; position: relative; }
+[data-tema="poveste"] .nav-marca::after, [data-tema="poveste"] .nav-grup + .nav-grup::before {
+  content: ""; display: block; height: 14px; margin: 12px 8px 4px; position: absolute; left: 0; right: 0; bottom: -18px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 14'%3E%3Cpath d='M0 7 H84 M116 7 H200' stroke='%23d8b06a' stroke-opacity='.55'/%3E%3Cpath d='M100 1 l6 6 -6 6 -6 -6z' fill='none' stroke='%23d8b06a'/%3E%3Ccircle cx='88' cy='7' r='1.6' fill='%23d8b06a'/%3E%3Ccircle cx='112' cy='7' r='1.6' fill='%23d8b06a'/%3E%3C/svg%3E") center / contain no-repeat; }
+[data-tema="poveste"] .nav-grup + .nav-grup { margin-top: 18px; position: relative; }
+[data-tema="poveste"] .nav-grup + .nav-grup::before { position: static; margin: 0 8px 12px; }
+[data-tema="poveste"] .nav-marca .semn { border-color: rgba(216, 176, 106, .7); color: var(--gold-light); }
+[data-tema="poveste"] .nav-marca strong { font-family: var(--f-disp); font-weight: 600; font-size: 21px; color: #f6ead3; }
+[data-tema="poveste"] .nav-marca small { font-family: var(--f-disp); font-style: italic; letter-spacing: .02em; text-transform: none; font-size: 13px; color: #cdb8c9; }
+[data-tema="poveste"] .sidenav .nav-titlu { color: #a893ad; margin-top: 10px; }
+[data-tema="poveste"] .sidenav .nav-item { font-family: var(--f-disp); font-size: 19px; font-weight: 600; color: #ecdcea; padding: 9px 12px; border-radius: 99px; }
+[data-tema="poveste"] .sidenav .nav-item:hover { background: rgba(216, 176, 106, .08); color: #fff; text-shadow: 0 0 12px rgba(243, 217, 166, .55); transform: translateX(3px); }
+[data-tema="poveste"] .sidenav .nav-item:hover .nav-ic { color: var(--gold-light); filter: drop-shadow(0 0 6px rgba(243, 217, 166, .6)); }
+[data-tema="poveste"] .sidenav .nav-item.on { background: transparent; box-shadow: none; color: #fff; }
+[data-tema="poveste"] .sidenav .nav-ic { color: var(--gold); }
+[data-tema="poveste"] .sidenav .nav-ic svg { width: 21px; height: 21px; }
+[data-tema="poveste"] .sidenav .nav-badge { background: var(--wine); font-family: var(--f-ui); }
+/* indicatorul secțiunii active: o „pastilă” cu contur auriu luminos care alunecă */
+[data-tema="poveste"] .nav-indicator { left: 8px; width: calc(100% - 16px); border-radius: 99px; z-index: 0;
+  background: linear-gradient(90deg, rgba(138, 47, 69, .55), rgba(216, 176, 106, .16)); border: 1.5px solid rgba(243, 217, 166, .85);
+  box-shadow: 0 0 14px rgba(243, 217, 166, .45), inset 0 0 12px rgba(243, 217, 166, .15); }
+[data-tema="poveste"] .nota-meniu { border-color: rgba(216, 176, 106, .3); background: rgba(255, 255, 255, .04); }
+[data-tema="poveste"] .nota-meniu strong { font-family: var(--f-disp); font-size: 19px; }
+[data-tema="poveste"] .sidenav .alege-clasa select { background: #341d42; }
+[data-tema="poveste"] .bottomnav { background: linear-gradient(180deg, #2c1838, #1d0f27); border: 1px solid rgba(216, 176, 106, .3); }
+[data-tema="poveste"] .bottomnav .nav-item { font-family: var(--f-disp); font-size: 13px; font-weight: 700; }
+
+/* ---------- titlurile paginilor, peste scenă ---------- */
+[data-tema="poveste"] .cap-pagina .titlu-pagina { color: #fbefdc; text-shadow: 0 2px 18px rgba(20, 8, 30, .6); font-size: clamp(36px, 4.4vw, 54px); font-weight: 700; }
+[data-tema="poveste"] .cap-pagina p { color: #f0e3ee; text-shadow: 0 1px 8px rgba(20, 8, 30, .7); }
+[data-tema="poveste"] .cap-pagina .inapoi, [data-tema="poveste"] .pagina > .inapoi, [data-tema="poveste"] .pagina > .row > .inapoi { color: #f3d9a6 !important; }
+[data-tema="poveste"] .eyebrow { color: #f3d9a6; }
+[data-tema="poveste"] .eyebrow::before { background: #f3d9a6; }
+
+/* ---------- pergament: cardurile și panourile ---------- */
+[data-tema="poveste"] .sheet { background: var(--hartie), linear-gradient(170deg, #fdf7ea, #f6ead2); border: 1px solid #e2c99b;
+  box-shadow: inset 0 0 0 3px rgba(255, 252, 244, .7), inset 0 0 0 4px rgba(216, 176, 106, .35), var(--umbra); }
+[data-tema="poveste"] .rand-tema, [data-tema="poveste"] .cifra, [data-tema="poveste"] .lista-azi a, [data-tema="poveste"] .recomandare {
+  background: var(--hartie), linear-gradient(170deg, #fffaf0, #f8eedb); border-color: #e6d1aa; }
+[data-tema="poveste"] .btn, [data-tema="poveste"] a.btn { border-radius: 99px; }
+[data-tema="poveste"] .btn.ghost, [data-tema="poveste"] a.btn.ghost { background: #fffaf0; border-color: #e3caa0; color: #6f2a40; }
+[data-tema="poveste"] .seg { background: rgba(251, 243, 226, .92); border-color: #e2c99b; }
+[data-tema="poveste"] .toast { background: linear-gradient(180deg, #34203f, #241330); border: 1px solid rgba(216, 176, 106, .4); }
+
+/* =====================================================================
+   DASHBOARD: titlul, cartea, panourile
+   ===================================================================== */
+.erou-poveste { text-align: center; padding: 6px 12px 0; }
+.titlu-poveste { margin: 0; font-family: "Cormorant Garamond", Georgia, serif; font-weight: 700; font-size: clamp(40px, 5.4vw, 72px); line-height: 1.02; letter-spacing: .01em;
+  background: linear-gradient(180deg, #fff6e2 20%, #f1cf8f 75%, #d8a95a); -webkit-background-clip: text; background-clip: text; color: transparent;
+  filter: drop-shadow(0 3px 14px rgba(25, 8, 35, .55)); }
+.erou-poveste p { margin: 8px auto 18px; max-width: 520px; font-family: "Cormorant Garamond", Georgia, serif; font-size: 21px; line-height: 1.35; color: #f6ecf3; text-shadow: 0 1px 10px rgba(20, 8, 30, .75); }
+.buton-calatorie { display: inline-flex; align-items: center; gap: 12px; padding: 12px 30px; border-radius: 99px; text-decoration: none;
+  font-family: "Cormorant Garamond", Georgia, serif; font-weight: 700; font-size: 21px; color: #3b2316;
+  background: linear-gradient(180deg, #ffe6b0, #e9b866); border: 1.5px solid #fff1cc; box-shadow: 0 0 0 3px rgba(233, 184, 102, .35), 0 10px 26px -8px rgba(233, 160, 70, .8);
+  transition: transform var(--t) var(--ease), box-shadow var(--t) var(--ease), filter var(--t) var(--ease); }
+.buton-calatorie:hover { transform: translateY(-2px); box-shadow: 0 0 0 5px rgba(233, 184, 102, .3), 0 14px 32px -8px rgba(233, 160, 70, .95); filter: brightness(1.04); }
+.buton-calatorie:active { transform: scale(.97); }
+.buton-calatorie span { transition: transform var(--t) var(--ease); }
+.buton-calatorie:hover span { transform: translateX(4px); }
+
+/* masa pe care stă cartea, cu pisica */
+.masa-cartii { position: relative; margin-top: 6px; }
+/* pisica doarme pe colțul cărții, deasupra ornamentului, fără să acopere capitolele */
+.masa-cartii .pisica { position: absolute; left: 0; top: -22px; width: 150px; z-index: 6; pointer-events: none; }
+[data-tema="poveste"] .sidenav { scrollbar-width: thin; scrollbar-color: rgba(216, 176, 106, .4) transparent; }
+[data-tema="poveste"] .sidenav::-webkit-scrollbar { width: 6px; }
+[data-tema="poveste"] .sidenav::-webkit-scrollbar-thumb { background: rgba(216, 176, 106, .4); border-radius: 6px; }
+[data-tema="poveste"] .sidenav::-webkit-scrollbar-track { background: transparent; }
+.masa-cartii .pisica svg { width: 100%; filter: drop-shadow(0 8px 10px rgba(30, 10, 30, .35)); }
+[data-tema="poveste"] .pisica .respira { animation: respira 4.4s ease-in-out infinite; transform-origin: 100px 96px; transform-box: view-box; }
+@keyframes respira { 0%, 100% { transform: scale(1, 1); } 50% { transform: scale(1.012, 1.04); } }
+
+/* ---------- cartea deschisă ---------- */
+.carte-poveste { position: relative; margin: 0 auto; width: min(100%, 980px); padding: 46px 0 28px; perspective: 1800px; }
+.carte-umbra { position: absolute; left: 4%; right: 4%; bottom: 8px; height: 46px; border-radius: 50%; background: radial-gradient(ellipse, rgba(20, 6, 20, .6), transparent 70%); filter: blur(6px); }
+.carte-corp { position: relative; display: grid; grid-template-columns: 1fr 26px 1fr; transform: rotateX(14deg); transform-origin: 50% 100%; transform-style: preserve-3d;
+  padding: 10px 12px 14px; border-radius: 18px 18px 26px 26px;
+  background: linear-gradient(180deg, #5c2a3a, #3e1a28); box-shadow: 0 2px 0 #7a3a4e inset, 0 30px 40px -18px rgba(15, 5, 15, .8); }
+.pagina-carte { position: relative; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 52px 26px 30px; min-height: 280px;
+  background: var(--hartie), linear-gradient(90deg, #f3e5c6, #fbf3e0 30%, #fbf3e0 70%, #ecdbb6); }
+.pagina-carte.st { border-radius: 12px 4px 4px 14px; background: var(--hartie), linear-gradient(90deg, #ead7af 0, #fbf3e0 14%, #fbf3e0 80%, #e2cda2 100%);
+  box-shadow: -2px 2px 0 #efe0c0, -4px 4px 0 #e2cfa6, -6px 6px 0 #d8c296, -8px 8px 0 #cdb588, inset -18px 0 26px -18px rgba(90, 60, 30, .45); }
+.pagina-carte.dr { border-radius: 4px 12px 14px 4px; background: var(--hartie), linear-gradient(90deg, #e2cda2 0, #fbf3e0 20%, #fbf3e0 86%, #ead7af 100%);
+  box-shadow: 2px 2px 0 #efe0c0, 4px 4px 0 #e2cfa6, 6px 6px 0 #d8c296, 8px 8px 0 #cdb588, inset 18px 0 26px -18px rgba(90, 60, 30, .45); }
+.cotor { background: linear-gradient(90deg, #b99a6a, #e9d6ac 40%, #c4a473 60%, #9c7b4c); box-shadow: inset 0 0 8px rgba(60, 30, 10, .45); border-radius: 2px; }
+.carte-titlu { position: absolute; top: 18px; left: 50%; transform: translateX(-50%); margin: 0; z-index: 4; white-space: nowrap;
+  font-family: "Cormorant Garamond", Georgia, serif !important; font-weight: 700 !important; font-size: 30px !important; color: #3a2236 !important;
+  padding: 2px 18px; background: radial-gradient(ellipse, #fbf3e0 55%, transparent 72%); }
+.carte-titlu span { color: #c49a52; }
+.colt { position: absolute; width: 58px; height: 58px; opacity: .9; pointer-events: none; }
+.colt svg { width: 100%; height: 100%; }
+.colt.ss { top: 8px; left: 8px; transform: scaleY(-1); } .colt.js { bottom: 8px; left: 8px; }
+.colt.sd { top: 8px; right: 8px; transform: scale(-1, -1); } .colt.jd { bottom: 8px; right: 8px; transform: scaleX(-1); }
+.semn-carte { position: absolute; left: calc(50% + 38px); bottom: -14px; width: 30px; height: 76px; z-index: 5;
+  background: linear-gradient(90deg, #7d2238, #a8344f 50%, #7d2238); clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 80%, 0 100%); filter: drop-shadow(0 6px 6px rgba(40, 10, 20, .45)); }
+
+/* un capitol: ilustrație cu pată de acuarelă, titlu, subtitlu, săgeată — un link real */
+.capitol { position: relative; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 2px; padding: 14px 8px 12px; border-radius: 18px;
+  color: #3a2236; text-decoration: none; isolation: isolate; transition: transform var(--t) var(--ease); }
+.capitol::before { content: ""; position: absolute; inset: 4% 6% 18%; z-index: -1; border-radius: 46% 54% 50% 50% / 55% 45% 55% 45%;
+  background: radial-gradient(circle at 50% 45%, var(--pata) 0, color-mix(in srgb, var(--pata) 60%, transparent) 45%, transparent 72%); opacity: .9;
+  transition: opacity var(--t) var(--ease), transform var(--t-lent) var(--ease); }
+.capitol::after { content: ""; position: absolute; inset: 0; z-index: -1; border-radius: 18px; opacity: 0; transition: opacity var(--t) var(--ease);
+  background: radial-gradient(circle at 50% 40%, rgba(255, 228, 160, .55), transparent 70%); }
+.capitol:hover, .capitol:focus-visible { transform: translateY(-3px); }
+.capitol:hover::after, .capitol:focus-visible::after { opacity: 1; }
+.capitol:hover::before { transform: scale(1.06); }
+.cap-ilustr { width: 96px; height: 74px; display: grid; place-items: center; }
+.cap-ilustr svg { width: 100%; height: 100%; filter: drop-shadow(0 4px 4px rgba(80, 50, 30, .2)); transition: transform var(--t-lent) var(--ease); }
+.capitol:hover .cap-ilustr svg { transform: translateY(-3px) rotate(-2deg); }
+.cap-titlu { font-family: "Cormorant Garamond", Georgia, serif; font-weight: 700; font-size: 24px; line-height: 1.1; margin-top: 6px; }
+.capitol[data-ch="1"] .cap-titlu { font-style: italic; }
+.cap-sub { font-family: "Cormorant Garamond", Georgia, serif; font-style: italic; font-size: 16px; color: #6b5560; }
+.cap-sageata { margin-top: 8px; width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; font-size: 17px; color: #3a2236;
+  background: #fffaf0; border: 1.5px solid #c9a76a; box-shadow: 0 3px 8px rgba(80, 50, 30, .2); transition: transform var(--t) var(--ease), background-color var(--t) var(--ease); }
+.capitol:hover .cap-sageata { transform: translateX(3px); background: #fff2d3; }
+.capitol:focus-visible { outline: 3px solid #a96a78; outline-offset: 2px; }
+
+/* întoarcerea paginii la alegerea unui capitol */
+.foaie-intoarsa { position: absolute; top: 10px; bottom: 14px; width: calc(50% - 25px); pointer-events: none; opacity: 0; border-radius: 4px 12px 14px 4px;
+  background: var(--hartie), linear-gradient(90deg, #e2cda2, #fbf3e0 30%, #f3e6c8); box-shadow: 0 0 30px rgba(60, 30, 10, .3); backface-visibility: hidden; }
+.carte-poveste.intoarce-dr .foaie-intoarsa { left: calc(50% + 1px); transform-origin: left center; animation: intoarce-dr .48s var(--ease) forwards; }
+.carte-poveste.intoarce-st .foaie-intoarsa { left: 12px; transform-origin: right center; animation: intoarce-st .48s var(--ease) forwards; }
+@keyframes intoarce-dr { 0% { opacity: 1; transform: rotateY(0); } 100% { opacity: .9; transform: rotateY(-178deg); } }
+@keyframes intoarce-st { 0% { opacity: 1; transform: rotateY(0); } 100% { opacity: .9; transform: rotateY(178deg); } }
+
+/* deschiderea cărții la intrarea pe pagină */
+[data-tema="poveste"] #app.intra .carte-corp { animation: deschide-carte 1s var(--ease) both; }
+[data-tema="poveste"] #app.intra .pagina-carte.st { animation: deschide-pagina-st 1s var(--ease) both; transform-origin: right center; }
+[data-tema="poveste"] #app.intra .pagina-carte.dr { animation: deschide-pagina-dr 1s var(--ease) both; transform-origin: left center; }
+[data-tema="poveste"] #app.intra .capitol { animation: intra-viu .5s var(--ease) both; animation-delay: .55s; }
+[data-tema="poveste"] #app.intra .capitol[data-ch="2"], [data-tema="poveste"] #app.intra .capitol[data-ch="3"] { animation-delay: .65s; }
+[data-tema="poveste"] #app.intra .capitol[data-ch="4"] { animation-delay: .75s; }
+@keyframes deschide-carte { from { opacity: 0; transform: rotateX(28deg) translateY(30px) scale(.94); } }
+@keyframes deschide-pagina-st { from { transform: rotateY(38deg); } }
+@keyframes deschide-pagina-dr { from { transform: rotateY(-38deg); } }
+
+/* ---------- cele trei panouri de sub carte ---------- */
+.panouri-poveste { display: grid; grid-template-columns: 1.15fr 1.1fr .82fr; gap: 20px; align-items: stretch; margin-top: -4px; }
+.panou-poveste { position: relative; padding: 20px 22px 18px; border-radius: 20px; color: #3a2a36;
+  background: var(--hartie), linear-gradient(170deg, #fdf6e7, #f3e4c6); border: 1px solid #e0c590;
+  box-shadow: inset 0 0 0 3px rgba(255, 252, 244, .75), inset 0 0 0 4px rgba(216, 176, 106, .45), 0 18px 34px -16px rgba(20, 6, 26, .7); }
+.panou-poveste::before, .panou-poveste::after { content: ""; position: absolute; width: 46px; height: 46px; top: 8px; pointer-events: none; opacity: .8;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'%3E%3Cpath d='M56 4 C30 4 14 14 6 40 M56 4 C40 14 34 26 34 44 M46 14 c-2 6 -8 10 -14 10' fill='none' stroke='%23c49a52' stroke-width='2' stroke-linecap='round'/%3E%3Ccircle cx='6' cy='40' r='3' fill='%23c49a52'/%3E%3C/svg%3E") center / contain no-repeat; }
+.panou-poveste::before { right: 8px; }
+.panou-poveste::after { left: 8px; transform: scaleX(-1); opacity: .35; }
+.panou-titlu { margin: 0 0 12px; font-family: "Cormorant Garamond", Georgia, serif !important; font-weight: 700 !important; font-size: 27px !important; color: #2f1a3a !important; }
+.panou-titlu .stea-mica { color: #c49a52; }
+.lista-provocari { list-style: none; margin: 0 0 10px; padding: 0; }
+.lista-provocari li + li { border-top: 1px dashed #e2cfa8; }
+.lista-provocari a, .prov-exercitiu { display: flex; align-items: center; gap: 12px; padding: 10px 4px; min-height: 48px; color: inherit; text-decoration: none; border-radius: 10px;
+  transition: background-color var(--t-rapid) var(--ease); }
+.lista-provocari a:hover, .prov-exercitiu:hover { background: rgba(216, 176, 106, .14); }
+.bifa-poveste { width: 22px; height: 22px; flex: none; border-radius: 5px; border: 2px solid #9a8578; background: #fffaf0; display: grid; place-items: center; font-size: 14px; font-weight: 800; color: #fff; }
+.lista-provocari li.gata .bifa-poveste, .prov-exercitiu.gata .bifa-poveste { background: #3f7b5c; border-color: #3f7b5c; }
+.lista-provocari li.gata .prov-titlu { text-decoration: line-through; color: #8a7a80; }
+.lista-provocari li.restanta .bifa-poveste { border-color: var(--wine); }
+.prov-titlu { flex: 1; min-width: 0; font-family: "Cormorant Garamond", Georgia, serif; font-weight: 600; font-size: 19px; line-height: 1.2; }
+.prov-data { display: inline-flex; align-items: center; gap: 5px; flex: none; font-size: 13px; font-weight: 600; padding: 4px 10px; border-radius: 99px;
+  background: #fffaf0; border: 1px solid #e3caa0; color: #5a3a40; box-shadow: 0 2px 4px rgba(80, 50, 30, .08); }
+.prov-data .ic-cal { color: var(--wine); display: grid; }
+.lista-provocari li.curand .prov-data { border-color: #d9a94e; background: #fff4d8; }
+.lista-provocari li.restanta .prov-data { border-color: #d7a1ad; background: #fbe8ec; color: var(--wine); }
+.prov-exercitiu { font-size: 14px; color: #5a4a52; border-top: 1px dashed #e2cfa8; border-radius: 0 0 10px 10px; margin-bottom: 6px; }
+.progres-corp { display: flex; align-items: center; gap: 18px; }
+.inel-poveste { position: relative; width: 132px; height: 132px; flex: none; }
+.inel-poveste svg { width: 100%; height: 100%; }
+.inel-val { position: absolute; inset: 0; display: grid; place-items: center; font-family: "Cormorant Garamond", Georgia, serif; font-weight: 700; font-size: 32px; color: #2f1a3a; }
+[data-tema="poveste"] #app.intra .arc-poveste { animation: umple-inel 1.3s var(--ease) .4s both; }
+@keyframes umple-inel { from { stroke-dashoffset: var(--gol); } to { stroke-dashoffset: var(--plin); } }
+.bare-poveste { flex: 1; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.bara-poveste { display: grid; grid-template-columns: 22px 1fr; align-items: center; gap: 2px 8px; }
+.bara-poveste .xp { grid-column: 1 / -1; }
+.bp-ic { font-size: 15px; }
+.bp-et { font-family: "Cormorant Garamond", Georgia, serif; font-weight: 700; font-size: 18px; }
+.bara-poveste .xp { margin: 0; height: 9px; background: #eadfca; }
+.bara-poveste.teme .xp span { background: linear-gradient(90deg, #7a52a8, #a77bd8); }
+.bara-poveste.bac .xp span { background: linear-gradient(90deg, #c4566a, #e88a8a); }
+.bara-poveste.lectura .xp span { background: linear-gradient(90deg, #3f7b5c, #7fb08f); }
+.evolutie-mica { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 12px; padding-top: 10px; border-top: 1px dashed #e2cfa8; }
+/* insigna: panou violet ornamentat */
+.panou-poveste.insigna { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 2px; color: #f6ead3;
+  background: radial-gradient(circle at 50% 40%, rgba(216, 176, 106, .25), transparent 60%), linear-gradient(170deg, #3d2350, #241332); border-color: rgba(216, 176, 106, .55);
+  box-shadow: inset 0 0 0 3px rgba(42, 22, 54, .6), inset 0 0 0 4px rgba(216, 176, 106, .45), 0 18px 34px -16px rgba(20, 6, 26, .8); }
+.panou-poveste.insigna .panou-titlu { color: #f6ead3 !important; font-size: 23px !important; }
+.panou-poveste.insigna .panou-titlu span { color: var(--gold); }
+.insigna-scena { position: relative; width: 120px; height: 124px; display: grid; place-items: center; }
+.insigna-scena::before { content: ""; position: absolute; inset: -10px; border-radius: 50%; background: radial-gradient(circle, rgba(255, 220, 140, .45), transparent 65%); }
+.scut-wrap svg, .scut-mic svg { width: 100%; height: 100%; position: relative; }
+.scut-wrap { width: 100px; height: 110px; position: relative; }
+.scut.blocat { filter: grayscale(1) brightness(.85); opacity: .7; }
+.insigna-nume { font-family: "Cormorant Garamond", Georgia, serif; font-size: 23px; margin-top: 6px; color: #fff3da; }
+.insigna-desc { font-size: 13px; color: #d9c6d6; }
+.insigna-link { margin-top: 8px; font-size: 13px; font-weight: 700; color: var(--gold-light); text-decoration: none; }
+.insigna-link:hover { text-decoration: underline; }
+[data-tema="poveste"] .panou-poveste.insigna .insigna-scena::before { animation: aura 4s ease-in-out infinite; }
+.panou-poveste.insigna.noua .scut-wrap { animation: insigna-noua 1.2s var(--ease) both; }
+@keyframes aura { 0%, 100% { opacity: .55; transform: scale(.95); } 50% { opacity: 1; transform: scale(1.05); } }
+@keyframes insigna-noua { 0% { transform: scale(.3) rotate(-25deg); opacity: 0; } 60% { transform: scale(1.12) rotate(4deg); opacity: 1; } 100% { transform: none; } }
+.scut-mic { width: 64px; height: 70px; margin: 0 auto 4px; }
+[data-tema="poveste"] .galerie-insigne .insigna-mare { background: var(--hartie), linear-gradient(170deg, #fff9ec, #f4e6c8); }
+/* panoul „Noutăți” de sub carte */
+[data-tema="poveste"] #app[data-pag="acasa"] .panou-noutati { margin-top: 4px; }
+[data-tema="poveste"] #app[data-pag="acasa"] .pagina > * + * { margin-top: 0; }
+[data-tema="poveste"] #app.intra .panouri-poveste > * { animation: intra-viu .55s var(--ease) both; animation-delay: .8s; }
+[data-tema="poveste"] #app.intra .panouri-poveste > :nth-child(2) { animation-delay: .9s; }
+[data-tema="poveste"] #app.intra .panouri-poveste > :nth-child(3) { animation-delay: 1s; }
+
+/* =====================================================================
+   CELELALTE PAGINI, în aceeași lume
+   ===================================================================== */
+/* Temele mele: un jurnal cu pagini de hârtie */
+[data-tema="poveste"] .lista-teme { padding: 18px 18px 18px 30px; border-radius: 18px; background: var(--hartie), repeating-linear-gradient(180deg, #fdf6e7 0 33px, #ecdcbc 33px 34px);
+  border: 1px solid #e0c590; box-shadow: inset 4px 0 0 #c49a52, inset 6px 0 0 rgba(138, 47, 69, .35), var(--umbra); }
+[data-tema="poveste"] .lista-teme .rand-tema { background: rgba(255, 252, 244, .82); }
+[data-tema="poveste"] .lista-teme .rt-titlu { font-family: var(--f-disp); font-weight: 700; font-size: 21px; }
+/* rezolvarea: masă de scris confortabilă */
+[data-tema="poveste"] #app[data-pag="tema"] form textarea { background: var(--hartie), repeating-linear-gradient(180deg, #fffdf6 0 29px, #eadfc8 29px 30px); line-height: 30px; }
+/* Calendar: planner ca o hartă a aventurii */
+[data-tema="poveste"] #app[data-pag="calendar"] .calendar { background:
+  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='420' height='300'%3E%3Cpath d='M20 260 C90 200 140 240 200 180 S320 120 400 40' fill='none' stroke='%23b48a52' stroke-opacity='.22' stroke-width='3' stroke-dasharray='8 10'/%3E%3Cg transform='translate(360 240)' stroke='%23b48a52' stroke-opacity='.3' fill='none'%3E%3Ccircle r='26'/%3E%3Cpath d='M0 -34 L6 0 L0 34 L-6 0Z M-34 0 L0 6 L34 0 L0 -6Z' fill='%23b48a52' fill-opacity='.15'/%3E%3C/g%3E%3C/svg%3E") right bottom / 420px no-repeat,
+  var(--hartie), linear-gradient(170deg, #fbf1dc, #f1e0bd); }
+[data-tema="poveste"] #app[data-pag="calendar"] .calendar > .row:first-child { background: linear-gradient(90deg, #3d2350, #2a1636); }
+[data-tema="poveste"] #app[data-pag="calendar"] .zi { background: rgba(255, 252, 244, .7); border-color: #e6d3ad; }
+[data-tema="poveste"] #app[data-pag="calendar"] .zi.are { background: rgba(255, 244, 216, .9); }
+/* Bibliotecă: volume pe rafturi de lemn */
+[data-tema="poveste"] #app[data-pag="opere"] .grila-opere { gap: 34px 18px; padding: 8px 6px 18px; }
+[data-tema="poveste"] #app[data-pag="opere"] .opera:not(.deschisa) { box-shadow: inset 10px 0 0 rgba(0, 0, 0, .25), inset 12px 0 0 rgba(216, 176, 106, .5), 0 18px 0 -8px #6a4630, 0 22px 14px -8px rgba(20, 6, 26, .6); }
+[data-tema="poveste"] #app[data-pag="opere"] .opera:nth-child(3n+1):not(.deschisa) { background: linear-gradient(150deg, #4b2a62, #2a1636 75%); }
+[data-tema="poveste"] #app[data-pag="opere"] .opera:nth-child(3n+2):not(.deschisa) { background: linear-gradient(150deg, #8a2f45, #5a1c2e 75%); }
+[data-tema="poveste"] #app[data-pag="opere"] .opera:nth-child(3n+3):not(.deschisa) { background: linear-gradient(150deg, #33604d, #1d3d31 75%); }
+[data-tema="poveste"] #app[data-pag="opere"] .opera:not(.deschisa) .opera-titlu { font-family: var(--f-disp); font-weight: 700; font-size: 25px; }
+[data-tema="poveste"] #app[data-pag="opere"] .opera.deschisa { background: var(--hartie), linear-gradient(90deg, #ead7af 0, #fdf6e7 16px); }
+/* Pregătire BAC: o călătorie în etape */
+[data-tema="poveste"] #app[data-pag="bac"] .sub-file { counter-reset: etapa; background: rgba(251, 243, 226, .95); }
+[data-tema="poveste"] #app[data-pag="bac"] .sub-file button { counter-increment: etapa; display: inline-flex; align-items: center; gap: 8px; }
+[data-tema="poveste"] #app[data-pag="bac"] .sub-file button::before { content: counter(etapa); width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center;
+  font-size: 12px; font-weight: 800; border: 1.5px solid #c49a52; color: #8a6428; background: #fffaf0; }
+[data-tema="poveste"] #app[data-pag="bac"] .sub-file button.on::before { background: var(--wine); border-color: var(--wine); color: #fff; }
+[data-tema="poveste"] #app[data-pag="bac"] .cap-pagina::after { background: #fbefd8; }
+/* Rezultate: jurnalul progresului */
+[data-tema="poveste"] #app[data-pag="rezultate"] .galerie-insigne .grila-insigne { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+/* profesor: aceeași identitate, instrumente compacte și clare */
+[data-tema="poveste"] #app[data-rol="profesor"] .sheet { padding: 20px; }
+[data-tema="poveste"] #app[data-rol="profesor"] .cap-pagina .titlu-pagina { font-size: clamp(32px, 3.6vw, 44px); }
+[data-tema="poveste"] #app[data-pag="elevi"] .tabel-elevi thead th, [data-tema="poveste"] #app[data-pag="tema"][data-rol="profesor"] table thead th { background: #2f1a3a; }
+[data-tema="poveste"] #app[data-rol="profesor"][data-pag="acasa"] .tila { background: #2f1a3a !important; }
+/* pagina de intrare: cartea de piele peste scenă */
+[data-tema="poveste"] .intrare .sheet { backdrop-filter: none; }
+
+/* =====================================================================
+   TABLETĂ ȘI TELEFON
+   ===================================================================== */
+@media (max-width: 1280px) {
+  #scena .glicina { left: 250px; width: 180px; }
+  .masa-cartii .pisica { left: -2%; width: 17%; }
+}
+@media (max-width: 1100px) {
+  .panouri-poveste { grid-template-columns: 1fr 1fr; }
+  .panou-poveste.insigna { grid-column: 1 / -1; flex-direction: row; justify-content: center; flex-wrap: wrap; gap: 6px 18px; text-align: left; }
+  .panou-poveste.insigna .panou-titlu { width: 100%; text-align: center; }
+  .masa-cartii .pisica { display: none; }
+  .carte-poveste { padding-top: 40px; }
+  .pagina-carte { padding: 48px 14px 22px; }
+  .cap-titlu { font-size: 21px; }
+}
+@media (max-width: 860px) {
+  /* telefon: scena rămâne doar ca atmosferă, decorurile care încurcă cititul dispar */
+  #scena .decor, #scena .particule { display: none; }
+  [data-tema="poveste"] #scena .voal { background: rgba(28, 14, 38, .5) !important; }
+  .titlu-poveste { font-size: clamp(36px, 11vw, 48px); }
+  .erou-poveste p { font-size: 18px; }
+  /* cartea adaptată: o singură pagină, capitolele 2 × 2 */
+  .carte-poveste { perspective: none; padding: 36px 0 18px; }
+  .carte-corp { grid-template-columns: 1fr; transform: none; padding: 8px; border-radius: 18px; }
+  .cotor, .semn-carte, .carte-umbra, .colt.js, .colt.jd, .colt.sd { display: none; }
+  .pagina-carte { padding: 14px 8px 10px; min-height: 0; gap: 4px; }
+  .pagina-carte.st { border-radius: 12px 12px 0 0; padding-top: 40px; box-shadow: none; background: var(--hartie), #fbf3e0; }
+  .pagina-carte.dr { border-radius: 0 0 12px 12px; box-shadow: none; background: var(--hartie), #fbf3e0; border-top: 1px dashed #e0c9a0; }
+  .carte-titlu { top: 44px; font-size: 25px !important; }
+  .capitol { padding: 10px 4px; min-height: 44px; }
+  .cap-ilustr { width: 76px; height: 58px; }
+  .cap-titlu { font-size: 19px; }
+  .cap-sub { font-size: 14px; }
+  .cap-sageata { width: 30px; height: 30px; }
+  .panouri-poveste { grid-template-columns: 1fr; gap: 14px; }
+  .progres-corp { flex-direction: column; align-items: stretch; }
+  .inel-poveste { margin: 0 auto; width: 116px; height: 116px; }
+  .panou-poveste.insigna { flex-direction: column; text-align: center; }
+  [data-tema="poveste"] #app.intra .carte-corp, [data-tema="poveste"] #app.intra .pagina-carte { animation: intra-viu .45s var(--ease) both; }
+  [data-tema="poveste"] .lista-teme { padding: 12px; }
+}
+
+/* ---------- mișcare redusă: lumea rămâne, dar stă pe loc ---------- */
+@media (prefers-reduced-motion: reduce) {
+  #scena *, .pisica *, .carte-poveste, .carte-poveste *, .panou-poveste, .panou-poveste * { animation: none !important; transition: none !important; }
+  #scena .particule { display: none; }
+  .arc-poveste { stroke-dashoffset: var(--plin) !important; }
+}

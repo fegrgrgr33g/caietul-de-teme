@@ -1,0 +1,326 @@
+/* Caietul de teme — „Povestea Cunoașterii”.
+   Lumea ilustrată (scena de fundal, decorurile), cartea interactivă cu capitole, panourile de sub carte și pagina Rezultate.
+   Ilustrațiile sunt desene vectoriale (SVG) făcute în cod, separate pe straturi; textele, butoanele și datele sunt HTML real.
+   Se încarcă înainte de app.js; nu schimbă logica aplicației. */
+"use strict";
+
+function estePoveste() { return document.documentElement.dataset.tema === "poveste"; }
+
+/* =====================================================================
+   SCENA DE FUNDAL (o singură dată, în afara #app, deci nu se redesenează la fiecare clic)
+   ===================================================================== */
+function asiguraScena() {
+  if (!estePoveste() || document.getElementById("scena")) return;
+  const s = document.createElement("div");
+  s.id = "scena"; s.setAttribute("aria-hidden", "true");
+  // pod cu arcade (apeduct) și căsuțe cu ferestre luminate, generate în buclă
+  let arcade = "", case_ = "";
+  for (let i = 0; i < 7; i++) {
+    const x = i * 58;
+    arcade += `<rect x="${x}" y="20" width="14" height="62" fill="#4d3560"/><path d="M${x + 14} 82 V48 a22 22 0 0 1 44 0 V82" fill="none" stroke="#4d3560" stroke-width="3"/>`;
+  }
+  [[1210, 640, 46, 34], [1268, 628, 40, 40], [1322, 648, 52, 30], [1392, 622, 44, 44], [1450, 640, 50, 34], [1515, 630, 42, 40], [1160, 660, 40, 30]].forEach(([x, y, w, hh], k) => {
+    case_ += `<rect x="${x}" y="${y}" width="${w}" height="${hh}" fill="#3a2648"/><path d="M${x - 4} ${y} L${x + w / 2} ${y - 22} L${x + w + 4} ${y} Z" fill="#2c1c3a"/>`
+      + `<rect class="fereastra f${k % 3}" x="${x + w / 2 - 5}" y="${y + 10}" width="9" height="10" rx="1.5" fill="#ffcf7a"/>`;
+  });
+  s.innerHTML = `
+  <div class="scena-ilustratie"></div>
+  <svg class="scena-fundal" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice">
+    <defs>
+      <linearGradient id="sc-cer" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#2a1844"/><stop offset=".32" stop-color="#57336e"/><stop offset=".58" stop-color="#b0608a"/>
+        <stop offset=".74" stop-color="#e8937f"/><stop offset="1" stop-color="#f5c28c"/></linearGradient>
+      <radialGradient id="sc-soare" cx=".74" cy=".62" r=".42"><stop offset="0" stop-color="#ffe2a6" stop-opacity=".95"/><stop offset=".35" stop-color="#ffc58a" stop-opacity=".35"/><stop offset="1" stop-color="#ffc58a" stop-opacity="0"/></radialGradient>
+      <linearGradient id="sc-m1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9a6c9c"/><stop offset="1" stop-color="#c4849a"/></linearGradient>
+      <linearGradient id="sc-m2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6b4a80"/><stop offset="1" stop-color="#7d5687"/></linearGradient>
+      <linearGradient id="sc-deal" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4a3060"/><stop offset="1" stop-color="#2a1a3a"/></linearGradient>
+      <linearGradient id="sc-rau" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#f6c99a" stop-opacity="0"/><stop offset=".5" stop-color="#f8d3a4" stop-opacity=".75"/><stop offset="1" stop-color="#f6c99a" stop-opacity="0"/></linearGradient>
+      <linearGradient id="sc-podea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6a4658"/><stop offset="1" stop-color="#2a1824"/></linearGradient>
+      <pattern id="sc-balustri" width="44" height="64" patternUnits="userSpaceOnUse">
+        <path d="M15 0h14v7c-5 4-6 10-4 17 3 9 7 14 7 24 0 7-4 12-4 16h-12c0-4-4-9-4-16 0-10 4-15 7-24 2-7 1-13-4-17z" fill="#8c6a80"/>
+        <path d="M15 0h7v7c-3 4-4 10-2 17 2 9 4 14 4 24 0 7-2 12-2 16h-6c0-4-4-9-4-16 0-10 4-15 7-24 2-7 1-13-4-17z" fill="#a8869a" opacity=".55"/></pattern>
+    </defs>
+    <rect width="1600" height="900" fill="url(#sc-cer)"/>
+    <rect width="1600" height="900" fill="url(#sc-soare)"/>
+    <g class="nori" fill="#f7c0c8" opacity=".32">
+      <ellipse cx="420" cy="210" rx="170" ry="22"/><ellipse cx="560" cy="190" rx="110" ry="16"/><ellipse cx="1040" cy="150" rx="200" ry="20"/><ellipse cx="1300" cy="250" rx="150" ry="14"/></g>
+    <path d="M0 560 L140 500 280 540 420 470 560 520 700 455 860 515 1000 470 1160 505 1320 450 1480 500 1600 478 V900 H0Z" fill="url(#sc-m1)" opacity=".75"/>
+    <path d="M0 610 Q200 556 380 596 T760 588 T1120 600 T1600 566 V900 H0Z" fill="url(#sc-m2)" opacity=".92"/>
+    <path d="M300 650 Q620 600 980 632 T1600 610 V900 H300Z" fill="#5a3d6c" opacity=".55"/>
+    <path d="M520 640 C760 618 980 650 1180 630" stroke="url(#sc-rau)" stroke-width="10" fill="none" stroke-linecap="round"/>
+    <g transform="translate(700,548)" opacity=".9">${arcade}<rect x="0" y="14" width="410" height="9" fill="#5c4170"/></g>
+    <path d="M980 700 Q1080 470 1230 420 Q1360 380 1460 430 Q1560 480 1600 500 V900 H980Z" fill="url(#sc-deal)"/>
+    <g class="castel" transform="translate(1175,186)">
+      <rect x="62" y="96" width="120" height="150" fill="#3a2850"/><rect x="18" y="64" width="44" height="182" fill="#33234a"/>
+      <rect x="182" y="44" width="46" height="202" fill="#33234a"/><rect x="108" y="14" width="32" height="96" fill="#2f2045"/>
+      <path d="M14 66 L40 12 L66 66Z M178 46 L205 -10 L232 46Z M104 16 L124 -46 L144 16Z" fill="#251836"/>
+      <path d="M62 96 h120 v-10 h-12 v6 h-12 v-6 h-12 v6 h-12 v-6 h-12 v6 h-12 v-6 h-12 v6 h-12 v-6 h-12 v6 h-12 v-6 h-12 z" fill="#3a2850"/>
+      <path d="M124 -46 v-22 l18 7 -18 7" fill="#c66a7e" class="steag"/>
+      <rect class="fereastra f0" x="32" y="104" width="10" height="14" rx="5" fill="#ffd27a"/><rect class="fereastra f1" x="32" y="150" width="10" height="14" rx="5" fill="#ffd27a"/>
+      <rect class="fereastra f2" x="198" y="84" width="11" height="15" rx="5" fill="#ffd27a"/><rect class="fereastra f0" x="198" y="138" width="11" height="15" rx="5" fill="#ffd27a"/>
+      <rect class="fereastra f1" x="118" y="40" width="10" height="14" rx="5" fill="#ffd27a"/><rect class="fereastra f2" x="88" y="140" width="12" height="18" rx="6" fill="#ffd27a"/>
+      <rect class="fereastra f0" x="144" y="140" width="12" height="18" rx="6" fill="#ffd27a"/><rect class="fereastra f1" x="116" y="190" width="14" height="22" rx="7" fill="#ffd27a"/></g>
+    <g class="sat">${case_}</g>
+    <rect y="736" width="1600" height="164" fill="url(#sc-podea)"/>
+    <rect y="676" width="1600" height="12" fill="#a1808f"/><rect y="688" width="1600" height="64" fill="url(#sc-balustri)"/><rect y="748" width="1600" height="10" fill="#7b5b6d"/>
+    <g fill="#f3c69a" opacity=".07"><path d="M300 900 L620 760 H700 L560 900Z"/><path d="M900 900 L1000 760 H1090 L1200 900Z"/></g>
+  </svg>
+  <div class="voal"></div>
+  <svg class="decor glicina" viewBox="0 0 260 300">${ciorchini()}</svg>
+  <svg class="decor flori" viewBox="0 0 320 220">${flori()}</svg>
+  <div class="decor felinar"><span class="halou"></span>${felinarSvg()}</div>
+  <div class="particule">${Array.from({ length: 14 }, (_, i) => `<i style="--x:${(i * 37 + 11) % 96}%;--y:${(i * 53 + 7) % 88}%;--d:${9 + (i % 5) * 2.2}s;--w:${-(i * 1.7)}s;--s:${2 + (i % 3)}px"></i>`).join("")}</div>`;
+  document.body.prepend(s);
+}
+function ciorchini() {
+  // ramuri de glicină care atârnă din colțul de sus, cu frunze și flori în ciorchine
+  let out = `<path d="M0 6 C70 30 150 10 260 22" stroke="#4b3328" stroke-width="5" fill="none"/>`;
+  [[30, 18, 130], [78, 26, 175], [126, 22, 150], [170, 18, 200], [214, 22, 140]].forEach(([x, y, L], k) => {
+    out += `<g class="ciorchine c${k % 3}" style="transform-origin:${x}px ${y}px">`;
+    out += `<path d="M${x} ${y} q-3 ${L / 2} 2 ${L}" stroke="#56402f" stroke-width="2" fill="none"/>`;
+    for (let j = 0; j < 9; j++) {
+      const yy = y + 12 + j * (L / 10), r = 9 - j * .6, dx = (j % 2 ? 5 : -5) * (1 - j / 12);
+      const cul = ["#b48fd8", "#9d75c9", "#c9a7e6", "#8a62b8"][(j + k) % 4];
+      out += `<circle cx="${x + dx}" cy="${yy}" r="${r}" fill="${cul}"/><circle cx="${x - dx}" cy="${yy + 4}" r="${r * .8}" fill="${cul}" opacity=".85"/>`;
+    }
+    out += `<ellipse cx="${x + 14}" cy="${y + 8}" rx="12" ry="5" fill="#5f8a54" transform="rotate(25 ${x + 14} ${y + 8})"/><ellipse cx="${x - 13}" cy="${y + 10}" rx="11" ry="4.5" fill="#4f7a4a" transform="rotate(-30 ${x - 13} ${y + 10})"/></g>`;
+  });
+  return out;
+}
+function flori() {
+  let out = `<path d="M0 220 C60 150 150 140 320 170 V220Z" fill="#3c2a45"/>`;
+  const frunze = [[40, 170, -30], [90, 150, 20], [150, 160, -15], [210, 150, 25], [270, 165, -20], [120, 185, 10], [240, 190, -10]];
+  frunze.forEach(([x, y, r]) => { out += `<ellipse cx="${x}" cy="${y}" rx="26" ry="9" fill="#4e7a4c" transform="rotate(${r} ${x} ${y})"/>`; });
+  [[60, 140, 1], [110, 118, .9], [170, 132, 1.1], [228, 112, .95], [280, 138, .85], [140, 160, .8], [205, 158, .9]].forEach(([x, y, s], k) => {
+    out += `<g class="floare f${k % 3}" transform="translate(${x} ${y}) scale(${s})">`;
+    for (let p = 0; p < 5; p++) out += `<ellipse cx="0" cy="-9" rx="7" ry="10" fill="${["#b48fd8", "#9a72c8", "#c7a4e8"][k % 3]}" transform="rotate(${p * 72})"/>`;
+    out += `<circle r="4.5" fill="#f3d58c"/></g>`;
+  });
+  return out;
+}
+function felinarSvg() {
+  return `<svg viewBox="0 0 80 150" class="felinar-svg"><defs><radialGradient id="fl-sticla" cx=".5" cy=".55" r=".6"><stop offset="0" stop-color="#fff2c4"/><stop offset=".55" stop-color="#ffc768"/><stop offset="1" stop-color="#d98a3a"/></radialGradient></defs>
+    <path d="M40 2 v14" stroke="#2c1f1a" stroke-width="3"/><circle cx="40" cy="20" r="7" fill="none" stroke="#3a2a22" stroke-width="3"/>
+    <path d="M18 34 h44 l-6 -8 h-32z" fill="#3a2a22"/><rect x="20" y="34" width="40" height="70" rx="3" fill="url(#fl-sticla)" class="flacara-sticla"/>
+    <path d="M20 34 v70 M60 34 v70 M40 34 v70 M20 69 h40" stroke="#3a2a22" stroke-width="3" fill="none"/>
+    <path d="M14 104 h52 l-6 10 h-40z" fill="#3a2a22"/><ellipse cx="40" cy="78" rx="5" ry="9" fill="#fffbe6" class="flacara"/></svg>`;
+}
+function pisicaSvg() {
+  return `<svg viewBox="0 0 200 130" class="pisica-svg" role="img" aria-label="O pisică albă doarme pe un teanc de cărți">
+    <rect x="8" y="92" width="184" height="18" rx="3" fill="#6d2c3f"/><rect x="8" y="96" width="184" height="3" fill="#c9a062"/>
+    <rect x="18" y="108" width="168" height="18" rx="3" fill="#3f3266"/><rect x="18" y="112" width="168" height="3" fill="#c9a062"/>
+    <rect x="186" y="94" width="5" height="14" fill="#efe2c7"/><rect x="182" y="110" width="5" height="14" fill="#efe2c7"/>
+    <g class="respira">
+      <path d="M150 88 C182 84 192 64 170 60" stroke="#efe9e4" stroke-width="12" fill="none" stroke-linecap="round"/>
+      <ellipse cx="102" cy="70" rx="64" ry="26" fill="#f8f4ef"/><ellipse cx="108" cy="80" rx="54" ry="13" fill="#e9e0d8"/>
+      <circle cx="48" cy="66" r="22" fill="#faf6f1"/>
+      <path d="M32 52 L30 30 L46 46Z M58 46 L68 28 L68 52Z" fill="#faf6f1"/><path d="M34 48 L33 36 L42 45Z M60 46 L66 35 L66 50Z" fill="#f0c3c8"/>
+      <path d="M38 66 q5 4 10 0 M54 66 q5 4 10 0" stroke="#8b7a80" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <path d="M49 73 l2 2 2 -2z" fill="#e59aa6"/><path d="M28 72 h-12 M28 76 h-11 M70 72 h12 M70 76 h11" stroke="#d8cfd0" stroke-width="1.2"/>
+      <ellipse cx="66" cy="88" rx="14" ry="6" fill="#f8f4ef"/></g></svg>`;
+}
+
+/* =====================================================================
+   DASHBOARDUL ELEVULUI: titlul, cartea cu capitole, panourile
+   ===================================================================== */
+function acasaPoveste() {
+  const lucrari = S.predariElev;
+  const deFacut = S.temeElev.filter(t => !lucrari.some(p => p.tema_id === t.id))
+    .sort((a, b) => String(a.termen || "9999").localeCompare(String(b.termen || "9999")));
+  notificariElev(); // termene și teme noi: notificările browserului + lista din „Noutăți”
+  const t = deFacut[0];
+  const continua = t ? ["#/tema/" + encodeURIComponent(t.id), `Continuă cu „${t.titlu}”`] : ["#/bac", "Ai trimis toate temele: urmează o simulare BAC"];
+  return [
+    h("section", { class: "erou-poveste", "aria-labelledby": "titlu-poveste" },
+      h("h1", { id: "titlu-poveste", class: "titlu-poveste" }, "Povestea Cunoașterii"),
+      h("p", null, "Aici, temele, lecturile și provocările devin capitolele unei călătorii în lumea literaturii."),
+      h("a", { class: "buton-calatorie", href: continua[0], title: continua[1], "aria-label": "Continuă călătoria: " + continua[1] },
+        "Continuă călătoria", h("span", { "aria-hidden": "true" }, "→"))),
+    h("div", { class: "masa-cartii" }, h("div", { class: "decor pisica" }, (() => { const d = h("div"); d.innerHTML = pisicaSvg(); return d.firstChild; })()), carteCapitole()),
+    h("div", { class: "panouri-poveste" }, panouProvocari(deFacut), panouProgres(), panouInsigna()),
+    noutatiElev()];
+}
+
+/* ---------- cartea deschisă: patru capitole, fiecare un link real ---------- */
+const CAPITOLE = [
+  { k: "teme", titlu: "Temele mele", sub: "Primele provocări", pata: "#d9c4ee", ilustr: "pergament" },
+  { k: "calendar", titlu: "Calendar", sub: "Planul aventurii", pata: "#cfe5cf", ilustr: "calendar" },
+  { k: "bac", titlu: "Pregătire BAC", sub: "Marea încercare", pata: "#f5ddb8", ilustr: "toca" },
+  { k: "opere", titlu: "Bibliotecă", sub: "Lumea operelor", pata: "#f1c9d3", ilustr: "carti" }];
+const ILUSTRATII = {
+  pergament: `<svg viewBox="0 0 120 90"><path d="M14 30 h70 a8 8 0 0 1 0 16 h-6 v28 a8 8 0 0 1 -8 8 h-60 a8 8 0 0 1 0 -16 h6 v-28 a8 8 0 0 1 -2 -8z" fill="#f2e0b6" stroke="#a7783e" stroke-width="2.5"/>
+    <path d="M20 46 h50 M20 54 h44 M20 62 h48" stroke="#b99466" stroke-width="2" stroke-linecap="round"/><circle cx="16" cy="74" r="8" fill="#e5cd96" stroke="#a7783e" stroke-width="2.5"/>
+    <path d="M70 70 C80 40 98 16 116 6 C108 30 94 52 74 72Z" fill="#c9a36a" stroke="#6b4a6e" stroke-width="2"/><path d="M74 72 L104 18" stroke="#6b4a6e" stroke-width="1.6"/><path d="M70 70 l-6 10" stroke="#3a2a22" stroke-width="2.5" stroke-linecap="round"/></svg>`,
+  calendar: `<svg viewBox="0 0 120 90"><rect x="28" y="14" width="64" height="66" rx="7" fill="#fffaf0" stroke="#7a5a3a" stroke-width="2.5"/><rect x="28" y="14" width="64" height="16" rx="7" fill="#8a2f45"/>
+    <rect x="28" y="24" width="64" height="6" fill="#8a2f45"/><path d="M42 8 v12 M60 8 v12 M78 8 v12" stroke="#5a4636" stroke-width="4" stroke-linecap="round"/>
+    <g fill="#cbb38c">${[0, 1, 2, 3].map(c => [0, 1, 2].map(r => `<rect x="${36 + c * 13}" y="${38 + r * 12}" width="8" height="7" rx="1.5"/>`).join("")).join("")}</g>
+    <path d="M52 58 l8 8 18 -20" stroke="#3d8a5a" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  toca: `<svg viewBox="0 0 120 90"><path d="M60 14 L112 34 L60 54 L8 34Z" fill="#3a2a5c" stroke="#231839" stroke-width="2"/><path d="M60 14 L112 34 L60 40 L8 34Z" fill="#4c3a72"/>
+    <path d="M30 44 v18 c10 10 50 10 60 0 v-18 L60 54Z" fill="#2c2048"/><path d="M60 34 L96 44 v22" stroke="#d6a84a" stroke-width="2.5" fill="none"/>
+    <path d="M92 66 l4 14 4 -14z" fill="#d6a84a"/><circle cx="96" cy="66" r="3.5" fill="#e8bf5c"/><circle cx="60" cy="34" r="3" fill="#e8bf5c"/></svg>`,
+  carti: `<svg viewBox="0 0 120 90"><rect x="16" y="58" width="88" height="18" rx="3" fill="#6e2c43"/><rect x="16" y="62" width="88" height="3" fill="#d4a95c"/><rect x="100" y="60" width="4" height="14" fill="#efe2c7"/>
+    <rect x="22" y="40" width="78" height="18" rx="3" fill="#3d3a6e"/><rect x="22" y="44" width="78" height="3" fill="#d4a95c"/><rect x="96" y="42" width="4" height="14" fill="#efe2c7"/>
+    <rect x="30" y="22" width="66" height="18" rx="3" fill="#2f5e4c"/><rect x="30" y="26" width="66" height="3" fill="#d4a95c"/><rect x="92" y="24" width="4" height="14" fill="#efe2c7"/>
+    <path d="M78 22 v-14 l6 4 6 -4 v14" fill="#a8304c"/></svg>`,
+};
+const ORNAMENT_COLT = `<svg viewBox="0 0 60 60" aria-hidden="true"><path d="M4 56 C4 30 14 14 40 6 M4 56 C14 40 26 34 44 34 M14 46 c6 -2 10 -8 10 -14 M30 20 c4 2 8 2 12 -2" fill="none" stroke="#c49a52" stroke-width="2" stroke-linecap="round"/><circle cx="40" cy="6" r="3" fill="#c49a52"/><circle cx="44" cy="34" r="2.5" fill="#c49a52"/><path d="M20 30 c-4 -6 -2 -12 4 -14 c0 6 -2 10 -4 14z" fill="#b58fd0" opacity=".8"/></svg>`;
+
+function carteCapitole() {
+  const capitol = (c, nr) => h("a", { class: "capitol", href: "#/" + c.k, style: "--pata:" + c.pata, "data-ch": nr,
+      onclick: e => intoarcePagina(e, c.k, nr > 2 ? "dr" : "st") },
+    h("span", { class: "cap-ilustr", "aria-hidden": "true" }, (() => { const s = h("span"); s.innerHTML = ILUSTRATII[c.ilustr]; return s.firstChild; })()),
+    h("span", { class: "cap-titlu" }, c.titlu), h("span", { class: "cap-sub" }, c.sub),
+    h("span", { class: "cap-sageata", "aria-hidden": "true" }, "→"));
+  const colt = cls => { const d = h("span", { class: "colt " + cls, "aria-hidden": "true" }); d.innerHTML = ORNAMENT_COLT; return d; };
+  return h("nav", { class: "carte-poveste", "aria-label": "Capitolele tale" },
+    h("div", { class: "carte-umbra", "aria-hidden": "true" }),
+    h("div", { class: "carte-corp" },
+      h("div", { class: "pagina-carte st" }, colt("ss"), colt("js"), capitol(CAPITOLE[0], 1), capitol(CAPITOLE[1], 2)),
+      h("div", { class: "cotor", "aria-hidden": "true" }),
+      h("div", { class: "pagina-carte dr" }, colt("sd"), colt("jd"), capitol(CAPITOLE[2], 3), capitol(CAPITOLE[3], 4)),
+      h("div", { class: "foaie-intoarsa", "aria-hidden": "true" })),
+    h("h2", { class: "carte-titlu" }, h("span", { "aria-hidden": "true" }, "✦ "), "Capitolele tale", h("span", { "aria-hidden": "true" }, " ✦")),
+    h("span", { class: "semn-carte", "aria-hidden": "true" }));
+}
+/* la alegerea unui capitol, o foaie se întoarce scurt, apoi se deschide pagina (fără animație dacă utilizatorul a cerut mișcare redusă) */
+function intoarcePagina(e, pag, parte) {
+  if (e.button || e.ctrlKey || e.metaKey || e.shiftKey || MISCARE_REDUSA()) return;
+  e.preventDefault();
+  const carte = e.currentTarget.closest(".carte-poveste");
+  carte.classList.add("intoarce", "intoarce-" + parte);
+  setTimeout(() => mergi(pag), 480);
+}
+
+/* ---------- panoul „Următoarele provocări”: teme reale ---------- */
+function panouProvocari(deFacut) {
+  const azi = ziISO(Date.now());
+  const trimiseRecent = S.temeElev.filter(t => S.predariElev.some(p => p.tema_id === t.id))
+    .sort((a, b) => { const pa = S.predariElev.find(p => p.tema_id === a.id), pb = S.predariElev.find(p => p.tema_id === b.id); return String(pb.trimis_la).localeCompare(String(pa.trimis_la)); });
+  const lista = [...deFacut.slice(0, 3), ...trimiseRecent.slice(0, Math.max(0, 3 - Math.min(3, deFacut.length)))].slice(0, 3);
+  const zileTermen = t => { const z = zileRamase(t.termen); return z == null ? null : z; };
+  const exersatAzi = !!citesteLocal(cheieElev("exersat-" + azi), "");
+  return h("section", { class: "panou-poveste provocari", "aria-labelledby": "pp-titlu" },
+    h("h2", { id: "pp-titlu", class: "panou-titlu" }, "Următoarele provocări"),
+    lista.length ? h("ul", { class: "lista-provocari" }, lista.map(t => {
+      const p = S.predariElev.find(x => x.tema_id === t.id), z = zileTermen(t);
+      return h("li", { class: p ? "gata" : z != null && z < 0 ? "restanta" : z != null && z <= 1 ? "curand" : "" },
+        h("a", { href: "#/tema/" + encodeURIComponent(t.id), "aria-label": `${t.titlu}${p ? ", trimisă" : ""}${t.termen ? ", termen " + fmtZi(t.termen) : ""}` },
+          h("span", { class: "bifa-poveste", "aria-hidden": "true" }, p ? "✓" : ""),
+          h("span", { class: "prov-titlu" }, t.titlu),
+          t.termen ? h("span", { class: "prov-data" }, h("span", { "aria-hidden": "true" }, iconitaCalendar()), new Date(t.termen + "T12:00:00").toLocaleDateString("ro-RO", { day: "numeric", month: "short" })) : null));
+    })) : h("p", { class: "muted small" }, "Nicio temă încă. Când profesorul publică una, apare aici."),
+    h("a", { class: "prov-exercitiu" + (exersatAzi ? " gata" : ""), href: "#/limba", onclick: () => scrieLocal(cheieElev("exersat-" + azi), "1") },
+      h("span", { class: "bifa-poveste", "aria-hidden": "true" }, exersatAzi ? "✓" : ""), h("span", null, h("b", null, "Exercițiul zilei"), " · 5 minute de DOOM și gramatică")),
+    h("a", { class: "link-btn small", href: "#/teme" }, "Toate temele →"));
+}
+function iconitaCalendar() { const s = h("span", { class: "ic-cal" }); s.innerHTML = `<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18"/></svg>`; return s; }
+
+/* ---------- panoul „Progresul călătoriei”: procente din date reale ---------- */
+function panouProgres() {
+  const total = S.temeElev.length, trimise = S.predariElev.length;
+  const procent = total ? Math.round(trimise / total * 100) : 0;
+  const ist = istoricAntrenamente(); // date reale (în demonstrație: exemplele din modul demo)
+  const bac = ist.length ? Math.round(ist.reduce((s, x) => s + x.nota, 0) / ist.length * 10) : 0;
+  const citite = Object.values(citesteJSON(cheieElev("citite"), {})).filter(x => x && x.citit).length;
+  const lectura = Math.round(citite / OPERE.length * 100);
+  const note = S.predariElev.filter(p => notaFinala(p) != null).sort((a, b) => String(a.trimis_la).localeCompare(String(b.trimis_la))).map(notaFinala);
+  const L = 2 * Math.PI * 52;
+  const inel = h("div", { class: "inel-poveste", role: "img", "aria-label": `${procent}% din teme trimise (${trimise} din ${total})` });
+  inel.innerHTML = `<svg viewBox="0 0 132 132"><defs><linearGradient id="ip-g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8d5bc4"/><stop offset=".55" stop-color="#5e9aa8"/><stop offset="1" stop-color="#d9a94e"/></linearGradient></defs>
+    <circle cx="66" cy="66" r="52" fill="none" stroke="#ece0c7" stroke-width="11"/>
+    <circle class="arc-poveste" cx="66" cy="66" r="52" fill="none" stroke="url(#ip-g)" stroke-width="11" stroke-linecap="round" transform="rotate(-90 66 66)"
+      stroke-dasharray="${L.toFixed(1)}" style="--plin:${(L * (1 - procent / 100)).toFixed(1)};--gol:${L.toFixed(1)}" stroke-dashoffset="${(L * (1 - procent / 100)).toFixed(1)}"/>
+    <path d="M18 92 c-6 -10 -6 -22 0 -30 M14 82 c-8 0 -10 -6 -10 -10 M20 104 c-8 2 -12 -2 -14 -6 M114 92 c6 -10 6 -22 0 -30 M118 82 c8 0 10 -6 10 -10 M112 104 c8 2 12 -2 14 -6" stroke="#7d9a6a" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg>
+    <span class="inel-val">${procent}%</span>`;
+  const bara = (eticheta, ic, v, cls, titlu) => h("div", { class: "bara-poveste " + cls, title: titlu },
+    h("span", { class: "bp-ic", "aria-hidden": "true" }, ic), h("span", { class: "bp-et" }, eticheta),
+    h("div", { class: "xp", role: "progressbar", "aria-label": eticheta, "aria-valuenow": v, "aria-valuemin": 0, "aria-valuemax": 100 }, h("span", { style: `width:${v}%` })));
+  return h("section", { class: "panou-poveste progres", "aria-labelledby": "pg-titlu" },
+    h("h2", { id: "pg-titlu", class: "panou-titlu" }, h("span", { class: "stea-mica", "aria-hidden": "true" }, "✦ "), "Progresul călătoriei"),
+    h("div", { class: "progres-corp" }, inel,
+      h("div", { class: "bare-poveste" },
+        bara("Teme", "📖", procent, "teme", `${trimise} din ${total} teme trimise`),
+        bara("BAC", "🎓", bac, "bac", ist.length ? `media antrenamentelor: ${fmtNota(bac / 10)}` : "nicio simulare încă"),
+        bara("Lectură", "📚", lectura, "lectura", `${citite} din ${OPERE.length} opere citite`))),
+    note.length > 1 ? h("div", { class: "evolutie-mica" }, h("span", { class: "muted small" }, "Evoluția notelor"), sparkline(note.slice(-8))) : null);
+}
+
+/* ---------- insignele: doar cele obținute cu adevărat ---------- */
+function insigneObtinute() {
+  const lucrari = S.predariElev || [], note = lucrari.map(notaFinala).filter(n => n != null);
+  const citite = Object.values(citesteJSON(cheieElev("citite"), {})).filter(x => x && x.citit).length;
+  const ant = citesteJSON("antrenamente", []), sim = ant.filter(x => x.bac).length;
+  const stap = Object.values(citesteJSON(cheieElev("flash"), {})).filter(c => c >= 4).length;
+  const libere = lucrari.some(p => Object.values(p.rezultate || {}).some(r => r.max >= 2 && r.puncte === r.max));
+  const fara = lucrari.some(p => { const r = Object.values(p.rezultate || {}); return r.length && r.every(x => x.corect); });
+  return [
+    { n: "Primul pas", d: "Ai trimis prima temă.", ok: lucrari.length >= 1, ic: "pana" },
+    { n: "Fără greșeală", d: "O temă rezolvată perfect.", ok: fara, ic: "stea" },
+    { n: "Nota 10", d: "Ai obținut nota maximă.", ok: note.some(n => n >= 10), ic: "coroana" },
+    { n: "Condei de aur", d: "Punctaj maxim la un răspuns liber.", ok: libere, ic: "pana" },
+    { n: "Scriitor atent", d: "Ai finalizat 5 teme.", ok: lucrari.length >= 5, ic: "pana" },
+    { n: "Cititor", d: "5 opere citite din programă.", ok: citite >= 5, ic: "carte" },
+    { n: "Prima simulare", d: "Ai dat o simulare BAC completă.", ok: sim >= 1, ic: "toca" },
+    { n: "Teoretician", d: "10 termeni literari stăpâniți.", ok: stap >= 10, ic: "stea" },
+    { n: "Maratonist BAC", d: "10 simulări BAC.", ok: sim >= 10, ic: "toca" }];
+}
+function scutSvg(ic, blocat) {
+  const simbol = { pana: `<path d="M58 30 C46 44 40 58 38 72 C50 62 60 48 64 34Z" fill="#f5e6c4"/><path d="M38 72 l-4 8" stroke="#f5e6c4" stroke-width="3" stroke-linecap="round"/>`,
+    stea: `<path d="M50 30 l6 13 14 1 -11 9 4 14 -13 -8 -13 8 4 -14 -11 -9 14 -1z" fill="#f5e6c4"/>`,
+    coroana: `<path d="M32 62 l4 -24 10 12 4 -16 4 16 10 -12 4 24z" fill="#f5e6c4"/>`,
+    carte: `<path d="M30 40 c8 -4 14 -4 20 2 c6 -6 12 -6 20 -2 v28 c-8 -4 -14 -4 -20 2 c-6 -6 -12 -6 -20 -2z" fill="#f5e6c4"/><path d="M50 42 v28" stroke="#6b4a8e" stroke-width="2"/>`,
+    toca: `<path d="M50 32 l24 10 -24 10 -24 -10z M36 48 v10 c8 6 20 6 28 0 v-10" fill="#f5e6c4"/>` }[ic];
+  return `<svg viewBox="0 0 100 110" class="scut${blocat ? " blocat" : ""}"><defs><linearGradient id="sc-aur" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f6d68c"/><stop offset=".5" stop-color="#c9963f"/><stop offset="1" stop-color="#f0c96f"/></linearGradient>
+    <linearGradient id="sc-vi" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7b55a8"/><stop offset="1" stop-color="#3f2864"/></linearGradient></defs>
+    <path d="M50 6 L88 18 V52 C88 78 70 96 50 104 C30 96 12 78 12 52 V18Z" fill="url(#sc-aur)"/>
+    <path d="M50 14 L80 24 V52 C80 72 66 87 50 94 C34 87 20 72 20 52 V24Z" fill="url(#sc-vi)"/>${simbol}
+    <path d="M8 70 c-6 8 -4 18 4 24 M92 70 c6 8 4 18 -4 24" stroke="#c9963f" stroke-width="3" fill="none" stroke-linecap="round"/></svg>`;
+}
+function panouInsigna() {
+  const toate = insigneObtinute(), obt = toate.filter(x => x.ok);
+  const ultima = obt[obt.length - 1];
+  // animație și anunț doar când numărul insignelor a crescut față de ultima vizită (nicio insignă inventată)
+  const cheie = cheieElev("insigne-vazute"), vazute = Number(citesteLocal(cheie, "-1"));
+  const noua = vazute >= 0 && obt.length > vazute;
+  if (obt.length !== vazute && !S.demo) scrieLocal(cheie, String(obt.length));
+  if (noua && ultima) setTimeout(() => toast(`Insignă nouă: „${ultima.n}”. Felicitări!`), 600);
+  return h("section", { class: "panou-poveste insigna" + (noua ? " noua" : ""), "aria-labelledby": "pi-titlu" },
+    h("h2", { id: "pi-titlu", class: "panou-titlu" }, h("span", { "aria-hidden": "true" }, "✦ "), ultima ? "Insignă obținută" : "Prima insignă", h("span", { "aria-hidden": "true" }, " ✦")),
+    h("div", { class: "insigna-scena" }, (() => { const d = h("div", { class: "scut-wrap" }); d.innerHTML = scutSvg(ultima ? ultima.ic : "pana", !ultima); return d; })()),
+    ultima ? h("b", { class: "insigna-nume" }, ultima.n) : h("b", { class: "insigna-nume" }, "Te așteaptă"),
+    h("span", { class: "insigna-desc" }, ultima ? ultima.d : "Trimite prima temă ca s-o obții."),
+    h("a", { class: "insigna-link", href: "#/rezultate" }, `${obt.length} din ${toate.length} insigne →`));
+}
+
+/* =====================================================================
+   PAGINA „REZULTATE”: jurnalul progresului (note, tipuri de exerciții, BAC, insigne)
+   ===================================================================== */
+function paginaRezultate() {
+  const lucrari = S.predariElev || [];
+  const corectate = lucrari.filter(p => notaFinala(p) != null).sort((a, b) => String(b.trimis_la).localeCompare(String(a.trimis_la)));
+  const note = corectate.map(notaFinala), media = note.length ? note.reduce((a, b) => a + b, 0) / note.length : null;
+  const ins = insigneObtinute(), ist = istoricAntrenamente();
+  const bac = ist.length ? ist.reduce((s, x) => s + x.nota, 0) / ist.length : null;
+  return [capPagina("Rezultate", "Notele, progresul pe tipuri de exerciții, antrenamentele BAC și insignele tale, într-un singur jurnal."),
+    h("div", { class: "cifre" },
+      cifra("Media", media == null ? "–" : fmtNota(media), note.length ? `din ${note.length} ${note.length === 1 ? "notă" : "note"}` : "nicio notă încă", "✓", "var(--c3)"),
+      cifra("Teme trimise", `${lucrari.length}/${S.temeElev.length}`, "din temele publicate", "▤", "var(--c4)"),
+      cifra("Insigne", `${ins.filter(x => x.ok).length}/${ins.length}`, "obținute", "★", "var(--c2)"),
+      cifra("Antrenamente BAC", ist.length, bac == null ? "niciunul încă" : `media ${fmtNota(bac)}`, "◎", "var(--c5)", "#/bac")),
+    h("section", { class: "sheet stack", style: "--acc:var(--c4)" }, h("h3", null, "Notele tale"),
+      corectate.length ? h("div", { class: "tbl-wrap" }, h("table", { class: "tabel-carduri" },
+        h("thead", null, h("tr", null, h("th", null, "Tema"), h("th", null, "Trimisă"), h("th", null, "Corectare"), h("th", null, "Nota"))),
+        h("tbody", null, corectate.map(p => { const t = S.temeElev.find(x => x.id === p.tema_id), n = notaFinala(p);
+          return h("tr", null, h("td", { "data-label": "Tema" }, t ? h("a", { href: "#/tema/" + encodeURIComponent(t.id), class: "link-btn" }, t.titlu) : "Temă"),
+            h("td", { "data-label": "Trimisă", class: "small" }, fmtData(p.trimis_la)),
+            h("td", { "data-label": "Corectare" }, p.nota_profesor != null ? h("span", { class: "sursa prof" }, "nota profesorului") : h("span", { class: "sursa auto" }, "calculată automat")),
+            h("td", { "data-label": "Nota" }, h("span", { class: "nota" + (n < 5 ? " fail" : "") }, fmtNota(n)))); })))) : h("p", { class: "muted small" }, "Notele apar aici după ce temele sunt corectate."),
+      note.length > 1 ? h("div", null, h("div", { class: "label" }, "Evoluția notelor (de la cea mai veche)"), sparkline(note.slice().reverse())) : null),
+    statisticiTipuriView(),
+    ist.length > 1 ? h("section", { class: "sheet stack", style: "--acc:var(--c5)" }, h("div", { class: "row", style: "justify-content:space-between" }, h("h3", null, "Antrenamentele BAC"),
+      h("button", { type: "button", class: "link-btn small", onclick: () => { S.subBac = "progres"; mergi("bac"); } }, "Progresul BAC complet →")), graficNote(ist.slice().sort((a, b) => a.data - b.data))) : null,
+    h("section", { class: "sheet stack galerie-insigne", style: "--acc:var(--c2)" }, h("h3", null, "Insignele tale"),
+      h("div", { class: "grila-insigne" }, ins.map(x => h("div", { class: "insigna-mare" + (x.ok ? "" : " blocata") },
+        (() => { const d = h("div", { class: "scut-mic" }); d.innerHTML = scutSvg(x.ic, !x.ok); return d; })(), h("b", null, x.n), h("span", { class: "muted small" }, x.ok ? x.d : "Încă nu: " + x.d.charAt(0).toLowerCase() + x.d.slice(1)))))),
+    insigneExtraView()];
+}

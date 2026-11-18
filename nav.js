@@ -5,15 +5,16 @@
 
 /* ---------------- paginile ---------------- */
 const PAGINI_ELEV = [
-  { k: "acasa", n: "Acasă", i: "⌂", g: "Caietul meu", c: "var(--c1)" },
-  { k: "teme", n: "Teme", i: "✎", g: "Caietul meu", c: "var(--c2)" },
-  { k: "calendar", n: "Calendar", i: "▦", g: "Caietul meu", c: "var(--c4)" },
-  { k: "clasament", n: "Clasament", i: "★", g: "Caietul meu", c: "var(--c3)" },
-  { k: "bac", n: "BAC", i: "◎", g: "Învăț", c: "var(--c5)" },
-  { k: "opere", n: "Opere", i: "❦", g: "Învăț", c: "var(--c1)" },
-  { k: "limba", n: "Limbă", i: "Ă", g: "Învăț", c: "var(--c3)" },
-  { k: "jocuri", n: "Jocuri", i: "◆", g: "Învăț", c: "var(--c2)" },
-  { k: "profil", n: "Profil", i: "☺", g: "Eu", c: "var(--c4)" }];
+  { k: "acasa", n: "Acasă", i: "⌂", g: "Călătoria mea", c: "var(--c1)" },
+  { k: "teme", n: "Temele mele", i: "✎", g: "Călătoria mea", c: "var(--c2)" },
+  { k: "calendar", n: "Calendar", i: "▦", g: "Călătoria mea", c: "var(--c4)" },
+  { k: "bac", n: "Pregătire BAC", i: "◎", g: "Călătoria mea", c: "var(--c5)" },
+  { k: "opere", n: "Bibliotecă", i: "❦", g: "Călătoria mea", c: "var(--c1)" },
+  { k: "rezultate", n: "Rezultate", i: "▥", g: "Călătoria mea", c: "var(--c3)" },
+  { k: "profil", n: "Profil", i: "☺", g: "Călătoria mea", c: "var(--c4)" },
+  { k: "clasament", n: "Clasament", i: "★", g: "Mai mult", c: "var(--c3)" },
+  { k: "limba", n: "Limbă", i: "Ă", g: "Mai mult", c: "var(--c3)" },
+  { k: "jocuri", n: "Jocuri", i: "◆", g: "Mai mult", c: "var(--c2)" }];
 const MOBIL_ELEV = ["acasa", "teme", "calendar", "bac"];
 
 const PAGINI_PROF = [
@@ -63,6 +64,7 @@ const ICONITE = {
   banca: "M3 4h18v4H3z M5 8v12h14V8 M10 12h4",
   clase: "M12 3l9 5-9 5-9-5z M3 13l9 5 9-5 M3 17.5l9 5 9-5",
   mai: "M5 12h.01 M12 12h.01 M19 12h.01",
+  rezultate: "M4 20V12 M10 20V5 M16 20v-8 M22 20H2 M20 20V9",
 };
 function iconita(k) {
   const d = ICONITE[k]; if (!d) return null;
@@ -85,7 +87,7 @@ function cadru(pagini, mobil, continut, susMeniu) {
   const elev = S.profil && S.profil.rol === "elev";
   const side = h("nav", { class: "sidenav", "aria-label": "Meniu" },
     h("a", { href: "#/acasa", class: "nav-marca", "aria-label": "Caietul de teme, acasă", style: "text-decoration:none" },
-      h("span", { class: "semn", "aria-hidden": "true" }, "✦"), h("span", null, h("strong", null, "Caietul de teme"), h("small", null, elev ? "ATELIER LITERAR" : "CATEDRA DE ROMÂNĂ"))),
+      h("span", { class: "semn", "aria-hidden": "true" }, "✦"), h("span", null, h("strong", null, "Caietul de teme"), h("small", null, estePoveste() ? (elev ? "Povestea Cunoașterii" : "Catedra de română") : elev ? "ATELIER LITERAR" : "CATEDRA DE ROMÂNĂ"))),
     susMeniu || null,
     grupe.map(g => h("div", { class: "nav-grup" }, h("div", { class: "nav-titlu" }, g.n), g.l.map(p => linkNav(p)))),
     h("div", { class: "nota-meniu" }, h("strong", null, elev ? "În ritmul tău." : "La catedră."),
@@ -170,7 +172,8 @@ function drawElev() {
     subFile([["fig", "Ghicește figura"], ["autori", "Autori și citate"], ["duel", "Duel"]], "subJocuri"),
     S.subJocuri === "duel" ? duelView() : S.subJocuri === "autori" ? autoriView() : figuriView()];
   else if (pag === "profil") c = paginaProfilElev();
-  else c = paginaAcasaElev();
+  else if (pag === "rezultate") c = paginaRezultate();
+  else c = estePoveste() && S.claseElev.length ? acasaPoveste() : paginaAcasaElev();
   return cadru(paginiElev(), MOBIL_ELEV, c);
 }
 
@@ -372,8 +375,8 @@ function paginaClasamentElev() {
 }
 
 function paginaProfilElev() {
-  return [capPagina("Profilul meu", "Avatarul, nivelul, insignele și linkul pentru părinți."), profilElev(),
-    insigneExtraView(), statisticiTipuriView(), setariContView(),
+  return [capPagina("Profilul meu", "Avatarul, nivelul, linkul pentru părinți și setările contului. Notele și insignele sunt la Rezultate."), profilElev(),
+    setariContView(),
     h("section", { class: "sheet stack", style: "--acc:var(--c3)" }, h("h3", null, "Clasele mele"),
       S.claseElev.length ? h("div", { class: "files" }, S.claseElev.map(c => h("span", { class: "chip none" }, c.nume))) : h("p", { class: "muted small" }, "Nu ești încă într-o clasă."),
       h("p", { class: "muted small" }, "Ai primit codul unei clase noi? Scrie-l aici:")),

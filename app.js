@@ -192,14 +192,19 @@ function citesteLocal(k, d) { try { return localStorage.getItem(k) ?? d; } catch
 function scrieLocal(k, v) { try { localStorage.setItem(k, v); } catch { /* fără stocare: rămâne doar pentru acum */ } }
 
 /* ---------------- palete de culori ---------------- */
-const PALETE = { atelier: "Atelier literar", galaxie: "Galaxie", aurora: "Aurora", apus: "Apus" };
+const PALETE = { poveste: "Povestea Cunoașterii", atelier: "Atelier literar", galaxie: "Galaxie", aurora: "Aurora", apus: "Apus" };
+/* „Povestea Cunoașterii” folosește sistemul de design Atelier (butoane, dialoguri, accesibilitate) plus lumea ilustrată deasupra */
 function aplicaPaleta(p) {
-  if (!PALETE[p]) p = "atelier";
-  document.documentElement.dataset.paleta = p; scrieLocal("paleta-v2", p);
-  const m = document.querySelector('meta[name="theme-color"]'); if (m) m.content = p === "atelier" ? "#101b30" : "#0a0f1f";
-  const cs = document.querySelector('meta[name="color-scheme"]'); if (cs) cs.content = p === "atelier" ? "light" : "dark";
+  if (!PALETE[p]) p = "poveste";
+  const r = document.documentElement;
+  r.dataset.paleta = p === "poveste" ? "atelier" : p;
+  if (p === "poveste") r.dataset.tema = "poveste"; else delete r.dataset.tema;
+  scrieLocal("paleta-v3", p);
+  const deschis = p === "atelier" || p === "poveste";
+  const m = document.querySelector('meta[name="theme-color"]'); if (m) m.content = p === "poveste" ? "#24142e" : deschis ? "#101b30" : "#0a0f1f";
+  const cs = document.querySelector('meta[name="color-scheme"]'); if (cs) cs.content = deschis ? "light" : "dark";
 }
-aplicaPaleta(citesteLocal("paleta-v2", "atelier"));
+aplicaPaleta(citesteLocal("paleta-v3", "poveste"));
 
 /* ---------------- sunete (scurte, generate în browser) ---------------- */
 let sunet = citesteLocal("sunet", "da") === "da";
@@ -566,10 +571,10 @@ function formParolaNoua() {
 
 function drawRole() {
   const r = document.getElementById("role"); r.replaceChildren();
-  const pal = citesteLocal("paleta-v2", "atelier");
+  const pal = citesteLocal("paleta-v3", "poveste");
   r.append(
     h("div", { class: "palete", role: "group", "aria-label": "Culorile site-ului" }, Object.entries(PALETE).map(([k, v]) =>
-      h("button", { class: "paleta-btn" + (k === (document.documentElement.dataset.paleta || pal) ? " on" : ""), "data-p": k, title: v, "aria-label": "Culori: " + v,
+      h("button", { class: "paleta-btn" + (k === pal ? " on" : ""), "data-p": k, title: v, "aria-label": "Culori: " + v,
         onclick: () => { aplicaPaleta(k); sunetClic(); drawRole(); } }))),
     h("button", { class: "btn ghost sunet-btn", title: sunet ? "Oprește sunetele" : "Pornește sunetele", "aria-label": sunet ? "Oprește sunetele" : "Pornește sunetele",
       onclick: () => { sunet = !sunet; scrieLocal("sunet", sunet ? "da" : "nu"); if (sunet) sunetClic(); drawRole(); } }, sunet ? "♪" : "♪̸"));
