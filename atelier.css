@@ -190,3 +190,33 @@ a.cifra:hover { transform: translateY(-2px); box-shadow: 0 12px 26px -16px rgba(
 
 /* paleta Atelier în selectorul de culori */
 .paleta-btn[data-p="atelier"] { background: conic-gradient(#8f2948 0 33%, #f7f4ed 0 66%, #101b30 0); box-shadow: inset 0 0 0 1px rgba(0,0,0,.15); }
+
+/* ---------- mai puține animații decorative (doar cele care ajută) ---------- */
+[data-paleta="atelier"] #app.intra > *, [data-paleta="atelier"] #app.intra .layout > .stack > * { animation: intra-atelier .2s ease-out both; animation-delay: 0s !important; }
+@keyframes intra-atelier { from { opacity: 0; } }
+[data-paleta="atelier"] section.sheet:hover > .tema-head h2::before { transform: rotate(45deg); }
+[data-paleta="atelier"] .tile-row .tila, [data-paleta="atelier"] .tile-row:hover .tila { transform: none; }
+[data-paleta="atelier"] .optiune:hover, [data-paleta="atelier"] .rand-verif:hover, [data-paleta="atelier"] .loc:hover,
+[data-paleta="atelier"] .av-mare:hover, [data-paleta="atelier"] .av-opt:hover, [data-paleta="atelier"] .rand-tema:hover,
+[data-paleta="atelier"] .scurtatura:hover, [data-paleta="atelier"] a.stat:hover, [data-paleta="atelier"] a.cifra:hover { transform: none; }
+[data-paleta="atelier"] .btn:hover { transform: none; }
+[data-paleta="atelier"] .punct-nou, [data-paleta="atelier"] .ceas b.putin { animation: none; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+}
+
+/* ---------- spațiere, ierarhie și telefon ---------- */
+[data-paleta="atelier"] .pagina.stack { gap: 20px; }
+[data-paleta="atelier"] .sheet { padding: 24px; }
+[data-paleta="atelier"] .sheet h3 { font-size: 18px; }
+[data-paleta="atelier"] .cap-pagina p { font-size: 14px; }
+@media (max-width: 700px) {
+  [data-paleta="atelier"] .sheet { padding: 16px; border-radius: 16px; }
+  [data-paleta="atelier"] .pagina.stack { gap: 14px; }
+  .wrap { padding-left: 12px; padding-right: 12px; }
+  /* câmpurile de 16px nu fac telefonul să mărească pagina la atingere */
+  input, select, textarea { font-size: 16px !important; }
+  .row > .btn, .row > a.btn { flex: 1 1 auto; justify-content: center; }
+  .tema-head { flex-direction: column; }
+  .cap-rand { flex-direction: column; align-items: stretch; }
+}

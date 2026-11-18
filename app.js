@@ -473,7 +473,16 @@ async function reincarca() {
   if (S.demo) { render(); return; }
   try {
     if (S.profil.rol === "profesor") await incarcaProfesor(); else await incarcaElev();
-  } catch (e) { console.error(e); toast("Datele nu au putut fi încărcate. Încearcă din nou."); }
+  } catch (e) {
+    console.error(e);
+    const txt = String((e && (e.message || e.code)) || "");
+    if (/jwt|token|expired|401|PGRST30/i.test(txt)) {
+      // sesiunea a expirat: intră din nou, fără date vechi pe ecran
+      toast("Sesiunea a expirat. Intră din nou în cont."); try { await S.sb.auth.signOut(); } catch { /* deja ieșit */ }
+      return;
+    }
+    toast(navigator.onLine ? "Datele nu au putut fi încărcate. Încearcă din nou." : "Nu ai conexiune la internet. Datele se încarcă din nou când revine.");
+  }
   render();
 }
 
@@ -583,6 +592,7 @@ function draw() {
   // tranziție când se schimbă pagina (alt rol sau altă clasă), nu la fiecare re-desenare
   const cheie = S.profil.rol + "|" + (S.clasaSel || "") + "|" + S.pag + "|" + (S.pagId || "");
   if (cheie !== S.ultimaCheie) { S.ultimaCheie = cheie; app.classList.remove("intra"); void app.offsetWidth; app.classList.add("intra"); }
+  else app.classList.remove("intra"); // la o simplă re-desenare (filtru, salvare) pagina nu mai „reintră”
 }
 
 /* ---------------- comun ---------------- */
@@ -603,11 +613,22 @@ function notaBox(p) {
       h("div", { class: "muted small" }, `Punctaj: ${fmtNr(p.punctaj)} din ${fmtNr(p.punctaj_max)}` + (p.procent != null ? ` (${p.procent}%)` : ""))));
 }
 
+/* Cine a dat punctajul: corectare automată (grilă, răspuns scurt), AI (răspunsuri libere) sau profesorul. */
+function sursaCorectarii(ex, r) {
+  if (typeof r.puncte !== "number") return null;
+  if (r.de_profesor) return h("span", { class: "sursa prof", title: "Punctajul a fost dat sau confirmat de profesor" }, "✓ Confirmat de profesor");
+  if (ex.tip === "liber") return h("span", { class: "sursa ai" + (r.sigur === false ? " nesigur" : ""), title: r.sigur === false ? "AI-ul nu e sigur; profesorul va verifica" : "Evaluare propusă de AI; profesorul o poate schimba" },
+    r.sigur === false ? "AI · de verificat" : "Evaluat de AI");
+  return h("span", { class: "sursa auto", title: "Corectat pe loc, după răspunsul corect stabilit de profesor" }, "Corectat automat");
+}
+
 /* Lista de exerciții cu rezultatul fiecăruia. `editabil` = profesorul poate schimba punctajul. */
 function rezultateView(p, exercitii, editabil, corecte) {
   const rez = p.rezultate || {};
   const box = h("div", { class: "stack", style: "gap:10px" });
-  if (p.feedback && p.feedback.rezumat) box.append(h("p", null, p.feedback.rezumat));
+  if (p.feedback && p.feedback.rezumat) box.append(h("div", { class: "feedback-general" }, h("div", { class: "label" }, "Pe scurt"), h("p", null, p.feedback.rezumat)));
+  if (!editabil && exercitii.some(e => e.tip === "liber") && exercitii.some(e => e.tip === "liber" && !(rez[e.id] || {}).de_profesor && typeof (rez[e.id] || {}).puncte === "number"))
+    box.append(h("p", { class: "muted small" }, "Răspunsurile libere sunt evaluate întâi de AI. Profesorul poate confirma sau schimba punctajul; atunci apare „Confirmat de profesor”."));
   if (p.eroare && p.status === "partial") box.append(h("div", { class: "note" }, p.eroare));
   exercitii.forEach((ex, i) => {
     const r = rez[ex.id] || {};
@@ -624,7 +645,7 @@ function rezultateView(p, exercitii, editabil, corecte) {
     const row = h("div", { class: "mistake" + efect, style: `border-left-color:var(${pts == null ? "--warn" : r.corect ? "--good" : "--bad"});animation-delay:${i * 0.12}s` },
       h("div", { class: "row", style: "justify-content:space-between" },
         h("strong", null, `${i + 1}. ${ex.enunt}`),
-        h("div", { class: "row" }, stare, h("span", { class: "nota" }, `${pts == null ? "?" : fmtNr(pts)}/${fmtNr(ex.puncte)}p`))),
+        h("div", { class: "row" }, sursaCorectarii(ex, r), stare, h("span", { class: "nota" }, `${pts == null ? "?" : fmtNr(pts)}/${fmtNr(ex.puncte)}p`))),
       h("div", { class: "small" }, h("span", { class: "muted" }, "Răspuns: "), raspunsAfisat ? h("span", { class: "pre" }, raspunsAfisat) : h("em", { class: "muted" }, "(gol)")),
       corectText && !r.corect ? h("div", { class: "small" }, h("span", { class: "muted" }, ex.tip === "liber" ? "Răspuns model: " : "Corect: "), h("span", { class: "pre" }, corectText)) : null,
       r.comentariu ? h("div", { class: "small", style: "margin-top:2px" }, r.comentariu) : null,
@@ -632,6 +653,14 @@ function rezultateView(p, exercitii, editabil, corecte) {
       Array.isArray(r.imagini_local) && r.imagini_local.length ? h("div", { class: "poze" }, r.imagini_local.map(u => h("img", { src: u, alt: "Pagină din caiet" }))) : null,
       editabil && r.sigur === false ? h("div", { class: "chip wait", style: "margin-top:6px" }, "AI-ul nu e sigur de punctaj: verifică") : null,
       !editabil && pts != null && !r.corect ? explicaView(p, ex, r, raspunsAfisat, corectText) : null);
+    if (editabil && ex.tip === "liber" && pts != null && !r.de_profesor) row.append(h("div", { class: "row small", style: "margin-top:6px" },
+      h("button", { class: "btn ghost", type: "button", onclick: async () => {
+        if (S.demo) { r.de_profesor = true; r.sigur = true; toast("Punctajul AI a fost confirmat (demonstrație)."); render(); return; }
+        const { error } = await S.sb.rpc("seteaza_puncte", { p_predare: p.id, p_exercitiu: ex.id, p_puncte: pts, p_comentariu: null });
+        if (error) { toast(eroareDb(error, "Confirmarea nu a putut fi salvată.")); return; }
+        toast("Punctajul AI a fost confirmat. Elevul vede acum „Confirmat de profesor”."); reincarca();
+      } }, `Confirmă punctajul AI (${fmtNr(pts)}p)`),
+      h("span", { class: "muted small" }, "sau scrie alt punctaj mai jos")));
     if (editabil) {
       const nid = `pt-${p.id}-${ex.id}`;
       const inp = h("input", { type: "number", id: nid, min: "0", max: String(ex.puncte), step: "0.25", style: "width:80px",
@@ -823,7 +852,7 @@ function formularRaspunsuri(t) {
   return h("form", { class: "stack", onsubmit: e => { e.preventDefault(); trimite(t); } },
     items,
     h("div", { class: "row", style: "justify-content:space-between" },
-      h("span", { class: "muted small", id: "ciorna-" + t.id }, (S.ciornaSalvata || {})[t.id] ? "Ciornă salvată" : "Ciorna se salvează singură cât scrii."),
+      h("span", { class: "salvare " + (((S.stareCiorna || {})[t.id] || {}).stare || ""), id: "ciorna-" + t.id, role: "status", "aria-live": "polite" }, textStareCiorna(t.id)),
       h("span", { class: "muted small" }, t.a_doua_incercare !== false && !(S.reia || {})[t.id] ? "După corectare, poți îmbunătăți lucrarea o dată." : "")),
     h("div", null, h("button", { class: "btn", type: "submit" }, "Trimite răspunsurile")));
 }
@@ -864,18 +893,41 @@ function imaginiView(paths) {
 }
 
 /* ---------------- ciorna: se salvează singură cât scrie elevul ---------------- */
+/* Ciorna: se salvează în browser imediat și în cont după 1,2 s de pauză.
+   Starea se vede lângă butonul de trimitere: se salvează / salvat în cont / doar pe acest dispozitiv. */
+function stareCiorna(temaId, stare, ora) {
+  (S.stareCiorna || (S.stareCiorna = {}))[temaId] = { stare, ora };
+  const el = document.getElementById("ciorna-" + temaId); if (!el) return;
+  el.className = "salvare " + stare;
+  el.textContent = textStareCiorna(temaId);
+}
+function textStareCiorna(temaId) {
+  const s = (S.stareCiorna || {})[temaId];
+  if (!s) return "Răspunsurile se salvează singure cât scrii.";
+  const ora = s.ora ? s.ora.toLocaleTimeString("ro-RO", { hour: "2-digit", minute: "2-digit" }) : "";
+  return { asteapta: "Modificări nesalvate…", salveaza: "Se salvează…", cont: `Salvat în cont la ${ora}`, local: `Salvat doar pe acest dispozitiv la ${ora}. Se va salva în cont când revine conexiunea.`, demo: `Salvat (demonstrație) la ${ora}` }[s.stare] || "";
+}
 function salveazaCiorna(temaId) {
   clearTimeout(salveazaCiorna.t[temaId]);
+  try { scrieLocal("ciorna-" + temaId, JSON.stringify(S.raspunsuri[temaId] || {})); } catch { /* spațiu plin */ }
+  stareCiorna(temaId, "asteapta");
   salveazaCiorna.t[temaId] = setTimeout(async () => {
     const R = S.raspunsuri[temaId] || {};
-    scrieLocal("ciorna-" + temaId, JSON.stringify(R));
-    if (!S.demo && S.user) await S.sb.from("ciorne").upsert({ tema_id: temaId, elev_id: S.user.id, raspunsuri: R, actualizat: new Date().toISOString() });
-    S.ciornaSalvata = S.ciornaSalvata || {}; S.ciornaSalvata[temaId] = new Date();
-    const el = document.getElementById("ciorna-" + temaId);
-    if (el) el.textContent = "Ciornă salvată la " + S.ciornaSalvata[temaId].toLocaleTimeString("ro-RO", { hour: "2-digit", minute: "2-digit" });
+    if (S.demo || !S.user) { stareCiorna(temaId, "demo", new Date()); return; }
+    stareCiorna(temaId, "salveaza");
+    let ok = false;
+    try {
+      const { error } = await S.sb.from("ciorne").upsert({ tema_id: temaId, elev_id: S.user.id, raspunsuri: R, actualizat: new Date().toISOString() });
+      ok = !error;
+    } catch { ok = false; }
+    stareCiorna(temaId, ok ? "cont" : "local", new Date());
+    if (!ok) (salveazaCiorna.reia || (salveazaCiorna.reia = new Set())).add(temaId);
+    else salveazaCiorna.reia && salveazaCiorna.reia.delete(temaId);
   }, 1200);
 }
 salveazaCiorna.t = {};
+// când revine internetul, ciornele rămase doar local se salvează în cont
+addEventListener("online", () => { for (const id of salveazaCiorna.reia || []) salveazaCiorna(id); });
 
 async function trimite(t) {
   const R = { ...(S.raspunsuri[t.id] || {}) };

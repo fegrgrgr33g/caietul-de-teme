@@ -19,6 +19,31 @@ function selectSimplu(id, eticheta, optiuni, valoare, laSchimbare) {
     optiuni.map(([v, n]) => { const o = h("option", { value: v }, n); o.selected = (valoare || "") === v; return o; }));
 }
 
+/* erori neprevăzute: un mesaj clar pentru utilizator (o dată la câteva secunde), detaliile rămân în consolă */
+let ultimaEroare = 0;
+function anuntaEroare(e) {
+  console.error(e);
+  if (Date.now() - ultimaEroare < 8000) return;
+  ultimaEroare = Date.now();
+  try { toast(navigator.onLine ? "Ceva n-a mers. Dacă se repetă, reîncarcă pagina." : "Nu ai conexiune la internet. Încearcă din nou când revine."); } catch { /* toast indisponibil */ }
+}
+addEventListener("error", e => { if (e.message && !/ResizeObserver|Script error/.test(e.message)) anuntaEroare(e.error || e.message); });
+addEventListener("unhandledrejection", e => anuntaEroare(e.reason));
+addEventListener("offline", () => { try { toast("Ai pierdut conexiunea. Ce scrii se păstrează pe acest dispozitiv."); } catch { /* */ } });
+addEventListener("online", () => { try { if (typeof S !== "undefined" && S.profil && !S.offline) { toast("Conexiunea a revenit."); reincarca(); } } catch { /* */ } });
+
+/* „Sari la conținut” (pentru tastatură și cititoare de ecran): mută focusul fără să schimbe adresa paginii */
+document.addEventListener("click", e => {
+  const a = e.target.closest && e.target.closest(".sari-continut"); if (!a) return;
+  e.preventDefault(); const app = document.getElementById("app"); app.tabIndex = -1; app.focus();
+});
+
+/* nu pierde răspunsurile: avertizează dacă pagina se închide înainte de salvare */
+addEventListener("beforeunload", e => {
+  const s = Object.values((typeof S !== "undefined" && S.stareCiorna) || {});
+  if (s.some(x => x.stare === "asteapta" || x.stare === "salveaza")) { e.preventDefault(); e.returnValue = ""; }
+});
+
 /* ---------------- zilele în care elevul a lucrat (pentru serie) ---------------- */
 function zileActive() { return citesteJSON(cheieElev("zile"), []); }
 function marcheazaZi() {
@@ -559,41 +584,7 @@ function clasamentProfView() {
     h("button", { type: "button", class: v === k ? "on" : "", onclick: () => { S.vedereClas = k; draw(); } }, n))), corp);
 }
 
-/* fișa unui elev (pentru profesor) și raportul de tipărit pentru ședința cu părinții */
-function fisaElev(id) {
-  const m = S.membri.find(x => x.elev_id === id);
-  if (!m) return [capPagina("Elevul nu a fost găsit", "Poate e în altă clasă.", null, ["elevi", "Elevii clasei"])];
-  const nume = (m.profiles && m.profiles.nume) || "Elev", clasa = S.clase.find(c => c.id === S.clasaSel);
-  const cron = [...S.teme].filter(t => !t.ciorna && !(t.publicata_la && new Date(t.publicata_la) > new Date()) && (!t.grupa || t.grupa === m.grupa)).sort((a, b) => String(a.creat_la).localeCompare(String(b.creat_la)));
-  const rand = cron.map(t => ({ t, p: S.predari.find(p => p.tema_id === t.id && p.elev_id === id) }));
-  const note = rand.map(r => r.p ? notaFinala(r.p) : null).filter(n => n != null);
-  const media = note.length ? note.reduce((a, b) => a + b, 0) / note.length : null;
-  const azi = ziISO(Date.now()), intarziate = rand.filter(r => r.t.termen && (r.p ? String(r.p.trimis_la).slice(0, 10) > r.t.termen : r.t.termen < azi)).length;
-  const msg = (S.mesaje || []).filter(x => x.elev_id === id).length;
-  const sit = situatieElevi().find(x => x.m.elev_id === id);
-  return [h("a", { href: "#/elevi", class: "inapoi nu-tipari" }, "‹ Elevii clasei"),
-    h("section", { class: "sheet stack fisa-elev", style: "--acc:var(--c5)" },
-      h("div", { class: "row", style: "gap:16px" }, avatar(m.profiles && m.profiles.avatar, nume, 64),
-        h("div", { style: "flex:1" }, h("h2", { class: "titlu-pagina" }, nume), h("div", { class: "muted small" }, (clasa ? clasa.nume : "") + (m.grupa ? " · grupa " + m.grupa : ""))),
-        h("button", { class: "btn nu-tipari", type: "button", onclick: () => window.print() }, "Raport pentru părinți (tipărește)")),
-      h("div", { class: "stats" },
-        h("div", { class: "stat" }, h("div", { class: "label" }, "Media"), h("div", { class: "v nota" + (media != null && media < 5 ? " fail" : "") }, fmtNota(media))),
-        h("div", { class: "stat" }, h("div", { class: "label" }, "Teme trimise"), h("div", { class: "v" }, `${rand.filter(r => r.p).length}/${rand.length}`)),
-        h("div", { class: "stat" }, h("div", { class: "label" }, "Întârziate sau lipsă"), h("div", { class: "v", style: intarziate ? "color:var(--warn)" : "" }, intarziate)),
-        h("div", { class: "stat" }, h("div", { class: "label" }, "Mesaje"), h("div", { class: "v" }, msg))),
-      note.length > 1 ? h("div", null, h("div", { class: "label" }, "Evoluția notelor"), sparkline(rand.map(r => r.p ? notaFinala(r.p) : null))) : null,
-      sit && sit.motive.length ? h("div", { class: "note" }, "De urmărit: " + sit.motive.join(", ") + ".") : null,
-      h("div", { class: "tbl-wrap" }, h("table", null,
-        h("thead", null, h("tr", null, h("th", null, "Tema"), h("th", null, "Termen"), h("th", null, "Trimisă"), h("th", null, "Nota"), h("th", { class: "nu-tipari" }, ""))),
-        h("tbody", null, rand.map(({ t, p }) => { const n = p ? notaFinala(p) : null; return h("tr", null,
-          h("td", null, t.titlu), h("td", { class: "small" }, t.termen ? fmtZi(t.termen) : "–"),
-          h("td", { class: "small" }, p ? fmtData(p.trimis_la) : h("span", { class: "chip " + (t.termen && t.termen < azi ? "err" : "none") }, "netrimisă")),
-          h("td", null, n == null ? "–" : h("span", { class: "nota" + (n < 5 ? " fail" : "") }, fmtNota(n))),
-          h("td", { class: "nu-tipari" }, p ? h("button", { class: "link-btn", type: "button", onclick: () => deschideLucrarea(t.id, p.id) }, "Deschide") : null)); })))),
-      rand.some(r => r.p && r.p.comentariu_profesor) ? h("div", { class: "stack", style: "gap:6px" }, h("div", { class: "label" }, "Comentariile profesorului"),
-        rand.filter(r => r.p && r.p.comentariu_profesor).map(r => h("p", { class: "small", style: "margin:0" }, h("b", null, r.t.titlu + ": "), r.p.comentariu_profesor))) : null,
-      h("p", { class: "muted small doar-tipar" }, `Raport generat de Caietul de teme, ${new Date().toLocaleDateString("ro-RO")}.`))];
-}
+/* fișa elevului: vezi elevi.js */
 
 /* =====================================================================
    PROFESOR · TEME: publicare (ciornă, programată, timp limită), duplicare, termene suprapuse
@@ -802,6 +793,10 @@ function demoExtra(rol) {
     S.clase[0].anunt = "Joi avem lucrare din „Plumb”. Recitiți poezia și fișa simbolismului."; S.clase[0].anunt_la = "2026-11-12T08:00:00Z";
     S.teme.push({ id: "tc", clasa_id: "c1", titlu: "Recapitulare: romantismul", cerinta: "", termen: null, elevii_vad: true, creat_la: "2026-11-12T09:00:00Z", ciorna: true });
     S.exercitii.push({ id: "c1x", tema_id: "tc", ordine: 1, enunt: "Numește două trăsături ale romantismului.", tip: "liber", variante: [], puncte: 2 });
+    // o temă cu termenul trecut, netrimisă de unii elevi (pentru restanțe)
+    S.teme.push({ id: "tr", clasa_id: "c1", titlu: "Fișă de lectură: „Ion”", cerinta: "", termen: ziISO(Date.now() - 3 * 864e5), elevii_vad: true, creat_la: "2026-11-08T09:00:00Z" });
+    S.exercitii.push({ id: "r1x", tema_id: "tr", ordine: 1, enunt: "Cine este Vasile Baciu?", tip: "text", variante: [], puncte: 1 });
+    for (const [e, n] of [["e0", 10], ["e2", 8]]) S.predari.push({ id: "r-" + e, tema_id: "tr", elev_id: e, status: "corectat", nota: n, punctaj: n / 10, punctaj_max: 1, procent: n * 10, trimis_la: ziISO(Date.now() - 4 * 864e5) + "T10:00:00Z", rezultate: {} });
   } else {
     S.claseElev[0].anunt = "Joi avem lucrare din „Plumb”. Recitiți poezia și fișa simbolismului."; S.claseElev[0].anunt_la = "2026-11-12T08:00:00Z";
     S.temeElev.push({ id: "t3", clasa_id: "c1", titlu: "Mini-test: figuri de stil", cerinta: "", termen: ziISO(Date.now() + 864e5), minute: 10, creat_la: "2026-11-11T08:00:00Z",

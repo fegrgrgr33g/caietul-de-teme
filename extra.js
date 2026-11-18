@@ -54,8 +54,19 @@ async function paginaParinte(token) {
   const app = document.getElementById("app"); document.getElementById("role").replaceChildren();
   app.replaceChildren(h("div", { class: "sheet empty" }, h("h2", null, "Se încarcă notele…")));
   let d = null;
+  const formatBun = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(token);
   if (token === "demo") d = DEMO_PARINTE;
-  else if (S.sb) { const r = await S.sb.rpc("note_parinte", { p_token: token }); d = r.data; }
+  else if (S.sb && formatBun) {
+    let r;
+    try { r = await S.sb.rpc("note_parinte", { p_token: token }); } catch (e) { r = { error: e }; }
+    if (r.error) {
+      app.replaceChildren(h("div", { class: "sheet empty" }, h("h2", null, "Notele nu au putut fi încărcate"),
+        h("p", { class: "muted" }, "Verifică conexiunea la internet și încearcă din nou."),
+        h("button", { class: "btn", type: "button", style: "margin-top:12px", onclick: () => paginaParinte(token) }, "Încearcă din nou")));
+      return;
+    }
+    d = r.data;
+  }
   if (!d) { app.replaceChildren(h("div", { class: "sheet empty" }, h("h2", null, "Linkul nu mai e valabil"), h("p", { class: "muted" }, "Cere-i elevului un link nou."))); return; }
   const note = d.teme.map(t => t.nota).filter(n => n != null).map(Number);
   const media = note.length ? note.reduce((a, b) => a + b, 0) / note.length : null;
