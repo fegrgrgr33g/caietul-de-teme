@@ -1,0 +1,308 @@
+/* =====================================================================
+   Caietul de teme — „Atelier viu”
+   Dark Academia + Editorial Modern: bleumarin, vișiniu, auriu, crem, alb cald.
+   Titluri DM Serif Display, interfață DM Sans. Interacțiuni 180–300 ms, easing cubic-bezier(.22, 1, .36, 1).
+   Se aplică temei implicite (data-paleta="atelier"); componentele noi (dialog, confirmare, toast) merg în orice temă.
+   ===================================================================== */
+:root {
+  --ease: cubic-bezier(.22, 1, .36, 1);
+  --t-rapid: 180ms; --t: 240ms; --t-lent: 300ms;
+}
+:root[data-paleta="atelier"] {
+  --night: #17243b; --night-2: #233653; --wine: #903451; --wine-2: #7c2b44; --gold: #cba565; --gold-light: #ecd3a3;
+  --bg: #f5f2eb; --bg-2: #fffefa; --text: #202840; --muted: #6c6875; --edge: #e8e1d7; --line-soft: #efe9e0; --sunk: #f8f4ed;
+  --c1: #903451; --c2: #a8793a; --c3: #377662; --c4: #3f6593; --c5: #6d4f8a;
+  --good: #2f6f59; --warn: #9a6519; --bad: #9c3049; --acc: var(--wine);
+  --glass: rgba(23, 36, 59, .04); --glass-2: rgba(23, 36, 59, .07);
+  --f-ui: "DM Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-disp: "DM Serif Display", Georgia, "Times New Roman", serif;
+  --umbra: 0 1px 2px rgba(32, 40, 64, .04), 0 8px 24px -12px rgba(32, 40, 64, .12);
+  --umbra-sus: 0 2px 4px rgba(32, 40, 64, .05), 0 18px 34px -16px rgba(32, 40, 64, .26);
+}
+[data-paleta="atelier"] body { font-family: var(--f-ui); -webkit-font-smoothing: antialiased; letter-spacing: -.005em; }
+
+/* ---------- tipografie ---------- */
+[data-paleta="atelier"] h2, [data-paleta="atelier"] h3, [data-paleta="atelier"] .titlu-pagina, [data-paleta="atelier"] .rt-titlu,
+[data-paleta="atelier"] .brand h1, [data-paleta="atelier"] .nav-marca strong { font-family: var(--f-disp); font-weight: 400; letter-spacing: -.01em; }
+[data-paleta="atelier"] h2 { font-size: 26px; color: var(--night); }
+[data-paleta="atelier"] h3 { font-size: 21px; color: var(--night); }
+[data-paleta="atelier"] .titlu-pagina { font-size: clamp(32px, 4vw, 48px); line-height: 1.05; color: var(--night); letter-spacing: -.02em; }
+[data-paleta="atelier"] .cap-pagina p { font-size: 14px; line-height: 1.6; max-width: 58ch; }
+[data-paleta="atelier"] .label, [data-paleta="atelier"] .nav-titlu { font-family: var(--f-ui); font-weight: 700; letter-spacing: .14em; }
+.eyebrow { display: flex; align-items: center; gap: 10px; font-size: 11px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: #946548; }
+.eyebrow::before { content: ""; width: 22px; height: 1px; background: var(--gold, #cba565); }
+[data-paleta="atelier"] .nota, [data-paleta="atelier"] .stat .v, [data-paleta="atelier"] .cifra strong, [data-paleta="atelier"] .progres-rand b { font-family: var(--f-disp); font-weight: 400; letter-spacing: -.01em; }
+
+/* ---------- butoane: apăsare, tranziții naturale ---------- */
+[data-paleta="atelier"] button, [data-paleta="atelier"] .btn, [data-paleta="atelier"] a.btn {
+  transition: transform var(--t) var(--ease), background-color var(--t) var(--ease), box-shadow var(--t) var(--ease), border-color var(--t) var(--ease), color var(--t-rapid) var(--ease); }
+[data-paleta="atelier"] .btn, [data-paleta="atelier"] a.btn { background: var(--wine); color: #fff; border: 1px solid transparent; border-radius: 11px; font-weight: 700; box-shadow: 0 6px 16px -8px rgba(144, 52, 81, .55); }
+[data-paleta="atelier"] .btn:hover { background: var(--wine-2); transform: translateY(-2px); box-shadow: 0 10px 22px -10px rgba(144, 52, 81, .65); }
+[data-paleta="atelier"] .btn:active, [data-paleta="atelier"] .btn.ghost:active, [data-paleta="atelier"] .seg button:active { transform: scale(.97); transition-duration: 90ms; }
+[data-paleta="atelier"] .btn.ghost, [data-paleta="atelier"] a.btn.ghost { background: var(--bg-2); color: #7a3249; border-color: #eadfd6; box-shadow: none; }
+[data-paleta="atelier"] .btn.ghost:hover { background: #faf3ee; border-color: #dcc8bd; transform: translateY(-2px); }
+[data-paleta="atelier"] .btn.danger, .btn.pericol { background: var(--bg-2); color: var(--bad); border-color: #ecc8cf; box-shadow: none; }
+[data-paleta="atelier"] .btn.danger:hover, .btn.pericol:hover { background: #fbeef0; }
+.dialog-viu .btn.pericol { background: var(--bad, #9c3049); color: #fff; border-color: transparent; }
+[data-paleta="atelier"] button:disabled, [data-paleta="atelier"] .btn:disabled { transform: none; box-shadow: none; }
+[data-paleta="atelier"] :focus-visible { outline: 3px solid #a96a78; outline-offset: 3px; }
+[data-paleta="atelier"] .link-btn { color: var(--wine); font-weight: 700; transition: color var(--t-rapid) var(--ease); }
+
+/* ---------- carduri ---------- */
+[data-paleta="atelier"] .sheet { background: var(--bg-2); border: 1px solid var(--edge); border-radius: 19px; box-shadow: var(--umbra); }
+[data-paleta="atelier"] section.sheet { border-top: 1px solid var(--edge); }
+[data-paleta="atelier"] .rand-tema, [data-paleta="atelier"] a.cifra, [data-paleta="atelier"] .recomandare, [data-paleta="atelier"] .card-clasa,
+[data-paleta="atelier"] .lista-azi a, [data-paleta="atelier"] .progres-rand a.pr, [data-paleta="atelier"] .note-recente a, [data-paleta="atelier"] .opera,
+[data-paleta="atelier"] .rand-verif, [data-paleta="atelier"] .insigna-mare {
+  transition: transform var(--t) var(--ease), box-shadow var(--t) var(--ease), border-color var(--t) var(--ease), background-color var(--t) var(--ease); }
+[data-paleta="atelier"] .rand-tema:hover, [data-paleta="atelier"] a.cifra:hover, [data-paleta="atelier"] .recomandare:hover, [data-paleta="atelier"] .card-clasa:hover,
+[data-paleta="atelier"] .lista-azi a:hover, [data-paleta="atelier"] .progres-rand a.pr:hover, [data-paleta="atelier"] .opera:not(.deschisa):hover,
+[data-paleta="atelier"] .rand-verif:hover, [data-paleta="atelier"] .insigna-mare:hover { transform: translateY(-3px); box-shadow: var(--umbra-sus); }
+[data-paleta="atelier"] .note-recente a:hover { transform: translateX(3px); }
+[data-paleta="atelier"] .cifra { border-radius: 16px; background: var(--bg-2); }
+[data-paleta="atelier"] .cifra-ic { border-radius: 13px; width: 40px; height: 40px; }
+
+/* ---------- câmpuri ---------- */
+[data-paleta="atelier"] input[type=text], [data-paleta="atelier"] input[type=email], [data-paleta="atelier"] input[type=password], [data-paleta="atelier"] input[type=date],
+[data-paleta="atelier"] input[type=number], [data-paleta="atelier"] input[type=search], [data-paleta="atelier"] input[type=datetime-local], [data-paleta="atelier"] textarea, [data-paleta="atelier"] select {
+  background: #fffefa; border: 1px solid #e2dbd0; border-radius: 12px; transition: border-color var(--t) var(--ease), box-shadow var(--t) var(--ease), background-color var(--t) var(--ease); }
+[data-paleta="atelier"] input:hover, [data-paleta="atelier"] textarea:hover, [data-paleta="atelier"] select:hover { border-color: #d3c8b8; }
+[data-paleta="atelier"] input:focus, [data-paleta="atelier"] textarea:focus, [data-paleta="atelier"] select:focus { border-color: var(--wine); box-shadow: 0 0 0 4px rgba(144, 52, 81, .12); background: #fff; }
+[data-paleta="atelier"] textarea { font-family: var(--f-lit); }
+
+/* ---------- filtre și file: starea activă se vede clar ---------- */
+[data-paleta="atelier"] .seg { background: #f1ebe2; border: 1px solid #ebe3d8; border-radius: 12px; padding: 4px; gap: 4px; }
+[data-paleta="atelier"] .seg button { color: #6f6a75; border-radius: 9px; font-weight: 700; font-size: 13px; position: relative; }
+[data-paleta="atelier"] .seg button:hover { color: var(--night); background: rgba(255,255,255,.5); }
+[data-paleta="atelier"] .seg button.on { background: #fff; color: var(--wine); box-shadow: 0 2px 8px rgba(38, 34, 35, .08); }
+[data-paleta="atelier"] .seg button.on::after { content: ""; position: absolute; left: 30%; right: 30%; bottom: 3px; height: 2px; border-radius: 2px; background: var(--gold); animation: linie-filtru var(--t-lent) var(--ease) both; }
+@keyframes linie-filtru { from { transform: scaleX(0); } }
+[data-paleta="atelier"] .chip { border-radius: 8px; font-weight: 700; letter-spacing: .01em; }
+[data-paleta="atelier"] .chip.ok { background: #e7f3ec; color: #2f6f59; border-color: #cfe6d9; }
+[data-paleta="atelier"] .chip.wait { background: #fdf0de; color: #8f5c17; border-color: #f2dcb5; }
+[data-paleta="atelier"] .chip.err { background: #f9e7eb; color: #8e2c45; border-color: #efc9d2; }
+[data-paleta="atelier"] .chip.none { background: #f3efe8; color: #625e6b; border-color: #e8e1d7; }
+
+/* ---------- meniul lateral: bleumarin, indicator auriu care alunecă ---------- */
+[data-paleta="atelier"] .sidenav { background: var(--night); border-radius: 22px; padding: 26px 14px 18px; position: sticky; }
+[data-paleta="atelier"] .sidenav .nav-item { position: relative; z-index: 1; border-radius: 11px; color: #cdd1db; font-family: var(--f-ui); font-weight: 600; font-size: 14px;
+  transition: background-color var(--t) var(--ease), color var(--t) var(--ease), transform var(--t) var(--ease); }
+[data-paleta="atelier"] .sidenav .nav-item:hover { background: #2a3851; color: #fff; transform: translateX(3px); }
+[data-paleta="atelier"] .sidenav .nav-item.on { background: rgba(255, 255, 255, .1); color: #fff; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .07); }
+[data-paleta="atelier"] .sidenav .nav-item.on::before { display: none; }
+[data-paleta="atelier"] .sidenav .nav-ic { background: transparent; border-color: transparent; color: #d9bf8c; width: 26px; }
+[data-paleta="atelier"] .sidenav .nav-item.on .nav-ic { background: transparent; color: var(--gold-light); }
+[data-paleta="atelier"] .sidenav .nav-badge { background: #9c3c56; color: #fff; border-radius: 7px; }
+.nav-indicator { display: none; }
+[data-paleta="atelier"] .nav-indicator { display: block; position: absolute; left: 14px; top: 0; width: 3px; border-radius: 0 4px 4px 0; background: var(--gold); z-index: 2; pointer-events: none;
+  box-shadow: 0 0 12px rgba(203, 165, 101, .55); transition: transform var(--t-lent) var(--ease), height var(--t-lent) var(--ease), opacity var(--t) var(--ease); }
+[data-paleta="atelier"] .nav-marca strong { font-size: 20px; }
+[data-paleta="atelier"] .nota-meniu { background: rgba(255, 255, 255, .045); border-color: rgba(227, 208, 166, .18); }
+[data-paleta="atelier"] .nota-meniu strong { font-family: var(--f-disp); font-weight: 400; font-size: 17px; }
+
+/* bara de jos (telefon): compactă, bleumarin, cu starea activă vizibilă */
+[data-paleta="atelier"] .bottomnav { background: var(--night); border-radius: 20px; }
+[data-paleta="atelier"] .bottomnav .nav-item { transition: background-color var(--t) var(--ease), color var(--t) var(--ease); }
+[data-paleta="atelier"] .bottomnav .nav-item.on { background: rgba(255, 255, 255, .1); color: #fff; }
+[data-paleta="atelier"] .bottomnav .nav-item.on .nav-ic { color: var(--gold-light); background: transparent; }
+[data-paleta="atelier"] .bottomnav .nav-item.on::after { content: ""; position: absolute; left: 35%; right: 35%; bottom: 3px; height: 2px; border-radius: 2px; background: var(--gold); }
+[data-paleta="atelier"] .meniu-mai { animation: apare-fond var(--t) var(--ease); }
+[data-paleta="atelier"] .meniu-mai-in { animation: urca var(--t-lent) var(--ease) both; border-radius: 20px; }
+@keyframes apare-fond { from { opacity: 0; } }
+@keyframes urca { from { transform: translateY(24px); opacity: 0; } }
+
+/* ---------- intrarea în pagină: conținutul apare treptat, cardurile pe rând ---------- */
+[data-paleta="atelier"] #app.intra > *, [data-paleta="atelier"] #app.intra .layout > .stack > * { animation: none; }
+[data-paleta="atelier"] #app.intra .pagina > * { animation: intra-viu .48s var(--ease) both; }
+[data-paleta="atelier"] #app.intra .pagina > :nth-child(2) { animation-delay: 50ms; }
+[data-paleta="atelier"] #app.intra .pagina > :nth-child(3) { animation-delay: 100ms; }
+[data-paleta="atelier"] #app.intra .pagina > :nth-child(4) { animation-delay: 150ms; }
+[data-paleta="atelier"] #app.intra .pagina > :nth-child(5) { animation-delay: 200ms; }
+[data-paleta="atelier"] #app.intra .pagina > :nth-child(n+6) { animation-delay: 240ms; }
+/* cardurile din interiorul unei grile apar și ele pe rând */
+[data-paleta="atelier"] #app.intra :is(.grid-acasa, .cifre, .grila-opere, .grila-clase, .lista-teme, .progres-rand) > * { animation: intra-viu .44s var(--ease) both; }
+[data-paleta="atelier"] #app.intra :is(.grid-acasa, .cifre, .grila-opere, .grila-clase, .lista-teme, .progres-rand) > :nth-child(2) { animation-delay: 120ms; }
+[data-paleta="atelier"] #app.intra :is(.grid-acasa, .cifre, .grila-opere, .grila-clase, .lista-teme, .progres-rand) > :nth-child(3) { animation-delay: 170ms; }
+[data-paleta="atelier"] #app.intra :is(.grid-acasa, .cifre, .grila-opere, .grila-clase, .lista-teme, .progres-rand) > :nth-child(4) { animation-delay: 220ms; }
+[data-paleta="atelier"] #app.intra :is(.grid-acasa, .cifre, .grila-opere, .grila-clase, .lista-teme, .progres-rand) > :nth-child(n+5) { animation-delay: 260ms; }
+@keyframes intra-viu { from { opacity: 0; transform: translateY(16px); } }
+
+/* barele de progres cresc la prima afișare a paginii */
+[data-paleta="atelier"] #app.intra :is(.xp, .bara-loc) > span { animation: creste .9s var(--ease) .25s both; transform-origin: left center; }
+@keyframes creste { from { transform: scaleX(0); } }
+[data-paleta="atelier"] .xp { background: #efe8de; height: 8px; }
+[data-paleta="atelier"] .xp span { background: linear-gradient(90deg, var(--wine), #b8586f); }
+[data-paleta="atelier"] .xp.plin span { background: linear-gradient(90deg, var(--good), #5a9c83); }
+[data-paleta="atelier"] .xp.slab span { background: linear-gradient(90deg, #b8743a, var(--gold)); }
+
+/* ---------- banda de sus (hero): bleumarin, carte care plutește, stele ---------- */
+[data-paleta="atelier"] .erou-acasa { background: var(--night); border-radius: 23px; box-shadow: 0 16px 40px rgba(18, 30, 49, .14); isolation: isolate; }
+[data-paleta="atelier"] .erou-acasa::before { background: radial-gradient(circle at 76% 45%, rgba(213, 179, 112, .2), transparent 34%),
+  repeating-linear-gradient(145deg, transparent 0 38px, rgba(255, 255, 255, .015) 39px 40px); opacity: 1; background-size: auto; z-index: -1; }
+[data-paleta="atelier"] .erou-acasa h2 { font-family: var(--f-disp); font-weight: 400; color: #fff; }
+[data-paleta="atelier"] .erou-acasa h2 em { color: #e9ca9e; }
+[data-paleta="atelier"] .erou-supra { color: #efcd8e; }
+[data-paleta="atelier"] .erou-acasa .erou-btn { background: #e5bd78; color: #2b2941; box-shadow: 0 8px 24px rgba(228, 178, 92, .16); border-radius: 11px;
+  transition: transform var(--t) var(--ease), background-color var(--t) var(--ease), box-shadow var(--t) var(--ease); }
+[data-paleta="atelier"] .erou-acasa .erou-btn:hover { background: #f2cf8f; transform: translateY(-2px); box-shadow: 0 12px 28px rgba(228, 178, 92, .3); }
+[data-paleta="atelier"] .erou-acasa .erou-btn:active { transform: scale(.97); }
+[data-paleta="atelier"] .erou-arta { animation: pluteste 6s ease-in-out infinite; }
+[data-paleta="atelier"] .erou-arta .sc { animation: sclipeste 3.6s ease-in-out infinite; }
+[data-paleta="atelier"] .erou-arta .sc.b { animation-delay: -1.2s; } [data-paleta="atelier"] .erou-arta .sc.c { animation-delay: -2.3s; }
+@keyframes pluteste { 50% { transform: translateY(-7px); } }
+@keyframes sclipeste { 0%, 100% { opacity: .35; transform: scale(.75); } 50% { opacity: 1; transform: scale(1.15); } }
+
+/* ---------- stări vizuale ale temelor ---------- */
+/* culoarea stării bate culoarea temei (care vine din atributul style) */
+.rand-tema.st-gata { --stare: var(--good); }
+.rand-tema.st-evaluare { --stare: var(--c4); }
+.rand-tema.st-restanta { --stare: var(--bad); }
+.rand-tema.st-de-facut { --stare: #b0843f; }
+.rand-tema[class*="st-"] .rt-bara { background: var(--stare); box-shadow: none; }
+[data-paleta="atelier"] .rand-tema[class*="st-"]:hover { border-color: color-mix(in srgb, var(--stare) 45%, var(--edge)); }
+[data-paleta="atelier"] .rand-tema.st-restanta { background: linear-gradient(90deg, rgba(156, 48, 73, .045), var(--bg-2) 40%); }
+[data-paleta="atelier"] .rand-tema.st-gata .rt-titlu { color: #4b5363; }
+[data-paleta="atelier"] .rand-tema[data-stare]::after { content: attr(data-stare); position: absolute; top: 10px; right: 44px; font-size: 10px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--stare, var(--acc)); opacity: .9; }
+[data-paleta="atelier"] .rand-tema { position: relative; border-radius: 16px; }
+[data-paleta="atelier"] .rt-bara { width: 4px; }
+
+/* ---------- toast elegant ---------- */
+.toast { transition: transform var(--t-lent) var(--ease), opacity var(--t-lent) var(--ease); opacity: 0; transform: translate(-50%, 24px); }
+.toast.vizibil { opacity: 1; transform: translate(-50%, 0); }
+.toast { display: flex; align-items: center; gap: 10px; }
+.toast::before { content: "i"; flex: none; width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font-size: 12px; font-weight: 800; background: rgba(255, 255, 255, .14); color: #f3d7a8; }
+.toast[data-tip="succes"]::before { content: "✓"; background: #2f6f59; color: #fff; }
+.toast[data-tip="eroare"]::before { content: "!"; background: #9c3049; color: #fff; }
+[data-paleta="atelier"] .toast { background: var(--night); color: #fff; border: 0; border-radius: 13px; box-shadow: 0 20px 40px rgba(0, 0, 0, .22); font-size: 14px; padding: 13px 18px 13px 14px; }
+
+/* ---------- dialog de confirmare ---------- */
+.dialog-viu { border: 0; border-radius: 22px; padding: 28px 26px 22px; width: min(440px, calc(100vw - 32px)); background: var(--bg-2, #fffefa); color: var(--text, #202840);
+  box-shadow: 0 30px 70px -20px rgba(16, 24, 40, .45); text-align: center; animation: dialog-intra var(--t-lent) var(--ease) both; }
+.dialog-viu::backdrop { background: rgba(17, 26, 43, .55); backdrop-filter: blur(3px); animation: apare-fond var(--t) var(--ease); }
+.dialog-viu.iese { animation: dialog-iese 160ms ease-in both; }
+.dialog-viu h2 { font-family: var(--f-disp); font-weight: 400; font-size: 26px; margin: 10px 0 8px; color: var(--night, var(--text)); }
+.dialog-viu p { color: var(--muted); font-size: 14px; line-height: 1.6; margin: 0 0 20px; }
+.dlg-ic { width: 52px; height: 52px; margin: 0 auto; border-radius: 50%; display: grid; place-items: center; font: 400 26px var(--f-disp, Georgia); color: var(--c4, #3f6593); background: color-mix(in srgb, var(--c4, #3f6593) 12%, transparent); }
+.dialog-viu.pericol .dlg-ic { color: var(--bad, #9c3049); background: color-mix(in srgb, var(--bad, #9c3049) 12%, transparent); }
+.dlg-butoane { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+.dlg-butoane .btn { flex: 1 1 140px; }
+@keyframes dialog-intra { from { opacity: 0; transform: translateY(12px) scale(.96); } }
+@keyframes dialog-iese { to { opacity: 0; transform: translateY(8px) scale(.97); } }
+
+/* ---------- confirmare animată după trimiterea temei ---------- */
+.confirmare-viu { position: fixed; inset: 0; z-index: 90; display: grid; place-items: center; padding: 16px; background: rgba(17, 26, 43, .5); backdrop-filter: blur(3px);
+  animation: apare-fond var(--t) var(--ease); }
+.confirmare-viu.pleaca { opacity: 0; transition: opacity .35s ease; }
+.conf-card { width: min(380px, 100%); background: var(--bg-2, #fffefa); color: var(--text, #202840); border-radius: 24px; padding: 30px 26px 24px; text-align: center;
+  box-shadow: 0 30px 70px -20px rgba(16, 24, 40, .5); animation: dialog-intra .42s var(--ease) both; position: relative; overflow: hidden; }
+.conf-card::before { content: ""; position: absolute; inset: 0 0 auto; height: 110px; background: radial-gradient(circle at 50% 0, rgba(203, 165, 101, .28), transparent 70%); pointer-events: none; }
+.conf-sigiliu { position: relative; width: 84px; height: 84px; margin: 0 auto 6px; border-radius: 50%; display: grid; place-items: center; color: #2f6f59; background: #e7f3ec;
+  box-shadow: 0 0 0 8px rgba(47, 111, 89, .08); animation: sigiliu .6s var(--ease) .1s both; }
+.conf-sigiliu svg circle { stroke-dasharray: 145; stroke-dashoffset: 145; animation: deseneaza .6s var(--ease) .2s forwards; }
+.conf-sigiliu svg path { stroke-dasharray: 40; stroke-dashoffset: 40; animation: deseneaza .4s var(--ease) .65s forwards; }
+.conf-card h2 { font-family: var(--f-disp); font-weight: 400; font-size: 28px; margin: 8px 0 6px; color: var(--night, var(--text)); }
+.conf-card p { color: var(--muted); font-size: 14px; line-height: 1.6; margin: 0 0 18px; }
+@keyframes sigiliu { from { transform: scale(.4) rotate(-20deg); opacity: 0; } 70% { transform: scale(1.06); } }
+@keyframes deseneaza { to { stroke-dashoffset: 0; } }
+
+/* ---------- încărcare (schelet) ---------- */
+[data-paleta="atelier"] .schelet .bloc { background: linear-gradient(90deg, #efe9df, #f8f4ed, #efe9df); background-size: 200% 100%; border-radius: 18px; }
+[data-paleta="atelier"] .schelet .schelet-meniu { background: var(--night); }
+[data-paleta="atelier"] .schelet .schelet-meniu .bloc { background: linear-gradient(90deg, rgba(255,255,255,.05), rgba(255,255,255,.11), rgba(255,255,255,.05)); background-size: 200% 100%; }
+
+/* =====================================================================
+   PERSONALITATEA FIECĂREI PAGINI (aceeași identitate, alt caracter)
+   ===================================================================== */
+
+/* Teme: un cuprins editorial, cu numere de capitol */
+[data-paleta="atelier"] .lista-teme { counter-reset: tema; }
+[data-paleta="atelier"] .lista-teme .rand-tema { counter-increment: tema; }
+[data-paleta="atelier"] .lista-teme .rt-titlu::before { content: counter(tema, decimal-leading-zero); font-family: var(--f-disp); color: var(--gold); font-size: 15px; margin-right: 10px; }
+[data-paleta="atelier"] .lista-teme .rand-tema { padding-top: 18px; padding-bottom: 18px; }
+
+/* Rezolvarea unei teme: foaie de caiet, cu marginea roșie și rânduri */
+[data-paleta="atelier"] #app[data-pag="tema"] .text-suport { background:
+  linear-gradient(90deg, transparent 52px, rgba(144, 52, 81, .28) 52px 53px, transparent 53px),
+  repeating-linear-gradient(180deg, #fffdf7 0 31px, #e9e2d6 31px 32px); border-color: #e6dccb; line-height: 32px; padding-top: 16px; }
+[data-paleta="atelier"] #app[data-pag="tema"] .text-suport::before { display: none; }
+[data-paleta="atelier"] #app[data-pag="tema"] form.stack > .stack { padding: 16px 18px; border-radius: 16px; background: #fffdf9; border: 1px solid var(--line-soft); }
+[data-paleta="atelier"] #app[data-pag="tema"] .mistake { border-left-width: 3px; padding-left: 16px; }
+[data-paleta="atelier"] #app[data-pag="tema"] .bara-tema .btn { border-radius: 99px; }
+
+/* Calendar: agendă cu banda de sus bleumarin */
+[data-paleta="atelier"] #app[data-pag="calendar"] .calendar > .row:first-child { background: var(--night); color: #fff; border-radius: 14px; padding: 10px 12px; margin: -6px -6px 6px; }
+[data-paleta="atelier"] #app[data-pag="calendar"] .calendar > .row:first-child h2 { color: #fff; }
+[data-paleta="atelier"] #app[data-pag="calendar"] .calendar > .row:first-child .btn.ghost { background: rgba(255,255,255,.08); color: #fff; border-color: rgba(255,255,255,.15); }
+[data-paleta="atelier"] #app[data-pag="calendar"] .zi { background: #fffdf8; border-color: #efe8dc; border-radius: 12px; transition: border-color var(--t) var(--ease), box-shadow var(--t) var(--ease); }
+[data-paleta="atelier"] #app[data-pag="calendar"] .zi.are:hover { border-color: #d9c39c; box-shadow: var(--umbra); }
+[data-paleta="atelier"] #app[data-pag="calendar"] .zi.azi { border-color: var(--gold); box-shadow: 0 0 0 2px rgba(203, 165, 101, .35); }
+[data-paleta="atelier"] #app[data-pag="calendar"] .zi.azi .nr-zi { color: var(--wine); font-weight: 800; }
+
+/* BAC: sala de examen, cu sigiliu auriu */
+[data-paleta="atelier"] #app[data-pag="bac"] .cap-pagina { position: relative; padding-right: 110px; }
+[data-paleta="atelier"] #app[data-pag="bac"] .cap-pagina::after { content: "BAC"; position: absolute; right: 8px; top: 4px; width: 84px; height: 84px; border-radius: 50%;
+  display: grid; place-items: center; font: 400 22px var(--f-disp); letter-spacing: .06em; color: #8a6428; border: 2px solid var(--gold);
+  box-shadow: inset 0 0 0 5px var(--bg), inset 0 0 0 6px rgba(203, 165, 101, .6); transform: rotate(-10deg); background: #fbf3e2; }
+[data-paleta="atelier"] #app[data-pag="bac"] .antrenament { border: 1px solid #e6d9c2; background: repeating-linear-gradient(180deg, #fffefa 0 35px, #f6efe2 35px 36px); }
+[data-paleta="atelier"] #app[data-pag="bac"] .ceas b { font-family: var(--f-disp); color: var(--night); }
+[data-paleta="atelier"] #app[data-pag="bac"] .cifra { border-style: double; border-width: 3px; border-color: #eadfcb; }
+
+/* Biblioteca: coperți de carte care se deschid */
+[data-paleta="atelier"] #app[data-pag="opere"] .grila-opere { perspective: 1400px; }
+[data-paleta="atelier"] #app[data-pag="opere"] .opera:not(.deschisa) { background: linear-gradient(150deg, #1f2f4b, var(--night) 70%); border: 0; color: #f3eee2; overflow: hidden;
+  box-shadow: inset 10px 0 0 #121c2f, inset 12px 0 0 rgba(203, 165, 101, .45), var(--umbra); }
+[data-paleta="atelier"] #app[data-pag="opere"] .opera:not(.deschisa)::after { content: ""; position: absolute; inset: 10px 10px 10px 22px; border: 1px solid rgba(203, 165, 101, .35); border-radius: 8px; pointer-events: none; }
+[data-paleta="atelier"] #app[data-pag="opere"] .opera:nth-child(3n+2):not(.deschisa) { background: linear-gradient(150deg, #8a3150, #5e2036 70%); }
+[data-paleta="atelier"] #app[data-pag="opere"] .opera:nth-child(3n+3):not(.deschisa) { background: linear-gradient(150deg, #2e5a4b, #1d3d33 70%); }
+[data-paleta="atelier"] #app[data-pag="opere"] .opera:not(.deschisa) .opera-cap { color: #f3eee2; padding: 22px 20px 22px 34px; min-height: 150px; }
+[data-paleta="atelier"] #app[data-pag="opere"] .opera:not(.deschisa) .opera-titlu { font-family: var(--f-disp); font-weight: 400; font-size: 23px; color: #fff; }
+[data-paleta="atelier"] #app[data-pag="opere"] .opera:not(.deschisa) .opera-an { color: var(--gold); }
+[data-paleta="atelier"] #app[data-pag="opere"] .opera:not(.deschisa) .muted { color: #c9cdd6; }
+[data-paleta="atelier"] #app[data-pag="opere"] .opera:not(.deschisa) .chip.none { background: rgba(255,255,255,.1); color: #efe6d4; border-color: rgba(255,255,255,.15); }
+[data-paleta="atelier"] #app[data-pag="opere"] .opera:not(.deschisa):hover { transform: translateY(-3px) rotateY(-6deg); transform-origin: left center; }
+[data-paleta="atelier"] #app[data-pag="opere"] .opera.deschisa { transform-origin: left center; animation: deschide-cartea .55s var(--ease) both;
+  background: linear-gradient(90deg, #f1e8d8 0, #fffdf7 14px); border-color: #e7dcc7; }
+[data-paleta="atelier"] #app[data-pag="opere"] .opera.deschisa .opera-titlu { font-family: var(--f-disp); font-weight: 400; font-size: 30px; color: var(--night); }
+@keyframes deschide-cartea { from { opacity: 0; transform: perspective(1400px) rotateY(-22deg) translateX(-8px); } 60% { opacity: 1; } }
+
+/* Rezultate și progres (profil): galerie de insigne */
+[data-paleta="atelier"] #app[data-pag="profil"] .insigna-mare { background: linear-gradient(160deg, #fbf3e2, var(--bg-2)); border-color: #eadcc0; }
+[data-paleta="atelier"] #app[data-pag="profil"] .insigna-mare.blocata { background: var(--sunk); }
+
+/* Clasament: podium cu nuanțe aurii */
+[data-paleta="atelier"] .loc.p1 { background: linear-gradient(90deg, rgba(203, 165, 101, .2), transparent 70%); }
+[data-paleta="atelier"] .loc.p2 { background: linear-gradient(90deg, rgba(160, 170, 190, .18), transparent 70%); }
+[data-paleta="atelier"] .loc.p3 { background: linear-gradient(90deg, rgba(176, 116, 70, .16), transparent 70%); }
+
+/* Profesor — Catalogul clasei: registru cu antet bleumarin */
+[data-paleta="atelier"] #app[data-pag="elevi"] .tabel-elevi thead th, [data-paleta="atelier"] #app[data-pag="tema"][data-rol="profesor"] table thead th {
+  background: var(--night); color: #e7e2d8; border: 0; padding-top: 12px; padding-bottom: 12px; }
+[data-paleta="atelier"] #app[data-pag="elevi"] .tabel-elevi thead th:first-child, [data-paleta="atelier"] #app[data-pag="tema"][data-rol="profesor"] table thead th:first-child { border-radius: 12px 0 0 12px; }
+[data-paleta="atelier"] #app[data-pag="elevi"] .tabel-elevi thead th:last-child, [data-paleta="atelier"] #app[data-pag="tema"][data-rol="profesor"] table thead th:last-child { border-radius: 0 12px 12px 0; }
+[data-paleta="atelier"] #app[data-pag="elevi"] .tabel-elevi tbody tr { transition: background-color var(--t-rapid) var(--ease); }
+[data-paleta="atelier"] #app[data-pag="elevi"] .tabel-elevi tbody tr:hover td { background: #faf6ef; }
+[data-paleta="atelier"] #app[data-pag="elevi"] .unelte-elevi { background: linear-gradient(180deg, #fffefa, #fbf8f1); }
+
+/* Profesor — catedra: codul clasei ca plăcuțe aurii */
+[data-paleta="atelier"] #app[data-rol="profesor"][data-pag="acasa"] .tila { background: var(--night) !important; color: var(--gold-light) !important; border: 1px solid rgba(203, 165, 101, .5); box-shadow: none; font-family: var(--f-disp); font-weight: 400; }
+
+/* ---------- telefon ---------- */
+@media (max-width: 860px) {
+  [data-paleta="atelier"] .titlu-pagina { font-size: clamp(28px, 8vw, 36px); }
+  [data-paleta="atelier"] #app[data-pag="bac"] .cap-pagina { padding-right: 74px; }
+  [data-paleta="atelier"] #app[data-pag="bac"] .cap-pagina::after { width: 60px; height: 60px; font-size: 16px; }
+  [data-paleta="atelier"] .rand-tema[data-stare]::after { top: 8px; right: 32px; }
+  /* pe telefon animațiile rămân ușoare: fără înclinări 3D */
+  [data-paleta="atelier"] #app[data-pag="opere"] .opera:not(.deschisa):hover { transform: translateY(-2px); }
+}
+
+/* ---------- mișcare redusă: fără animații decorative ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .nav-indicator, .toast, .dialog-viu, .conf-card, .confirmare-viu { transition: none !important; animation: none !important; }
+  [data-paleta="atelier"] .erou-arta, [data-paleta="atelier"] .erou-arta .sc { animation: none !important; }
+  .conf-sigiliu svg circle, .conf-sigiliu svg path { stroke-dashoffset: 0 !important; }
+}
+
+/* banda de sus: textul aliniat la stânga, ca în referință */
+[data-paleta="atelier"] .erou-text { text-align: left; }
+[data-paleta="atelier"] .erou-text .row, [data-paleta="atelier"] .erou-meta { justify-content: flex-start; }
