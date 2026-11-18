@@ -155,7 +155,7 @@ const INTRO = { activ: false, faza1: false, gata: false, iesit: false };
   let ultim = 0;
   (function deseneaza(t) {
     if (MISCARE) requestAnimationFrame(deseneaza);
-    if (document.hidden || (t - ultim < 50 && t)) return;
+    if (document.hidden || (t - ultim < 50 && t) || document.documentElement.dataset.paleta === "atelier") return; // tema Atelier n-are cer înstelat
     ultim = t;
     ctx.clearRect(0, 0, W, H);
     ctx.fillStyle = "#e9ecff";
@@ -186,9 +186,14 @@ function citesteLocal(k, d) { try { return localStorage.getItem(k) ?? d; } catch
 function scrieLocal(k, v) { try { localStorage.setItem(k, v); } catch { /* fără stocare: rămâne doar pentru acum */ } }
 
 /* ---------------- palete de culori ---------------- */
-const PALETE = { galaxie: "Galaxie", aurora: "Aurora", apus: "Apus" };
-function aplicaPaleta(p) { if (!PALETE[p]) p = "galaxie"; document.documentElement.dataset.paleta = p; scrieLocal("paleta", p); }
-aplicaPaleta(citesteLocal("paleta", "galaxie"));
+const PALETE = { atelier: "Atelier literar", galaxie: "Galaxie", aurora: "Aurora", apus: "Apus" };
+function aplicaPaleta(p) {
+  if (!PALETE[p]) p = "atelier";
+  document.documentElement.dataset.paleta = p; scrieLocal("paleta-v2", p);
+  const m = document.querySelector('meta[name="theme-color"]'); if (m) m.content = p === "atelier" ? "#101b30" : "#0a0f1f";
+  const cs = document.querySelector('meta[name="color-scheme"]'); if (cs) cs.content = p === "atelier" ? "light" : "dark";
+}
+aplicaPaleta(citesteLocal("paleta-v2", "atelier"));
 
 /* ---------------- sunete (scurte, generate în browser) ---------------- */
 let sunet = citesteLocal("sunet", "da") === "da";
@@ -546,7 +551,7 @@ function formParolaNoua() {
 
 function drawRole() {
   const r = document.getElementById("role"); r.replaceChildren();
-  const pal = citesteLocal("paleta", "galaxie");
+  const pal = citesteLocal("paleta-v2", "atelier");
   r.append(
     h("div", { class: "palete", role: "group", "aria-label": "Culorile site-ului" }, Object.entries(PALETE).map(([k, v]) =>
       h("button", { class: "paleta-btn" + (k === (document.documentElement.dataset.paleta || pal) ? " on" : ""), "data-p": k, title: v, "aria-label": "Culori: " + v,
