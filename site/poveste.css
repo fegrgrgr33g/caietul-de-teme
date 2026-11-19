@@ -671,3 +671,37 @@ html.fara-miscare::view-transition-old(*), html.fara-miscare::view-transition-ne
 }
 html.fara-miscare .cap-ilustr { transform: none !important; }
 @media (prefers-reduced-motion: reduce) { .cap-ilustr { transform: none !important; } }
+
+/* =====================================================================
+   OBIECTE 3D RANDATE CARE PLUTESC DEASUPRA PAGINII
+   ===================================================================== */
+.obiect-3d { position: relative; display: block; width: 100%; height: 100%; }
+.obiect-3d img { position: absolute; left: 50%; top: 46%; width: 86px; height: 86px; object-fit: contain; translate: -50% -50%;
+  /* culorile, armonizate cu pergamentul și violetul, fără să piardă volumul */
+  filter: saturate(.78) sepia(.18) contrast(1.04) drop-shadow(0 10px 8px rgba(70, 40, 20, .28)); }
+.o-pergament .strat-0 { width: 80px; height: 80px; left: 44%; }
+.o-pergament .strat-1 { width: 58px; height: 58px; left: 66%; top: 38%; rotate: 18deg; }
+.o-calendar img { width: 82px; height: 82px; }
+.o-toca img { width: 94px; height: 94px; top: 44%; }
+.o-carti img { width: 86px; height: 86px; filter: saturate(.62) sepia(.32) hue-rotate(-12deg) contrast(1.05) drop-shadow(0 10px 8px rgba(70, 40, 20, .3)); }
+/* umbra de pe pagină: se micșorează când obiectul urcă */
+.umbra-obiect { position: absolute; left: 50%; bottom: 2px; width: 62px; height: 10px; translate: -50% 0; border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(70, 40, 20, .38), transparent 70%); }
+[data-tema="poveste"] .obiect-3d img { animation: pluteste-obiect 4.6s ease-in-out infinite; }
+[data-tema="poveste"] .obiect-3d .umbra-obiect { animation: umbra-obiect 4.6s ease-in-out infinite; }
+[data-tema="poveste"] .capitol[data-ch="2"] :is(img, .umbra-obiect) { animation-delay: -1.2s; }
+[data-tema="poveste"] .capitol[data-ch="3"] :is(img, .umbra-obiect) { animation-delay: -2.4s; }
+[data-tema="poveste"] .capitol[data-ch="4"] :is(img, .umbra-obiect) { animation-delay: -3.5s; }
+[data-tema="poveste"] .o-pergament .strat-1 { animation: pluteste-pana 5.2s ease-in-out infinite; }
+@keyframes pluteste-obiect { 0%, 100% { transform: translateY(2px) rotate(-1.5deg); } 50% { transform: translateY(-8px) rotate(1.5deg); } }
+@keyframes pluteste-pana { 0%, 100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-11px) rotate(6deg); } }
+@keyframes umbra-obiect { 0%, 100% { transform: scale(1); opacity: .9; } 50% { transform: scale(.72); opacity: .55; } }
+.capitol:hover .obiect-3d img { filter: saturate(.9) sepia(.1) contrast(1.06) drop-shadow(0 16px 12px rgba(70, 40, 20, .32)); }
+.capitol:hover .cap-ilustr svg { transform: none; }
+@media (max-width: 860px) {
+  .obiect-3d img { width: 70px; height: 70px; }
+  .o-pergament .strat-0 { width: 64px; height: 64px; } .o-pergament .strat-1 { width: 46px; height: 46px; }
+  .o-toca img { width: 76px; height: 76px; }
+}
+html.fara-miscare .obiect-3d :is(img, .umbra-obiect) { animation: none !important; }
+@media (prefers-reduced-motion: reduce) { .obiect-3d :is(img, .umbra-obiect) { animation: none !important; } }

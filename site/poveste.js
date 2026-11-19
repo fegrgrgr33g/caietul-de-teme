@@ -340,6 +340,19 @@ const ILUSTRATII = {
 };
 const ORNAMENT_COLT = `<svg viewBox="0 0 60 60" aria-hidden="true"><path d="M4 56 C4 30 14 14 40 6 M4 56 C14 40 26 34 44 34 M14 46 c6 -2 10 -8 10 -14 M30 20 c4 2 8 2 12 -2" fill="none" stroke="#c49a52" stroke-width="2" stroke-linecap="round"/><circle cx="40" cy="6" r="3" fill="#c49a52"/><circle cx="44" cy="34" r="2.5" fill="#c49a52"/><path d="M20 30 c-4 -6 -2 -12 4 -14 c0 6 -2 10 -4 14z" fill="#b58fd0" opacity=".8"/></svg>`;
 
+/* obiectele 3D randate (Microsoft Fluent Emoji 3D, licență MIT, în img/3d/); dacă imaginea nu se încarcă, rămâne desenul vectorial */
+const OBIECTE_3D = { pergament: ["pergament.png", "pana.png"], calendar: ["calendar.png"], toca: ["toca.png"], carti: ["carti.png"] };
+function obiect3d(c) {
+  const imgs = OBIECTE_3D[c.ilustr] || [];
+  const desen = () => { const s = h("span"); s.innerHTML = ILUSTRATII[c.ilustr]; return s.firstChild; };
+  if (!imgs.length) return desen();
+  const cutie = h("span", { class: "obiect-3d o-" + c.ilustr },
+    h("span", { class: "umbra-obiect" }),
+    imgs.map((f, i) => h("img", { src: "img/3d/" + f, alt: "", width: "256", height: "256", decoding: "async", loading: "eager", class: "strat-" + i,
+      onerror: e => { const box = e.target.closest(".obiect-3d"); if (box && !box.dataset.cazut) { box.dataset.cazut = "1"; box.replaceWith(desen()); } } })));
+  return cutie;
+}
+
 function carteCapitole() {
   // obiectul se înclină ușor după mouse, ca un obiect real pus pe pagină (nu și cu animațiile oprite)
   const inclina = e => {
@@ -351,7 +364,7 @@ function carteCapitole() {
   const capitol = (c, nr) => h("a", { class: "capitol", href: "#/" + c.k, style: "--pata:" + c.pata, "data-ch": nr,
       onpointermove: inclina, onpointerleave: reseteaza,
       onclick: e => intoarcePagina(e, c.k, nr > 2 ? "dr" : "st") },
-    h("span", { class: "cap-ilustr", "aria-hidden": "true" }, (() => { const s = h("span"); s.innerHTML = ILUSTRATII[c.ilustr]; return s.firstChild; })()),
+    h("span", { class: "cap-ilustr", "aria-hidden": "true" }, obiect3d(c)),
     h("span", { class: "cap-titlu" }, c.titlu), h("span", { class: "cap-sub" }, c.sub),
     h("span", { class: "cap-sageata", "aria-hidden": "true" }, "→"));
   const colt = cls => { const d = h("span", { class: "colt " + cls, "aria-hidden": "true" }); d.innerHTML = ORNAMENT_COLT; return d; };
