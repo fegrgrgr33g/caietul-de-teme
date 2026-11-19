@@ -132,15 +132,25 @@ const INTRO = { activ: false, faza1: false, gata: false, iesit: false };
       `--i:-${(Math.random() * 10).toFixed(1)}s;--dx:${((Math.random() - 0.5) * 8).toFixed(1)}vw;--o:${(0.25 + Math.random() * 0.6).toFixed(2)}`;
     praf.append(p);
   }
+  // toată deschiderea rulează de RAPID ori mai repede decât e scrisă în CSS: ~2,4 s în loc de 6,7 s
+  const RAPID = 2.8;
+  const accelereaza = () => { try { for (const a of el.getAnimations({ subtree: true })) a.playbackRate = RAPID; } catch { /* browser vechi: rămâne viteza din CSS */ } };
+  accelereaza();
   const iesi = () => {
     if (INTRO.iesit) return; INTRO.iesit = true;
-    el.classList.add("iesire");
-    setTimeout(() => { el.remove(); INTRO.activ = false; }, 1700);
+    el.classList.add("iesire"); accelereaza();
+    document.removeEventListener("keydown", tasta, true);
+    setTimeout(() => { el.remove(); INTRO.activ = false; }, 650);
   };
+  // se poate sări imediat: butonul (primește focus), un clic oriunde, Esc / Enter / Space
+  const tasta = e => { if (["Escape", "Enter", " "].includes(e.key)) { e.preventDefault(); iesi(); } };
+  document.addEventListener("keydown", tasta, true);
+  el.addEventListener("click", iesi);
+  const sari = document.getElementById("sari-intro"); sari.addEventListener("click", iesi);
+  requestAnimationFrame(() => sari.focus({ preventScroll: true }));
   INTRO.incearca = () => { if (INTRO.faza1 && INTRO.gata) iesi(); };
-  setTimeout(() => { INTRO.faza1 = true; INTRO.incearca(); }, 6700);
-  document.getElementById("sari-intro").addEventListener("click", iesi);
-  setTimeout(iesi, 20000);   // oricum, nu ținem pe nimeni mai mult de 20 de secunde
+  setTimeout(() => { INTRO.faza1 = true; INTRO.incearca(); }, 6700 / RAPID);
+  setTimeout(iesi, 5000);   // nu ținem pe nimeni pe ecranul de deschidere, nici dacă internetul e lent
 })();
 
 /* Cerul cu stele: sclipesc încet și se mișcă puțin după mouse. */
