@@ -705,3 +705,11 @@ html.fara-miscare .cap-ilustr { transform: none !important; }
 }
 html.fara-miscare .obiect-3d :is(img, .umbra-obiect) { animation: none !important; }
 @media (prefers-reduced-motion: reduce) { .obiect-3d :is(img, .umbra-obiect) { animation: none !important; } }
+
+/* =====================================================================
+   OBIECTE 3D LIVE (three.js): pânza ocupă locul imaginii; imaginea rămâne ca rezervă
+   ===================================================================== */
+.cap-ilustr .panza-3d { position: absolute; left: 50%; top: 50%; translate: -50% -50%; display: block; pointer-events: none; z-index: 2; }
+.cap-ilustr.are-3d .obiect-3d { display: none; }
+.cap-ilustr.are-3d { transform: none !important; }
+.capitol:hover .cap-ilustr.are-3d .panza-3d { filter: drop-shadow(0 0 10px rgba(255, 220, 150, .35)); }

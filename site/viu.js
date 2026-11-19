@@ -25,6 +25,7 @@ function dupaDesen() {
   if (app && S.profil) { app.dataset.pag = S.pag || "acasa"; app.dataset.rol = S.profil.rol; }
   else if (app) { delete app.dataset.pag; delete app.dataset.rol; }
   pozitioneazaIndicator();
+  if (typeof monteaza3D === "function") monteaza3D();
 }
 
 /* ---------- meniul lateral: un indicator care alunecă spre secțiunea activă ---------- */

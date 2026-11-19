@@ -359,12 +359,13 @@ function carteCapitole() {
     if (MISCARE_REDUSA() || e.pointerType === "touch") return;
     const r = e.currentTarget.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5;
     e.currentTarget.style.setProperty("--ry", (x * 18).toFixed(1) + "deg"); e.currentTarget.style.setProperty("--rx", (-y * 14).toFixed(1) + "deg");
+    if (typeof inclinaObiect3D === "function") inclinaObiect3D(e.currentTarget.dataset.model, x, y, true);
   };
-  const reseteaza = e => { e.currentTarget.style.removeProperty("--rx"); e.currentTarget.style.removeProperty("--ry"); };
-  const capitol = (c, nr) => h("a", { class: "capitol", href: "#/" + c.k, style: "--pata:" + c.pata, "data-ch": nr,
+  const reseteaza = e => { e.currentTarget.style.removeProperty("--rx"); e.currentTarget.style.removeProperty("--ry"); if (typeof inclinaObiect3D === "function") inclinaObiect3D(e.currentTarget.dataset.model, 0, 0, false); };
+  const capitol = (c, nr) => h("a", { class: "capitol", href: "#/" + c.k, style: "--pata:" + c.pata, "data-ch": nr, "data-model": c.ilustr,
       onpointermove: inclina, onpointerleave: reseteaza,
       onclick: e => intoarcePagina(e, c.k, nr > 2 ? "dr" : "st") },
-    h("span", { class: "cap-ilustr", "aria-hidden": "true" }, obiect3d(c)),
+    h("span", { class: "cap-ilustr", "aria-hidden": "true", "data-model": c.ilustr }, obiect3d(c)),
     h("span", { class: "cap-titlu" }, c.titlu), h("span", { class: "cap-sub" }, c.sub),
     h("span", { class: "cap-sageata", "aria-hidden": "true" }, "→"));
   const colt = cls => { const d = h("span", { class: "colt " + cls, "aria-hidden": "true" }); d.innerHTML = ORNAMENT_COLT; return d; };
