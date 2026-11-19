@@ -133,17 +133,19 @@ function calendarView(rol) {
     h("div", { class: "calendar-layout" },
     h("section", { class: "sheet stack calendar", style: "--acc:var(--c4)" },
       h("div", { class: "row", style: "justify-content:space-between" },
-        h("button", { type: "button", class: "btn ghost", "aria-label": "Luna trecută", onclick: () => schimbaLuna(-1) }, "‹"),
+        h("button", { type: "button", class: "btn ghost luna-nav", "aria-label": "Luna trecută", onclick: () => schimbaLuna(-1) }, "‹"),
         h("h2", { style: "text-transform:capitalize", "aria-live": "polite" }, numeLuna),
-        h("button", { type: "button", class: "btn ghost", "aria-label": "Luna viitoare", onclick: () => schimbaLuna(1) }, "›")),
+        h("button", { type: "button", class: "btn ghost luna-nav", "aria-label": "Luna viitoare", onclick: () => schimbaLuna(1) }, "›")),
       h("div", { class: "grila-cal" + (dir > 0 ? " glisare-dr" : dir < 0 ? " glisare-st" : "") }, ["Lu", "Ma", "Mi", "Jo", "Vi", "Sâ", "Du"].map(z => h("div", { class: "cap-zi" }, z)), celule),
       h("div", { class: "row small muted" }, h("span", { class: "chip ok" }, rol === "profesor" ? "toți au trimis" : "trimisă"), h("span", { class: "chip wait" }, "urmează"), h("span", { class: "chip err" }, rol === "profesor" ? "termen trecut, lipsesc lucrări" : "termen trecut"))),
-    typeof panouZiAleasa === "function" ? panouZiAleasa(rol, peZi, predate) : null),
-    h("div", { class: "sheet" }, h("h3", null, "Termene apropiate"),
-      viitoare.length ? h("div", { class: "stack", style: "gap:8px;margin-top:10px" }, viitoare.map(t => {
-        const zile = Math.round((new Date(t.termen + "T00:00:00") - azi) / 86400000);
-        return h("a", { class: "rand-verif", href: "#/tema/" + encodeURIComponent(t.id) }, h("span", { class: "chip " + (zile <= 1 ? "wait" : "none") }, zile === 0 ? "azi" : zile === 1 ? "mâine" : `în ${zile} zile`), h("span", { style: "flex:1;text-align:left" }, t.titlu), h("span", { class: "muted" }, "›"));
-      })) : h("p", { class: "muted small" }, "Niciun termen în viitor."))];
+    // coloana din dreapta: ziua aleasă, apoi termenele apropiate (ca în „Harta timpului”)
+    h("div", { class: "cal-lateral" },
+      typeof panouZiAleasa === "function" ? panouZiAleasa(rol, peZi, predate) : null,
+      h("section", { class: "sheet termene-apropiate", "aria-labelledby": "ta-titlu" }, h("h3", { id: "ta-titlu" }, "Termene apropiate"),
+        viitoare.length ? h("div", { class: "stack", style: "gap:8px;margin-top:10px" }, viitoare.map(t => {
+          const zile = Math.round((new Date(t.termen + "T00:00:00") - azi) / 86400000);
+          return h("a", { class: "rand-verif", href: "#/tema/" + encodeURIComponent(t.id) }, h("span", { style: "flex:1;text-align:left" }, t.titlu), h("span", { class: "chip " + (zile <= 1 ? "wait" : "none") }, zile === 0 ? "azi" : zile === 1 ? "mâine" : `în ${zile} zile`));
+        })) : h("p", { class: "muted small" }, "Niciun termen în viitor."))))];
 }
 
 /* =====================================================================

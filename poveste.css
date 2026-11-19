@@ -4,16 +4,24 @@
    Se aplică peste sistemul de design Atelier (html[data-paleta="atelier"][data-tema="poveste"]).
    ===================================================================== */
 :root[data-tema="poveste"] {
-  /* paleta „Povestea Cunoașterii” */
-  --nocturn: #211b39; --violet-regal: #53416f; --visiniu: #873f5c; --auriu: #d8ae75; --crem: #fff2dc; --pergament: #f3ddbf; --roz: #d9a2b4; --salvie: #839c83;
+  /* paleta „Povestea Cunoașterii 2.0” (tokenuri comune; fiecare capitol are și o paletă secundară, mai jos) */
+  --midnight-violet: #211D39; --royal-plum: #604B79; --dusty-rose: #BA829C; --warm-gold: #D9B27A; --ivory: #FFF8EC;
+  --parchment: #F4E5CF; --sage-green: #799486; --deep-ink: #29233A; --soft-lavender: #DDD2EA;
+  --nocturn: var(--midnight-violet); --violet-regal: var(--royal-plum); --visiniu: #873f5c; --auriu: var(--warm-gold); --crem: var(--ivory); --pergament: var(--parchment); --roz: var(--dusty-rose); --salvie: var(--sage-green);
+  /* mișcare: hover, interfață, întoarcerea paginii, ambient */
+  --t-hover: 180ms; --t-ui: 280ms; --t-pagina: 560ms; --t-ambient: 12s;
+  /* spațiere și forme */
+  --sp-1: 4px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px; --sp-5: 24px; --sp-6: 32px; --sp-7: 48px;
+  --raza-mica: 10px; --raza: 16px; --raza-mare: 24px;
+  --f-ui: "DM Sans", system-ui, sans-serif; --f-citat: "Cormorant Garamond", Georgia, serif;
   --night: #211b39; --night-2: #2e2550; --violet: #211b39; --violet-2: #18132b;
   --wine: #873f5c; --wine-2: #6e3149; --gold: #d8ae75; --gold-light: #f2d6a8;
   --bg: #211b39; --bg-2: #fff2dc; --sunk: #f8e8cc; --edge: #e6cca3; --line-soft: #f0dfc2;
-  --text: #2c2440; --muted: #65596e;
+  --text: var(--deep-ink); --muted: #625770;
   --c1: #873f5c; --c2: #9c6e33; --c3: #557a5a; --c4: #53416f; --c5: #6f5596;
   /* culoarea secțiunii: fiecare pagină are accentul ei (setat mai jos după #app[data-pag]) */
   --sectiune: var(--wine);
-  --f-disp: "Cormorant Garamond", "DM Serif Display", Georgia, serif;
+  --f-disp: "Fraunces", "Cormorant Garamond", Georgia, serif;
   --umbra: 0 2px 4px rgba(42, 22, 54, .08), 0 14px 32px -16px rgba(42, 22, 54, .45);
   --umbra-sus: 0 4px 10px rgba(42, 22, 54, .12), 0 22px 40px -18px rgba(42, 22, 54, .55);
   --hartie: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .45 0 0 0 0 .32 0 0 0 0 .18 0 0 0 .07 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");

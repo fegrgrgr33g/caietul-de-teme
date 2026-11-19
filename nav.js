@@ -261,8 +261,10 @@ function randTemaElev(t, i) {
     h("span", { class: "rt-bara", "aria-hidden": "true" }),
     h("span", { class: "rt-text" }, h("span", { class: "rt-titlu" }, t.titlu),
       h("span", { class: "muted small" }, [numeClasaElev(t.clasa_id), `${(t.exercitii || []).length} exerciții`, nMsg ? `${nMsg} mesaje` : ""].filter(Boolean).join(" · "))),
+    h("span", { class: "rt-obiect", "aria-hidden": "true" }, h("img", { src: "img/3d/" + ["pergament", "carti", "calendar", "toca"][i % 4] + ".png", alt: "", width: "56", height: "56", loading: "lazy", decoding: "async" })),
     h("span", { class: "rt-dr" }, chipTermen(t.termen, !!p), statusChip(p, S.busy[t.id]),
-      fin != null ? h("span", { class: "nota" + (fin < 5 ? " fail" : "") }, fmtNota(fin)) : null),
+      fin != null ? h("span", { class: "nota" + (fin < 5 ? " fail" : "") }, fmtNota(fin)) : null,
+      h("span", { class: "rt-actiune", "aria-hidden": "true" }, { gata: "Vezi feedback", evaluare: "Vezi lucrarea", restanta: "Continuă →", lucru: "Continuă →", "de-facut": "Începe →" }[stare])),
     h("span", { class: "rt-sageata", "aria-hidden": "true" }, "›"));
 }
 
@@ -386,12 +388,40 @@ function paginaTemeElev() {
   const n = { "de-facut": toate.filter(t => !trimisa(t)).length, trimise: toate.filter(trimisa).length, toate: toate.length };
   const out = [capPagina("Teme", "Apasă pe o temă ca s-o deschizi: o rezolvi, vezi corectura și îi scrii profesorului.")];
   if (!S.claseElev.length) return out.concat(formIntraInClasa(), gol("Nu ești încă într-o clasă", "Cere-i profesorului codul clasei."));
-  out.push(h("div", { class: "seg sub-file" }, [["de-facut", "De făcut"], ["trimise", "Trimise"], ["toate", "Toate"]].map(([k, t]) =>
-    h("button", { type: "button", class: f === k ? "on" : "", onclick: () => { S.filtruTeme = k; draw(); } }, `${t} (${n[k]})`))),
-    cautaSiSorteaza());
-  if (!lista.length) out.push(gol(f === "de-facut" ? "Nicio temă de făcut" : "Nicio temă aici", f === "de-facut" ? "Ai trimis tot. Temele noi apar aici." : "Temele trimise apar aici."));
-  else out.push(h("div", { class: "stack lista-teme", style: "gap:10px" }, lista.map(t => randTemaElev(t, toate.indexOf(t)))));
+  // bara jurnalului: căutare și filtre, deasupra cărții
+  out.push(h("div", { class: "bara-jurnal" }, cautaSiSorteaza(),
+    h("div", { class: "seg sub-file", role: "group", "aria-label": "Filtrează temele" }, [["de-facut", "De făcut"], ["trimise", "Trimise"], ["toate", "Toate"]].map(([k, t]) =>
+      h("button", { type: "button", class: f === k ? "on" : "", "aria-pressed": f === k ? "true" : "false", onclick: () => { S.filtruTeme = k; draw(); } }, `${t} (${n[k]})`)))));
+  const principal = !lista.length ? gol(f === "de-facut" ? "Nicio temă de făcut" : "Nicio temă aici", f === "de-facut" ? "Ai trimis tot. Temele noi apar aici." : "Temele trimise apar aici.")
+    : h("div", { class: "stack lista-teme", style: "gap:10px" }, lista.map(t => randTemaElev(t, toate.indexOf(t))));
+  out.push(h("div", { class: "jurnal-layout" }, h("div", { class: "jurnal-principal" }, principal), asideTemeElev(toate)));
   return out;
+}
+/* lângă jurnal: prioritățile (temele netrimise, după termen) și progresul, doar din date reale */
+function asideTemeElev(toate) {
+  const predata = t => S.predariElev.find(p => p.tema_id === t.id);
+  const deFacut = sorteazaTeme(toate.filter(t => !predata(t))).slice(0, 4);
+  const recente = toate.filter(predata).sort((a, b) => String(predata(b).trimis_la).localeCompare(String(predata(a).trimis_la))).slice(0, Math.max(0, 4 - deFacut.length));
+  const evaluate = S.predariElev.filter(p => notaFinala(p) != null).length, trimise = S.predariElev.length;
+  const inLucru = toate.filter(t => !predata(t) && Object.values({ ...((S.ciorne || {})[t.id] || {}), ...(citesteJSON("ciorna-" + t.id, {}) || {}) }).some(v => String(v ?? "").trim())).length;
+  const restante = toate.filter(t => !predata(t) && (zileRamase(t.termen) ?? 1) < 0).length;
+  const pr = toate.length ? Math.round(trimise / toate.length * 100) : 0;
+  const ic = s => h("span", { class: "pri-bifa" + (s ? " bifat" : ""), "aria-hidden": "true" }, s ? "✓" : "");
+  return h("aside", { class: "jurnal-lateral", "aria-label": "Prioritățile și progresul tău" },
+    h("section", { class: "sheet panou-pri", "aria-labelledby": "pri-t" }, h("h2", { id: "pri-t" }, "Prioritățile tale"),
+      deFacut.length || recente.length ? h("ul", { class: "lista-pri" },
+        deFacut.map(t => { const z = zileRamase(t.termen); return h("li", null, h("a", { href: "#/tema/" + encodeURIComponent(t.id) }, ic(false), h("span", null, t.titlu),
+          z != null && z <= 1 ? h("span", { class: "chip " + (z < 0 ? "err" : "wait") }, z < 0 ? "Restantă" : "Important") : null)); }),
+        recente.map(t => h("li", { class: "facut" }, h("a", { href: "#/tema/" + encodeURIComponent(t.id) }, ic(true), h("s", null, t.titlu), h("span", { class: "sr-only" }, " (trimisă)")))))
+        : h("p", { class: "muted small" }, "Nicio temă deocamdată.")),
+    h("section", { class: "sheet panou-progres-teme", "aria-labelledby": "prg-t" }, h("h2", { id: "prg-t" }, "Progresul tău"),
+      h("div", { class: "progres-teme" },
+        h("div", { class: "inel-teme", style: `--p:${pr}`, role: "img", "aria-label": `${pr}% din teme trimise` }, h("b", null, pr + "%"), h("small", null, "trimise")),
+        h("ul", { class: "cifre-teme" },
+          h("li", null, h("span", { "aria-hidden": "true" }, "✓"), h("b", null, evaluate), " evaluate"),
+          h("li", null, h("span", { "aria-hidden": "true" }, "➤"), h("b", null, trimise), " trimise"),
+          h("li", null, h("span", { "aria-hidden": "true" }, "✎"), h("b", null, inLucru), " în lucru"),
+          h("li", null, h("span", { "aria-hidden": "true" }, "⌛"), h("b", null, restante), " restante")))));
 }
 
 function paginaTemaElev(id) {

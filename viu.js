@@ -25,6 +25,7 @@ function dupaDesen() {
   if (app && S.profil) { app.dataset.pag = S.pag || "acasa"; app.dataset.rol = S.profil.rol; }
   else if (app) { delete app.dataset.pag; delete app.dataset.rol; }
   pozitioneazaIndicator();
+  if (typeof asiguraLumea === "function") asiguraLumea();
   if (typeof monteaza3D === "function") monteaza3D();
 }
 
@@ -105,10 +106,11 @@ function confirmareTrimitere(nota) {
 
 /* ---------- eticheta mică de deasupra titlului, diferită pe fiecare pagină ---------- */
 const SUPRATITLURI = {
-  elev: { acasa: "Spațiul tău de învățare", teme: "Caietul cu teme", tema: "La masa de lucru", calendar: "Agenda termenelor", clasament: "Clasa ta", bac: "Sala de examen",
-    opere: "Biblioteca digitală", limba: "Atelier de limbă", jocuri: "Pauză activă", profil: "Profilul tău", rezultate: "Jurnalul progresului" },
-  profesor: { acasa: "Catedra", teme: "Temele clasei", tema: "Lucrările elevilor", "tema-noua": "Pregătește o temă", elevi: "Catalogul clasei", elev: "Fișa elevului",
-    calendar: "Agenda clasei", plan: "Planificare", banca: "Arhiva de subiecte", clase: "Clasele tale" },
+  // numele artistice ale locurilor din poveste (titlurile funcționale rămân „Teme”, „Calendar”, „BAC”...)
+  elev: { acasa: "Biblioteca dintre lumi", teme: "Jurnalul aventurierului", tema: "La masa de lucru", calendar: "Grădina timpului", clasament: "Sala clasei", bac: "Drumul spre castel",
+    opere: "Arhiva cărților fermecate", limba: "Atelierul cuvintelor", jocuri: "Curtea jocurilor", profil: "Camera călătorului", rezultate: "Turnul realizărilor" },
+  profesor: { acasa: "Atelierul scriitorului", teme: "Temele clasei", tema: "Lucrările elevilor", "tema-noua": "Masa de scris", elevi: "Catalogul clasei", elev: "Fișa elevului",
+    calendar: "Grădina timpului", plan: "Planificarea anului", banca: "Arhiva de subiecte", clase: "Clasele tale" },
 };
 function supratitlu() { const r = S.profil && SUPRATITLURI[S.profil.rol]; return (r && r[S.pag]) || ""; }
 

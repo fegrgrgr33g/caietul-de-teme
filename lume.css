@@ -1,0 +1,268 @@
+/* =====================================================================
+   Caietul de teme — „Povestea Cunoașterii 2.0”: sistemul vizual comun al lumii
+   Componente (numite după convenția proiectului):
+   PageHeader = .cap-pagina · StoryCard = .sheet · StoryButton = .btn · StoryInput = input/select/textarea
+   BookFrame = .lista-teme / calendar / tema · ChapterNavigation = .sidenav · Decor = .lume-jos
+   Se aplică doar în tema „Povestea Cunoașterii” (html[data-tema="poveste"]).
+   ===================================================================== */
+:root[data-tema="poveste"] {
+  --aur-linie: #b5852f; --aur-cald: #e3bd6a; --piele: #5e1d2b; --piele-2: #7a2838; --margine-foi: #eadcbc;
+  --sectiune-hartie: #fbf3e4;
+  --colt-ss: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56' viewBox='0 0 56 56'%3E%3Cg fill='none' stroke='%23b5852f' stroke-width='1.6' stroke-linecap='round'%3E%3Cpath d='M4 38V12a8 8 0 0 1 8-8h26'/%3E%3Cpath d='M9 29c0-11 6-18 18-20'/%3E%3Cpath d='M14 21c4 1 7-1 8-5'/%3E%3C/g%3E%3Ccircle cx='12' cy='12' r='2.6' fill='%23b5852f'/%3E%3C/svg%3E");
+  --colt-sd: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56' viewBox='0 0 56 56'%3E%3Cg transform='translate(56 0) scale(-1 1)'%3E%3Cg fill='none' stroke='%23b5852f' stroke-width='1.6' stroke-linecap='round'%3E%3Cpath d='M4 38V12a8 8 0 0 1 8-8h26'/%3E%3Cpath d='M9 29c0-11 6-18 18-20'/%3E%3Cpath d='M14 21c4 1 7-1 8-5'/%3E%3C/g%3E%3Ccircle cx='12' cy='12' r='2.6' fill='%23b5852f'/%3E%3C/g%3E%3C/svg%3E");
+  --colt-js: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56' viewBox='0 0 56 56'%3E%3Cg transform='translate(0 56) scale(1 -1)'%3E%3Cg fill='none' stroke='%23b5852f' stroke-width='1.6' stroke-linecap='round'%3E%3Cpath d='M4 38V12a8 8 0 0 1 8-8h26'/%3E%3Cpath d='M9 29c0-11 6-18 18-20'/%3E%3Cpath d='M14 21c4 1 7-1 8-5'/%3E%3C/g%3E%3Ccircle cx='12' cy='12' r='2.6' fill='%23b5852f'/%3E%3C/g%3E%3C/svg%3E");
+  --colt-jd: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56' viewBox='0 0 56 56'%3E%3Cg transform='translate(56 56) scale(-1 -1)'%3E%3Cg fill='none' stroke='%23b5852f' stroke-width='1.6' stroke-linecap='round'%3E%3Cpath d='M4 38V12a8 8 0 0 1 8-8h26'/%3E%3Cpath d='M9 29c0-11 6-18 18-20'/%3E%3Cpath d='M14 21c4 1 7-1 8-5'/%3E%3C/g%3E%3Ccircle cx='12' cy='12' r='2.6' fill='%23b5852f'/%3E%3C/g%3E%3C/svg%3E");
+  --orn-titlu: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='54' viewBox='0 0 200 54'%3E%3Cg fill='none' stroke='%23e3bd6a' stroke-width='1.6' stroke-linecap='round'%3E%3Cpath d='M100 6v-4M88 9l-3-4M112 9l3-4M78 15l-5-3M122 15l5-3'/%3E%3Cpath d='M76 44c8-6 16-7 24-2 8-5 16-4 24 2V24c-8-6-16-7-24-2-8-5-16-4-24 2z' fill='%23e3bd6a' fill-opacity='.18'/%3E%3Cpath d='M100 22v20'/%3E%3Cpath d='M66 36H22c-6 0-9 4-6 7M134 36h44c6 0 9 4 6 7'/%3E%3Cpath d='M58 36c-4-5-10-5-12-1M142 36c4-5 10-5 12-1'/%3E%3C/g%3E%3Ccircle cx='14' cy='43' r='2' fill='%23e3bd6a'/%3E%3Ccircle cx='186' cy='43' r='2' fill='%23e3bd6a'/%3E%3C/svg%3E");
+  --orn-linie: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='14' viewBox='0 0 260 14'%3E%3Cg fill='none' stroke='%23d9b27a' stroke-width='1.3' stroke-linecap='round'%3E%3Cpath d='M10 7h98M152 7h98'/%3E%3Cpath d='M112 7c4-6 10-6 12 0-2 6-8 6-12 0zM148 7c-4-6-10-6-12 0 2 6 8 6 12 0z'/%3E%3C/g%3E%3Cpath d='M130 2l5 5-5 5-5-5z' fill='%23d9b27a'/%3E%3C/svg%3E");
+  --emblema-marca: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='56' viewBox='0 0 64 56'%3E%3Cg fill='none' stroke='%23e3bd6a' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M18 50C6 44 2 30 6 16M46 50c12-6 16-20 12-34'/%3E%3Cpath d='M6 22l-4-3M5 30l-4-1M7 38l-4 1M11 45l-3 3M58 22l4-3M59 30l4-1M57 38l4 1M53 45l3 3'/%3E%3Cpath d='M16 38c6-4 11-4 16 0 5-4 10-4 16 0V20c-6-4-11-4-16 0-5-4-10-4-16 0z' fill='%23e3bd6a' fill-opacity='.22'/%3E%3Cpath d='M32 20v18M32 8v5M24 11l2 4M40 11l-2 4'/%3E%3C/g%3E%3C/svg%3E");
+  --castel-linie: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='150' viewBox='0 0 220 150'%3E%3Cg fill='none' stroke='%23c99a52' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round' opacity='.85'%3E%3Cpath d='M0 140c40-30 80-44 110-44s70 14 110 44'/%3E%3Cpath d='M80 100V70h8v-8h6v8h8V52l7-12 7 12v18h8v-8h6v8h8v30'/%3E%3Cpath d='M104 100V86a5 5 0 0 1 10 0v14M92 78h4M126 78h4M116 58h4'/%3E%3Cpath d='M30 130l6-18 6 18M44 126l5-14 5 14M168 128l6-18 6 18M182 132l5-14 5 14'/%3E%3Cpath d='M110 140c-6-10 4-16 0-26'/%3E%3C/g%3E%3Cg fill='%23e3bd6a'%3E%3Ccircle cx='40' cy='30' r='1.4'/%3E%3Ccircle cx='170' cy='22' r='1.6'/%3E%3Ccircle cx='150' cy='46' r='1'/%3E%3Ccircle cx='62' cy='14' r='1'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* ---------- paletele secundare ale capitolelor (același contrast, altă atmosferă) ---------- */
+#app[data-pag="acasa"] { --sectiune-hartie: #fbf3e4; }
+#app[data-pag="teme"], #app[data-pag="tema"] { --sectiune: #873f5c; --sectiune-hartie: #fcf2e3; }
+#app[data-pag="calendar"] { --sectiune: #5c7a69; --sectiune-hartie: #f6f3e2; }
+#app[data-pag="bac"] { --sectiune: var(--royal-plum); --sectiune-hartie: #f8f0ef; }
+#app[data-pag="opere"] { --sectiune: #8a5f2a; --sectiune-hartie: #fbf0dc; }
+#app[data-pag="rezultate"], #app[data-pag="clasament"] { --sectiune: #9b5470; --sectiune-hartie: #fcf0ea; }
+#app[data-pag="profil"], #app[data-pag="limba"], #app[data-pag="jocuri"] { --sectiune: #5d4f86; --sectiune-hartie: #f6f1f6; }
+#app[data-rol="profesor"] { --sectiune-hartie: #fbf4e6; }
+
+/* ---------- tipografie ---------- */
+[data-tema="poveste"] body { font-family: var(--f-ui); }
+[data-tema="poveste"] :is(h1, h2, h3, .titlu-pagina) { font-family: var(--f-disp); font-optical-sizing: auto; }
+[data-tema="poveste"] .sidenav :is(.nav-item, .nav-n) { font-family: var(--f-citat); font-weight: 700; font-size: 18px; letter-spacing: .005em; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* ---------- ChapterNavigation: meniul ca un semn de carte, cu emblema și castelul în linie aurie ---------- */
+[data-tema="poveste"] .sidenav { background-image: var(--castel-linie), linear-gradient(180deg, #2a1d3d, #1b1429 70%); background-repeat: no-repeat; background-position: 50% calc(100% - 8px), 0 0; background-size: 92% auto, auto; }
+@media (max-height: 760px) { [data-tema="poveste"] .sidenav { background-image: linear-gradient(180deg, #2a1d3d, #1b1429 70%); } }
+[data-tema="poveste"] .nav-marca { flex-direction: column; text-align: center; align-items: center; gap: 6px; }
+[data-tema="poveste"] .nav-marca .semn { width: 64px; height: 56px; font-size: 0; background: var(--emblema-marca) center / contain no-repeat; border: 0; box-shadow: none; }
+[data-tema="poveste"] .nav-marca strong { font-family: var(--f-disp); font-size: 23px; font-weight: 600; color: #f6e7c8; }
+[data-tema="poveste"] .nav-marca small { font-family: var(--f-citat); font-style: italic; font-size: 14px; color: #d9c8dc; }
+[data-tema="poveste"] .sidenav .nav-item.on { background: linear-gradient(180deg, #8a2f45, #5e1d2b); color: #fff3dc; border: 1px solid var(--aur-cald); box-shadow: 0 6px 16px -8px rgba(0, 0, 0, .7), inset 0 1px 0 rgba(255, 220, 180, .25); }
+[data-tema="poveste"] .sidenav .nav-item { transition: background-color var(--t-hover) var(--ease), color var(--t-hover) var(--ease), transform var(--t-hover) var(--ease); }
+[data-tema="poveste"] .sidenav .nav-item:not(.on):hover { background: rgba(227, 189, 106, .1); transform: translateX(2px); }
+html.meniu-restrans[data-tema="poveste"] .nav-marca .semn { width: 40px; height: 36px; }
+
+/* ---------- PageHeader: titlu centrat, ornament de carte, subtitlu în italic, linie ornamentală ---------- */
+@media (min-width: 861px) {
+  [data-tema="poveste"] #app .cap-pagina { text-align: center; display: flex; flex-direction: column; align-items: center; padding-top: 6px; }
+  [data-tema="poveste"] #app .cap-pagina::before { content: ""; width: 200px; height: 54px; background: var(--orn-titlu) center / contain no-repeat; margin-bottom: 2px; }
+  [data-tema="poveste"] #app .cap-pagina .eyebrow { order: 0; margin: 0 0 2px; font-family: var(--f-citat); font-style: italic; font-size: 15px; letter-spacing: .08em; text-transform: none; }
+  [data-tema="poveste"] #app .cap-pagina .eyebrow::before { display: none; }
+  [data-tema="poveste"] #app .cap-pagina .cap-rand { flex-direction: column; align-items: center; gap: 12px; }
+  [data-tema="poveste"] #app .cap-pagina .cap-text { flex-direction: column; align-items: center; }
+  [data-tema="poveste"] #app .cap-pagina .emblema-pagina { display: none; }
+  [data-tema="poveste"] #app .cap-pagina .titlu-pagina { font-size: clamp(38px, 3.6vw, 54px); font-weight: 600; line-height: 1.05; margin: 0;
+    background: linear-gradient(180deg, #fff1cc 10%, #e7bf72 60%, #c9953f); -webkit-background-clip: text; background-clip: text; color: transparent;
+    filter: drop-shadow(0 2px 6px rgba(20, 6, 24, .55)); }
+  [data-tema="poveste"] #app .cap-pagina .cap-text p { font-family: var(--f-citat); font-style: italic; font-size: 21px; line-height: 1.3; color: #f1e3ee; max-width: 640px; margin: 6px auto 0; }
+  [data-tema="poveste"] #app .cap-pagina .cap-text > div::after { content: ""; display: block; width: 260px; height: 14px; margin: 10px auto 0; background: var(--orn-linie) center / contain no-repeat; }
+}
+
+/* ---------- StoryCard: pergament cu colțuri aurii ---------- */
+[data-tema="poveste"] #app .sheet, [data-tema="poveste"] #app .panou-poveste {
+  background-color: var(--sectiune-hartie);
+  background-image: var(--colt-ss), var(--colt-sd), var(--colt-js), var(--colt-jd), var(--hartie), linear-gradient(180deg, rgba(255, 252, 244, .9), rgba(240, 222, 188, .55));
+  background-position: 6px 6px, calc(100% - 6px) 6px, 6px calc(100% - 6px), calc(100% - 6px) calc(100% - 6px), 0 0, 0 0;
+  background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, repeat, no-repeat; background-size: 44px, 44px, 44px, 44px, auto, auto;
+  border: 1px solid rgba(181, 133, 47, .55); border-radius: var(--raza);
+  box-shadow: inset 0 0 0 4px rgba(255, 248, 236, .55), inset 0 0 0 5px rgba(181, 133, 47, .25), 0 18px 38px -24px rgba(10, 2, 14, .9); }
+[data-tema="poveste"] #app .sheet > h2:first-child, [data-tema="poveste"] #app .sheet > .row:first-child h2 { font-size: 24px; color: #3a1f2c; }
+
+/* ---------- StoryButton: vișiniu cu chenar auriu; secundar: pergament ---------- */
+[data-tema="poveste"] .btn:not(.ghost):not(.pericol) { background: linear-gradient(180deg, #8f3049, #651f31); color: #fff4e0; border: 1px solid var(--aur-cald);
+  box-shadow: 0 6px 14px -8px rgba(60, 10, 25, .8), inset 0 1px 0 rgba(255, 220, 190, .25); transition: transform var(--t-hover) var(--ease), filter var(--t-hover) var(--ease), box-shadow var(--t-hover) var(--ease); }
+[data-tema="poveste"] .btn:not(.ghost):not(.pericol):hover { filter: brightness(1.08); transform: translateY(-1px); }
+[data-tema="poveste"] #app .btn.ghost { background: linear-gradient(180deg, #fffaf0, #f3e3c3); color: #5e1d2b; border: 1px solid rgba(181, 133, 47, .7); }
+[data-tema="poveste"] #app .btn:active { transform: scale(.97); }
+/* StoryInput: câmpuri curate, focus auriu */
+[data-tema="poveste"] #app :is(input[type="text"], input[type="search"], input[type="email"], input[type="password"], input:not([type]), select, textarea) { background: #fffdf7; border: 1px solid rgba(150, 110, 60, .45); border-radius: 12px; color: var(--deep-ink); }
+[data-tema="poveste"] #app :is(input, select, textarea):focus-visible { border-color: var(--aur-linie); box-shadow: 0 0 0 3px rgba(227, 189, 106, .45); outline: none; }
+
+/* ---------- BookFrame: conținutul principal stă într-o carte deschisă (copertă de piele, foi pe margini) ---------- */
+[data-tema="poveste"] #app :is(.lista-teme, .jurnal-principal > .gol, #app[data-pag="calendar"] .calendar) { position: relative; }
+[data-tema="poveste"] #app .lista-teme, [data-tema="poveste"] #app[data-pag="calendar"] .calendar {
+  border-radius: 10px; padding: 26px 24px 26px 34px;
+  background: var(--colt-ss) 8px 8px / 40px no-repeat, var(--colt-sd) calc(100% - 8px) 8px / 40px no-repeat, var(--colt-js) 8px calc(100% - 8px) / 40px no-repeat, var(--colt-jd) calc(100% - 8px) calc(100% - 8px) / 40px no-repeat, var(--hartie), linear-gradient(180deg, #fdf6e7, #f2e2c2);
+  box-shadow: 0 0 0 1px rgba(150, 105, 45, .55), -5px 4px 0 1px var(--margine-foi), 5px 4px 0 1px var(--margine-foi), -9px 8px 0 2px #dcc89f, 9px 8px 0 2px #dcc89f,
+    0 10px 0 13px var(--piele), 0 10px 0 15px #b38a45, 0 34px 60px 8px rgba(10, 2, 14, .6);
+  margin: 14px 16px 40px; }
+/* jurnalul de teme: inele aurii pe marginea din stânga */
+[data-tema="poveste"] #app .lista-teme::after { content: ""; position: absolute; left: -16px; top: 30px; bottom: 30px; width: 18px; pointer-events: none;
+  background: radial-gradient(circle at 50% 50%, transparent 4px, #e3bd6a 4.5px, #9c7330 7px, transparent 7.5px) 0 0 / 18px 64px repeat-y; }
+
+/* ---------- Teme: jurnalul aventurierului ---------- */
+.jurnal-layout { display: grid; gap: 22px; align-items: start; }
+@media (min-width: 1180px) { .jurnal-layout { grid-template-columns: minmax(0, 1fr) 320px; } .jurnal-lateral { position: sticky; top: 16px; } }
+.jurnal-lateral { display: grid; gap: 18px; }
+.bara-jurnal { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+[data-tema="poveste"] .bara-jurnal { padding: 10px 14px; border-radius: 999px;
+  background: linear-gradient(180deg, rgba(255, 249, 236, .96), rgba(243, 227, 195, .96)); border: 1px solid rgba(181, 133, 47, .6); box-shadow: 0 12px 26px -18px rgba(10, 2, 14, .9); }
+.bara-jurnal > * { margin: 0 !important; }
+.bara-jurnal > :first-child { flex: 1 1 320px; }
+@media (max-width: 860px) { [data-tema="poveste"] .bara-jurnal { border-radius: 18px; } }
+[data-tema="poveste"] .lista-teme .rand-tema { grid-template-columns: 4px 60px minmax(0, 1fr) auto 18px; background: rgba(255, 252, 244, .9); }
+[data-tema="poveste"] .rand-tema .rt-bara { order: -2; }
+.rt-obiect { display: none; order: -1; }
+[data-tema="poveste"] .lista-teme .rt-obiect { display: grid; place-items: center; }
+.rt-obiect img { width: 52px; height: 52px; object-fit: contain; filter: drop-shadow(0 4px 4px rgba(70, 40, 20, .3)); }
+.rt-actiune { display: none; }
+[data-tema="poveste"] .rand-tema .rt-actiune { display: inline-flex; align-items: center; padding: 7px 14px; border-radius: 999px; font-weight: 700; font-size: 13.5px; white-space: nowrap;
+  background: linear-gradient(180deg, #8f3049, #651f31); color: #fff4e0; border: 1px solid var(--aur-cald); }
+[data-tema="poveste"] .rand-tema.st-gata .rt-actiune, [data-tema="poveste"] .rand-tema.st-evaluare .rt-actiune { background: linear-gradient(180deg, #fffaf0, #f3e3c3); color: #5e1d2b; border-color: rgba(181, 133, 47, .7); }
+@media (max-width: 860px) { [data-tema="poveste"] .lista-teme .rand-tema { grid-template-columns: 4px 44px minmax(0, 1fr) 14px; } .rt-obiect img { width: 40px; height: 40px; }
+  [data-tema="poveste"] .rand-tema .rt-actiune { display: none; } [data-tema="poveste"] #app .lista-teme { margin: 10px 4px 26px; padding: 16px 12px 16px 18px; } }
+.lista-pri { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 4px; }
+.lista-pri a { display: grid; grid-template-columns: 22px minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 8px 6px; border-radius: 10px; color: inherit; text-decoration: none; font-size: 14.5px; }
+.lista-pri a:hover { background: rgba(181, 133, 47, .12); }
+.lista-pri .facut a { opacity: .7; }
+.pri-bifa { width: 20px; height: 20px; border-radius: 5px; border: 1.5px solid currentColor; display: grid; place-items: center; font-size: 13px; font-weight: 800; color: #fff; }
+.pri-bifa.bifat { background: var(--c1); border-color: var(--c1); }
+.progres-teme { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 16px; align-items: center; margin-top: 8px; }
+.inel-teme { width: 120px; aspect-ratio: 1; border-radius: 50%; display: grid; place-content: center; text-align: center;
+  background: radial-gradient(closest-side, var(--bg-2) 74%, transparent 75% 100%), conic-gradient(var(--c1) calc(var(--p) * 1%), var(--edge) 0); }
+.inel-teme b { font-family: var(--f-disp); font-size: 28px; color: var(--text); line-height: 1; }
+.inel-teme small { font-size: 12px; color: var(--muted); }
+.cifre-teme { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; font-size: 14.5px; }
+.cifre-teme span { display: inline-block; width: 20px; color: var(--c1); }
+.cifre-teme b { color: var(--c1); margin-right: 3px; }
+
+/* ---------- Calendar: harta timpului, într-o carte deschisă ---------- */
+[data-tema="poveste"] #app[data-pag="calendar"] .calendar > .row:first-child { border-radius: 999px; border: 1px solid var(--aur-cald); }
+[data-tema="poveste"] #app[data-pag="calendar"] .calendar::before { content: ""; position: absolute; left: 50%; top: -2px; width: 2px; height: 46px; transform: translateX(-50%);
+  background: linear-gradient(180deg, rgba(90, 55, 20, .45), transparent); pointer-events: none; }
+[data-tema="poveste"] .calendar .zi { transition: transform var(--t-hover) var(--ease), box-shadow var(--t-hover) var(--ease); }
+[data-tema="poveste"] .calendar .zi.are:hover { transform: translateY(-2px); }
+/* schimbarea lunii: grila „întoarce” scurt foaia (doar când se schimbă luna, vezi lume.js) */
+[data-tema="poveste"] .calendar.luna-noua .grila-cal, [data-tema="poveste"] .calendar.luna-noua .zi:not(.goala) { animation: luna-intra var(--t-ui) var(--ease) both; }
+@keyframes luna-intra { from { opacity: .2; transform: translateX(var(--dir, 12px)); } to { opacity: 1; transform: none; } }
+
+/* ---------- BAC: drumul spre castel (titlul hărții ca o banderolă) ---------- */
+[data-tema="poveste"] #app[data-pag="bac"] .harta-bac h2, [data-tema="poveste"] #app[data-pag="bac"] .sheet:has(.harta-zone) > h2 { display: inline-block; padding: 6px 34px; border-radius: 6px;
+  background: linear-gradient(180deg, #f7e6c2, #e2c48f); color: #5e1d2b; font-style: italic; box-shadow: 0 6px 14px -8px rgba(60, 30, 10, .7);
+  clip-path: polygon(0 0, 100% 0, 96% 50%, 100% 100%, 0 100%, 4% 50%); }
+
+/* ---------- Catedra profesorului: medalioane cu obiecte, tabele curate ---------- */
+[data-tema="poveste"] #app[data-rol="profesor"] .stats-mari .stat { position: relative; text-align: center; padding-top: 74px; }
+[data-tema="poveste"] #app[data-rol="profesor"] .stats-mari .stat::before { content: ""; position: absolute; top: 12px; left: 50%; width: 60px; height: 60px; transform: translateX(-50%);
+  background: center / contain no-repeat; filter: drop-shadow(0 5px 5px rgba(70, 40, 20, .3)); }
+[data-tema="poveste"] #app[data-rol="profesor"] .stats-mari .stat:nth-child(1)::before { background-image: url("img/3d/toca.png"); }
+[data-tema="poveste"] #app[data-rol="profesor"] .stats-mari .stat:nth-child(2)::before { background-image: url("img/3d/pergament.png"); }
+[data-tema="poveste"] #app[data-rol="profesor"] .stats-mari .stat:nth-child(3)::before { background-image: url("img/3d/carti.png"); }
+[data-tema="poveste"] #app[data-rol="profesor"] .stats-mari .stat:nth-child(4)::before { background-image: url("img/3d/pana.png"); }
+[data-tema="poveste"] #app[data-rol="profesor"] table th { font-family: var(--f-citat); font-size: 15px; letter-spacing: .04em; color: #5e1d2b; }
+[data-tema="poveste"] #app[data-rol="profesor"] table tbody tr:hover { background: rgba(181, 133, 47, .08); }
+
+/* ---------- decorul de jos: pisica pe cărți (stânga), călimara, ceașca și felinarul (dreapta) ---------- */
+.lume-jos { display: none; }
+@media (min-width: 1280px) and (min-height: 700px) {
+  [data-tema="poveste"] body.cu-lume .lume-jos { display: block; position: fixed; bottom: 0; z-index: 6; pointer-events: none; }
+  [data-tema="poveste"] .lume-jos.st { left: 262px; width: 210px; }
+  html.meniu-restrans[data-tema="poveste"] .lume-jos.st { left: 84px; }
+  [data-tema="poveste"] .lume-jos.dr { right: 58px; width: 250px; }
+  [data-tema="poveste"] body.cu-lume .pagina { padding-bottom: 150px; }
+  [data-tema="poveste"] body[data-pag="tema"] .lume-jos, [data-tema="poveste"] body[data-pag="tema-noua"] .lume-jos { display: none !important; }
+}
+.lume-jos svg { width: 100%; height: auto; display: block; filter: drop-shadow(0 10px 14px rgba(10, 2, 14, .55)); }
+[data-tema="poveste"] .lume-jos .respira { transform-box: fill-box; transform-origin: 50% 100%; animation: pisica-respira 4.6s ease-in-out infinite; }
+[data-tema="poveste"] .lume-jos .ureche { transform-box: fill-box; transform-origin: 50% 100%; animation: ureche-misca 11s ease-in-out infinite; }
+[data-tema="poveste"] .lume-jos .coada { transform-box: fill-box; transform-origin: 0% 50%; animation: coada-misca 9s ease-in-out infinite; }
+[data-tema="poveste"] .lume-jos .abur path { animation: abur 4.2s ease-in-out infinite; }
+[data-tema="poveste"] .lume-jos .abur path:nth-child(2) { animation-delay: 1.4s; } [data-tema="poveste"] .lume-jos .abur path:nth-child(3) { animation-delay: 2.8s; }
+[data-tema="poveste"] .lume-jos .flacara-felinar { transform-box: fill-box; transform-origin: 50% 100%; animation: flacara-felinar 2.4s ease-in-out infinite; }
+[data-tema="poveste"] .lume-jos .halou-felinar { animation: halou-felinar 6s ease-in-out infinite; }
+@keyframes pisica-respira { 0%, 100% { transform: scale(1, 1); } 50% { transform: scale(1.012, 1.045); } }
+@keyframes ureche-misca { 0%, 92%, 100% { transform: rotate(0); } 94% { transform: rotate(-9deg); } 96% { transform: rotate(3deg); } }
+@keyframes coada-misca { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(4deg); } }
+@keyframes abur { 0% { opacity: 0; transform: translateY(6px); } 30% { opacity: .75; } 100% { opacity: 0; transform: translateY(-22px); } }
+@keyframes flacara-felinar { 0%, 100% { transform: scale(1, 1); } 30% { transform: scale(.94, 1.06); } 65% { transform: scale(1.04, .95); } }
+@keyframes halou-felinar { 0%, 100% { opacity: .55; } 50% { opacity: .8; } }
+html.fara-miscare .lume-jos *, html.fara-miscare .lume-jos { animation: none !important; }
+@media (prefers-reduced-motion: reduce) { .lume-jos * { animation: none !important; } }
+
+/* ---------- părinte: jurnal calm, fără decor animat ---------- */
+[data-tema="poveste"] body.pagina-parinte #scena :is(.licurici, .pasari, .ceata, .carti-zboara, .lampioane) { display: none; }
+[data-tema="poveste"] body.pagina-parinte .lume-jos { display: none !important; }
+
+/* ---------- zoom 200% și ecrane mici: niciun ornament nu împinge conținutul ---------- */
+@media (max-width: 860px) {
+  [data-tema="poveste"] #app .sheet, [data-tema="poveste"] #app .panou-poveste { background-size: 30px, 30px, 30px, 30px, auto, auto; }
+  [data-tema="poveste"] #app[data-pag="calendar"] .calendar { margin: 10px 4px 26px; padding: 16px 12px; }
+  .progres-teme { grid-template-columns: 100px minmax(0, 1fr); } .inel-teme { width: 100px; }
+}
+@media print { .lume-jos { display: none !important; } }
+
+/* rândurile jurnalului pe două niveluri: titlul sus, termenul, starea și acțiunea dedesubt */
+[data-tema="poveste"] .lista-teme .rand-tema { grid-template-columns: 4px 60px minmax(0, 1fr) 18px; grid-template-rows: auto auto; row-gap: 8px; }
+[data-tema="poveste"] .lista-teme .rand-tema > .rt-bara { grid-column: 1; grid-row: 1 / span 2; }
+[data-tema="poveste"] .lista-teme .rand-tema > .rt-obiect { grid-column: 2; grid-row: 1 / span 2; }
+[data-tema="poveste"] .lista-teme .rand-tema > .rt-text { grid-column: 3; grid-row: 1; padding-right: 96px; }
+[data-tema="poveste"] .lista-teme .rand-tema > .rt-dr { grid-column: 3; grid-row: 2; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: flex-start; }
+[data-tema="poveste"] .lista-teme .rand-tema > .rt-dr .rt-actiune { margin-left: auto; }
+[data-tema="poveste"] .lista-teme .rand-tema > .rt-sageata { grid-column: 4; grid-row: 1 / span 2; }
+@media (max-width: 860px) { [data-tema="poveste"] .lista-teme .rand-tema { grid-template-columns: 4px 44px minmax(0, 1fr) 14px; } [data-tema="poveste"] .lista-teme .rand-tema > .rt-text { padding-right: 70px; } }
+
+/* decorul stă la capătul paginii (după conținut), nu fix peste ea: nu acoperă niciodată texte sau butoane */
+@media (min-width: 1280px) and (min-height: 700px) {
+  [data-tema="poveste"] body.cu-lume .pagina { position: relative; padding-bottom: 170px; }
+  [data-tema="poveste"] body.cu-lume .lume-jos { position: absolute; bottom: 0; z-index: 1; }
+  [data-tema="poveste"] .lume-jos.st, html.meniu-restrans[data-tema="poveste"] .lume-jos.st { left: -8px; width: 200px; }
+  [data-tema="poveste"] .lume-jos.dr { right: 0; width: 230px; }
+}
+/* castelul din meniu: la capătul listei, sub ultimul link */
+[data-tema="poveste"] .sidenav { padding-bottom: 150px; background-attachment: local, scroll; }
+@media (max-height: 760px) { [data-tema="poveste"] .sidenav { padding-bottom: 16px; } }
+
+/* Rezolvarea temei: lucrarea stă într-o carte deschisă; zona de scris rămâne simplă și lizibilă */
+[data-tema="poveste"] #app[data-pag="tema"] .pagina > .sheet { border-radius: 10px; padding: 28px 28px 30px;
+  box-shadow: 0 0 0 1px rgba(150, 105, 45, .55), -5px 4px 0 1px var(--margine-foi), 5px 4px 0 1px var(--margine-foi), -9px 8px 0 2px #dcc89f, 9px 8px 0 2px #dcc89f,
+    0 10px 0 13px var(--piele), 0 10px 0 15px #b38a45, 0 34px 60px 8px rgba(10, 2, 14, .6); margin: 10px 16px 40px; }
+[data-tema="poveste"] #app[data-pag="tema"] .tema-head { position: relative; padding-left: 70px; min-height: 56px; }
+[data-tema="poveste"] #app[data-pag="tema"] .tema-head::before { content: ""; position: absolute; left: 0; top: -4px; width: 58px; height: 58px; background: url("img/3d/pergament.png") center / contain no-repeat; filter: drop-shadow(0 4px 4px rgba(70, 40, 20, .3)); }
+[data-tema="poveste"] #app[data-pag="tema"] :is(textarea, input[type="text"]) { background: #fffefa; }
+@media (max-width: 860px) { [data-tema="poveste"] #app[data-pag="tema"] .pagina > .sheet { margin: 8px 4px 26px; padding: 18px 14px; } [data-tema="poveste"] #app[data-pag="tema"] .tema-head { padding-left: 52px; } [data-tema="poveste"] #app[data-pag="tema"] .tema-head::before { width: 42px; height: 42px; } }
+
+/* titlul primește focus programatic la schimbarea paginii (pentru cititoarele de ecran), fără contur vizual */
+[tabindex="-1"]:focus:not(:focus-visible), .titlu-pagina[tabindex="-1"]:focus { outline: none; }
+
+/* ---------- Calendar: coloana laterală (ziua aleasă + termenele apropiate), navigarea lunii ca o banderolă ---------- */
+.cal-lateral { display: grid; gap: 18px; align-content: start; }
+@media (min-width: 1001px) { .cal-lateral { position: sticky; top: 16px; } }
+[data-tema="poveste"] .calendar .luna-nav { width: 44px; height: 44px; padding: 0; border-radius: 50%; font-size: 22px; line-height: 1; background: linear-gradient(180deg, #8f3049, #651f31) !important; color: #fff4e0 !important; border: 1px solid var(--aur-cald) !important; }
+[data-tema="poveste"] .calendar > .row:first-child h2 { font-size: 28px; color: #fff2d6; }
+[data-tema="poveste"] .termene-apropiate .rand-verif { border-radius: 12px; background: rgba(255, 252, 244, .85); border: 1px solid rgba(181, 133, 47, .3); }
+[data-tema="poveste"] .panou-zi h3::before { content: ""; display: inline-block; width: 22px; height: 22px; margin-right: 8px; vertical-align: -4px; background: url("img/3d/calendar.png") center / contain no-repeat; }
+
+/* ---------- BAC: harta ilustrată mai înaltă, drumul luminos curge încet, etapele ca plăcuțe de pergament ---------- */
+[data-tema="poveste"] #app[data-pag="bac"] .harta-bac { min-height: clamp(300px, 34vw, 460px); border-radius: 14px; overflow: hidden; box-shadow: inset 0 0 0 1px rgba(181, 133, 47, .5), 0 18px 40px -24px rgba(10, 2, 14, .9); }
+[data-tema="poveste"] .harta-bac .drum-bac { animation: drum-curge 3s linear infinite; }
+@keyframes drum-curge { to { stroke-dashoffset: -28; } }
+[data-tema="poveste"] .zona-bac .zona-text { background: linear-gradient(180deg, #fffaf0, #f1dfba); border: 1px solid var(--aur-linie); border-radius: 10px; box-shadow: 0 8px 18px -10px rgba(40, 15, 30, .8); }
+[data-tema="poveste"] .zona-bac .zona-nr { background: linear-gradient(180deg, #8f3049, #651f31); color: #fff4e0; border: 2px solid var(--aur-cald); }
+[data-tema="poveste"] .zona-bac:hover .zona-text, [data-tema="poveste"] .zona-bac:focus-visible .zona-text { transform: translateY(-3px); box-shadow: 0 0 0 3px rgba(255, 217, 138, .6), 0 12px 22px -10px rgba(40, 15, 30, .9); }
+[data-tema="poveste"] .zona-bac .zona-text { transition: transform var(--t-hover) var(--ease), box-shadow var(--t-hover) var(--ease); }
+html.fara-miscare .harta-bac .drum-bac { animation: none; }
+@media (prefers-reduced-motion: reduce) { .harta-bac .drum-bac { animation: none; } }
+
+/* ---------- Biblioteca: arhiva fermecată, cu rafturile într-un dulap de lemn ---------- */
+[data-tema="poveste"] #app[data-pag="opere"] .grila-opere { padding: 26px 22px 30px; border-radius: 14px;
+  background: linear-gradient(90deg, rgba(0, 0, 0, .35), transparent 4%, transparent 96%, rgba(0, 0, 0, .35)), linear-gradient(180deg, #3b2418, #2a180f);
+  box-shadow: 0 0 0 10px #5a3722, 0 0 0 12px #b38a45, 0 30px 50px -20px rgba(10, 2, 14, .8), inset 0 12px 24px rgba(0, 0, 0, .45); margin: 12px 12px 30px; }
+[data-tema="poveste"] #app[data-pag="opere"] .opera.deschisa { box-shadow: 0 0 0 1px rgba(181, 133, 47, .6), 0 20px 40px -18px rgba(0, 0, 0, .8); }
+@media (max-width: 860px) { [data-tema="poveste"] #app[data-pag="opere"] .grila-opere { margin: 10px 6px 24px; padding: 18px 12px 22px; box-shadow: 0 0 0 6px #5a3722, 0 0 0 8px #b38a45; } }
+
+/* ---------- Profil: camera călătorului (o fereastră boltită spre castelul de la apus) ---------- */
+[data-tema="poveste"] #app[data-pag="profil"] .pagina > .sheet:first-of-type { position: relative; padding-right: clamp(20px, 22%, 220px);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='200' viewBox='0 0 180 200'%3E%3Cdefs%3E%3ClinearGradient id='c' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%236d5a96'/%3E%3Cstop offset='.6' stop-color='%23f3b99a'/%3E%3Cstop offset='1' stop-color='%23f8d9a2'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M20 196V80a70 70 0 0 1 140 0v116z' fill='url(%23c)'/%3E%3Ccircle cx='120' cy='96' r='14' fill='%23fff1c4'/%3E%3Cpath d='M20 170c40-30 90-36 140-20v46H20z' fill='%2355744f'/%3E%3Cg fill='%233d2d5c'%3E%3Crect x='62' y='118' width='34' height='30'/%3E%3Crect x='56' y='104' width='10' height='44'/%3E%3Crect x='92' y='100' width='10' height='48'/%3E%3Cpath d='M54 104l7-14 7 14zM90 100l7-15 7 15z'/%3E%3C/g%3E%3Cpath d='M20 196V80a70 70 0 0 1 140 0v116' fill='none' stroke='%235a3722' stroke-width='10'/%3E%3Cpath d='M90 12v184M20 110h140' stroke='%235a3722' stroke-width='5'/%3E%3Cpath d='M14 196h152' stroke='%23b38a45' stroke-width='6'/%3E%3C/svg%3E"), var(--colt-ss), var(--colt-sd), var(--colt-js), var(--colt-jd), var(--hartie), linear-gradient(180deg, rgba(255, 252, 244, .9), rgba(240, 222, 188, .55));
+  background-position: right 22px bottom 12px, 6px 6px, calc(100% - 6px) 6px, 6px calc(100% - 6px), calc(100% - 6px) calc(100% - 6px), 0 0, 0 0;
+  background-size: auto 86%, 44px, 44px, 44px, 44px, auto, auto; background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, no-repeat, repeat, no-repeat; }
+@media (max-width: 860px) { [data-tema="poveste"] #app[data-pag="profil"] .pagina > .sheet:first-of-type { padding-right: 16px; background-image: var(--colt-ss), var(--colt-sd), var(--colt-js), var(--colt-jd), var(--hartie), linear-gradient(180deg, rgba(255, 252, 244, .9), rgba(240, 222, 188, .55));
+  background-position: 6px 6px, calc(100% - 6px) 6px, 6px calc(100% - 6px), calc(100% - 6px) calc(100% - 6px), 0 0, 0 0; background-size: 30px, 30px, 30px, 30px, auto, auto; background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, repeat, no-repeat; } }
+
+/* ---------- Părinți: un jurnal de progres calm — fără mișcare ambientală, fără decor în colțuri ---------- */
+[data-tema="poveste"] body.pagina-parinte #scena .decor:not(.glicina) { display: none; }
+[data-tema="poveste"] body.pagina-parinte #scena .voal { background: rgba(28, 14, 38, .45); }
+[data-tema="poveste"] body.pagina-parinte .sheet { box-shadow: 0 10px 26px -18px rgba(10, 2, 14, .8); }
