@@ -102,3 +102,6 @@ function asiguraLumea() {
     if (el.parentNode !== pagina) pagina.append(el);
   }
 }
+
+// pagina pentru părinți se desenează separat (fără meniul aplicației): o marcăm imediat, pentru un decor mai calm
+try { if (new URLSearchParams(location.search).get("parinte")) document.body.classList.add("pagina-parinte"); } catch { /* fără URLSearchParams */ }

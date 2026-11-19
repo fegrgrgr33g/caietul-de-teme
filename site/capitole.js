@@ -58,17 +58,54 @@ function hartaBac() {
     { k: "turn", n: "Turnul argumentării", d: "corectorul de redactare", p: arg ? `${arg} antrenamente scurte` : "neînceput", x: 71, y: 34, mergi: () => { S.subBac = "corector"; draw(); } },
     { k: "castel", n: "Castelul simulărilor", d: "simulări BAC complete", p: sim ? `${sim} ${sim === 1 ? "simulare" : "simulări"}` : "nicio simulare încă", x: 88, y: 58, mergi: () => { S.subBac = "sim"; draw(); setTimeout(() => document.querySelector(".antrenament")?.scrollIntoView({ behavior: MISCARE_REDUSA() ? "auto" : "smooth", block: "start" }), 60); } }];
   const harta = h("div", { class: "harta-bac", role: "group", "aria-label": "Drumul cunoașterii: cinci zone de pregătire" });
+  // peisajul (desen vectorial original): apus, munți, castelul pe deal, pădure, râu cu pod și cascadă, drumul luminos
   harta.innerHTML = `<svg class="harta-fundal" viewBox="0 0 1000 380" preserveAspectRatio="none" aria-hidden="true">
-    <defs><linearGradient id="hb-cer" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f6e4c3"/><stop offset="1" stop-color="#ead2a6"/></linearGradient></defs>
+    <defs>
+      <linearGradient id="hb-cer" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6d5a96"/><stop offset=".38" stop-color="#c98fae"/><stop offset=".62" stop-color="#f3b99a"/><stop offset=".8" stop-color="#f8d9a2"/></linearGradient>
+      <radialGradient id="hb-soare" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#fff6d8"/><stop offset=".25" stop-color="#ffe2a0" stop-opacity=".9"/><stop offset="1" stop-color="#ffc98a" stop-opacity="0"/></radialGradient>
+      <linearGradient id="hb-munte1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8a77a8"/><stop offset="1" stop-color="#b79cb8"/></linearGradient>
+      <linearGradient id="hb-munte2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5e5a86"/><stop offset="1" stop-color="#8e8aa6"/></linearGradient>
+      <linearGradient id="hb-deal" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7f9a72"/><stop offset="1" stop-color="#4d6a4e"/></linearGradient>
+      <linearGradient id="hb-deal2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#93ad80"/><stop offset="1" stop-color="#5a7a55"/></linearGradient>
+      <linearGradient id="hb-apa" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#7fb7c9"/><stop offset="1" stop-color="#bfe0e6"/></linearGradient>
+      <filter id="hb-stralucire" x="-20%" y="-50%" width="140%" height="200%"><feGaussianBlur stdDeviation="5"/></filter>
+    </defs>
     <rect width="1000" height="380" fill="url(#hb-cer)"/>
-    <path d="M0 300 Q150 250 300 290 T620 270 T1000 260 V380 H0Z" fill="#c7d3b3" opacity=".7"/>
-    <g fill="#7f9a72" opacity=".75">${Array.from({ length: 16 }, (_, i) => `<path d="M${250 + i * 18} ${170 + (i % 3) * 10} l12 -34 12 34z"/>`).join("")}</g>
-    <path d="M120 282 C220 260 260 160 320 150 S460 250 520 252 S640 140 710 130 S820 210 880 222" fill="none" stroke="#8a5a2c" stroke-width="5" stroke-dasharray="2 14" stroke-linecap="round"/>
-    <g fill="#5a4636"><rect x="96" y="262" width="34" height="24"/><path d="M92 262 l21 -16 21 16z"/><rect x="138" y="268" width="26" height="18"/><path d="M135 268 l16 -12 16 12z"/></g>
-    <g fill="#6a4a2e"><rect x="494" y="214" width="56" height="40"/><path d="M488 214 l34 -24 34 24z"/></g>
-    <g fill="#53416f"><rect x="700" y="60" width="26" height="80"/><path d="M696 60 l17 -30 17 30z"/></g>
-    <g fill="#3a2a5c"><rect x="842" y="150" width="76" height="70"/><rect x="832" y="128" width="20" height="92"/><rect x="908" y="120" width="20" height="100"/><path d="M828 128 l14 -26 14 26z M904 120 l14 -28 14 28z"/></g>
-    <g transform="translate(44 44)" stroke="#8a5a2c" fill="none" opacity=".7"><circle r="26"/><path d="M0 -32 L6 0 L0 32 L-6 0Z M-32 0 L0 6 L32 0 L0 -6Z" fill="#8a5a2c" fill-opacity=".2"/></g></svg>`;
+    <circle cx="860" cy="128" r="90" fill="url(#hb-soare)"/><circle cx="860" cy="128" r="20" fill="#fff4cf"/>
+    <path d="M0 190 L70 130 L130 168 L210 104 L300 160 L380 118 L470 170 L560 112 L650 160 L740 120 L830 168 L920 130 L1000 160 V260 H0Z" fill="url(#hb-munte1)" opacity=".8"/>
+    <path d="M0 220 L90 170 L170 200 L260 150 L350 205 L450 168 L540 210 L640 172 L720 205 L800 180 L1000 210 V280 H0Z" fill="url(#hb-munte2)" opacity=".75"/>
+    <!-- castelul pe deal -->
+    <path d="M760 250 C800 180 900 170 1000 196 V300 H760Z" fill="url(#hb-deal)"/>
+    <g fill="#3d2d5c"><rect x="836" y="120" width="80" height="58"/><rect x="826" y="98" width="20" height="80"/><rect x="906" y="92" width="20" height="86"/><rect x="866" y="86" width="22" height="92"/>
+      <path d="M822 98 l14 -26 14 26z M902 92 l14 -28 14 28z M862 86 l15 -30 15 30z"/></g>
+    <g fill="#ffd27a"><rect x="848" y="140" width="5" height="8" rx="2"/><rect x="872" y="112" width="5" height="8" rx="2"/><rect x="896" y="146" width="5" height="8" rx="2"/><rect x="913" y="118" width="4" height="7" rx="2"/><rect x="832" y="120" width="4" height="7" rx="2"/></g>
+    <path d="M872 66 v-12 l12 4 -12 4" fill="#8a2f45" stroke="#3d2d5c" stroke-width="1.5"/>
+    <!-- dealurile din față -->
+    <path d="M0 270 C120 220 260 236 380 250 C520 266 640 226 780 244 C880 256 950 250 1000 246 V380 H0Z" fill="url(#hb-deal2)"/>
+    <path d="M0 316 C160 290 300 300 460 318 C620 336 780 300 1000 310 V380 H0Z" fill="#55744f"/>
+    <!-- pădurea -->
+    <g fill="#36573f">${Array.from({ length: 18 }, (_, i) => { const x = 222 + i * 12 + (i % 2) * 5, y = 196 + (i % 3) * 8; return `<path d="M${x} ${y} l10 -32 10 32z"/>`; }).join("")}</g>
+    <g fill="#4b6e4f">${Array.from({ length: 12 }, (_, i) => { const x = 238 + i * 15, y = 214 + (i % 2) * 6; return `<path d="M${x} ${y} l9 -26 9 26z"/>`; }).join("")}</g>
+    <!-- turnul argumentării -->
+    <g><rect x="700" y="86" width="28" height="94" fill="#6b5a86"/><path d="M694 86 l20 -34 20 34z" fill="#8a2f45"/><rect x="709" y="104" width="10" height="16" rx="5" fill="#ffd27a"/><rect x="696" y="176" width="36" height="10" fill="#4d3f66"/></g>
+    <!-- biblioteca operelor: un templu cu coloane -->
+    <g><path d="M488 226 h72 l-36 -22z" fill="#e9d6b0"/><rect x="490" y="226" width="68" height="6" fill="#d8c09a"/>
+      <g fill="#f3e6c8">${[494, 508, 522, 536, 550].map(x => `<rect x="${x}" y="232" width="5" height="26"/>`).join("")}</g><rect x="486" y="258" width="76" height="7" fill="#d8c09a"/><rect x="514" y="238" width="18" height="20" fill="#ffd27a" opacity=".8"/></g>
+    <!-- poarta / satul gramaticii -->
+    <g><rect x="92" y="262" width="56" height="44" fill="#8a6a50"/><path d="M106 306 v-22 a14 14 0 0 1 28 0 v22z" fill="#3a2414"/><rect x="86" y="254" width="68" height="10" fill="#6d5240"/>
+      <rect x="160" y="276" width="30" height="24" fill="#b08a62"/><path d="M156 276 l19 -14 19 14z" fill="#8a2f45"/><rect x="170" y="284" width="8" height="8" fill="#ffd27a"/>
+      <path d="M150 230 v34" stroke="#5a3c1c" stroke-width="3"/><path d="M150 232 h24 v26 l-12 -6 -12 6z" fill="#8a2f45"/><text x="162" y="250" font-size="9" text-anchor="middle" fill="#f6dc95" font-family="serif" font-weight="700">BAC</text></g>
+    <!-- râul, podul și cascada -->
+    <path d="M960 250 c-10 30 -40 40 -60 60 c-30 30 -120 30 -200 70 H760 c70 -40 150 -40 180 -70 c18 -18 24 -40 20 -60z" fill="url(#hb-apa)" opacity=".85"/>
+    <path d="M948 230 v34" stroke="#e8f6f8" stroke-width="7" opacity=".85"/><path d="M944 232 v32 M952 236 v28" stroke="#ffffff" stroke-width="1.5" opacity=".8"/>
+    <path d="M800 320 q34 -26 68 0" fill="none" stroke="#a88a66" stroke-width="7"/><path d="M806 320 v10 M834 308 v18 M862 320 v10" stroke="#a88a66" stroke-width="4"/>
+    <!-- drumul luminos care leagă zonele -->
+    <path d="M120 300 C210 300 250 200 320 186 S460 260 524 262 S650 160 712 150 S820 220 880 222" fill="none" stroke="#ffd98a" stroke-width="14" stroke-linecap="round" opacity=".55" filter="url(#hb-stralucire)"/>
+    <path class="drum-bac" d="M120 300 C210 300 250 200 320 186 S460 260 524 262 S650 160 712 150 S820 220 880 222" fill="none" stroke="#fff1c4" stroke-width="3.5" stroke-dasharray="2 12" stroke-linecap="round"/>
+    <!-- flori și licurici -->
+    <g fill="#e6a0c8" opacity=".9">${Array.from({ length: 26 }, (_, i) => `<circle cx="${(i * 41) % 1000}" cy="${338 + (i * 13) % 34}" r="${3 + (i % 3)}"/>`).join("")}</g>
+    <g fill="#fff3c4">${Array.from({ length: 10 }, (_, i) => `<circle cx="${80 + i * 92}" cy="${150 + (i * 37) % 110}" r="1.6"/>`).join("")}</g>
+    <g transform="translate(44 44)" stroke="#fff3d6" fill="none" opacity=".75"><circle r="24"/><path d="M0 -30 L6 0 L0 30 L-6 0Z M-30 0 L0 6 L30 0 L0 -6Z" fill="#fff3d6" fill-opacity=".25"/></g></svg>`;
   zone.forEach((z, i) => harta.append(h("button", { type: "button", class: "zona-bac z-" + z.k, style: `left:${z.x}%;top:${z.y}%`, onclick: z.mergi,
       "aria-label": `Zona ${i + 1}: ${z.n} — ${z.d}. ${z.p}.` },
     h("span", { class: "zona-nr", "aria-hidden": "true" }, i + 1), h("span", { class: "zona-text" }, h("b", null, z.n), h("small", null, z.p)))));

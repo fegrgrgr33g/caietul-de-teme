@@ -227,3 +227,42 @@ html.fara-miscare .lume-jos *, html.fara-miscare .lume-jos { animation: none !im
 
 /* titlul primește focus programatic la schimbarea paginii (pentru cititoarele de ecran), fără contur vizual */
 [tabindex="-1"]:focus:not(:focus-visible), .titlu-pagina[tabindex="-1"]:focus { outline: none; }
+
+/* ---------- Calendar: coloana laterală (ziua aleasă + termenele apropiate), navigarea lunii ca o banderolă ---------- */
+.cal-lateral { display: grid; gap: 18px; align-content: start; }
+@media (min-width: 1001px) { .cal-lateral { position: sticky; top: 16px; } }
+[data-tema="poveste"] .calendar .luna-nav { width: 44px; height: 44px; padding: 0; border-radius: 50%; font-size: 22px; line-height: 1; background: linear-gradient(180deg, #8f3049, #651f31) !important; color: #fff4e0 !important; border: 1px solid var(--aur-cald) !important; }
+[data-tema="poveste"] .calendar > .row:first-child h2 { font-size: 28px; color: #fff2d6; }
+[data-tema="poveste"] .termene-apropiate .rand-verif { border-radius: 12px; background: rgba(255, 252, 244, .85); border: 1px solid rgba(181, 133, 47, .3); }
+[data-tema="poveste"] .panou-zi h3::before { content: ""; display: inline-block; width: 22px; height: 22px; margin-right: 8px; vertical-align: -4px; background: url("img/3d/calendar.png") center / contain no-repeat; }
+
+/* ---------- BAC: harta ilustrată mai înaltă, drumul luminos curge încet, etapele ca plăcuțe de pergament ---------- */
+[data-tema="poveste"] #app[data-pag="bac"] .harta-bac { min-height: clamp(300px, 34vw, 460px); border-radius: 14px; overflow: hidden; box-shadow: inset 0 0 0 1px rgba(181, 133, 47, .5), 0 18px 40px -24px rgba(10, 2, 14, .9); }
+[data-tema="poveste"] .harta-bac .drum-bac { animation: drum-curge 3s linear infinite; }
+@keyframes drum-curge { to { stroke-dashoffset: -28; } }
+[data-tema="poveste"] .zona-bac .zona-text { background: linear-gradient(180deg, #fffaf0, #f1dfba); border: 1px solid var(--aur-linie); border-radius: 10px; box-shadow: 0 8px 18px -10px rgba(40, 15, 30, .8); }
+[data-tema="poveste"] .zona-bac .zona-nr { background: linear-gradient(180deg, #8f3049, #651f31); color: #fff4e0; border: 2px solid var(--aur-cald); }
+[data-tema="poveste"] .zona-bac:hover .zona-text, [data-tema="poveste"] .zona-bac:focus-visible .zona-text { transform: translateY(-3px); box-shadow: 0 0 0 3px rgba(255, 217, 138, .6), 0 12px 22px -10px rgba(40, 15, 30, .9); }
+[data-tema="poveste"] .zona-bac .zona-text { transition: transform var(--t-hover) var(--ease), box-shadow var(--t-hover) var(--ease); }
+html.fara-miscare .harta-bac .drum-bac { animation: none; }
+@media (prefers-reduced-motion: reduce) { .harta-bac .drum-bac { animation: none; } }
+
+/* ---------- Biblioteca: arhiva fermecată, cu rafturile într-un dulap de lemn ---------- */
+[data-tema="poveste"] #app[data-pag="opere"] .grila-opere { padding: 26px 22px 30px; border-radius: 14px;
+  background: linear-gradient(90deg, rgba(0, 0, 0, .35), transparent 4%, transparent 96%, rgba(0, 0, 0, .35)), linear-gradient(180deg, #3b2418, #2a180f);
+  box-shadow: 0 0 0 10px #5a3722, 0 0 0 12px #b38a45, 0 30px 50px -20px rgba(10, 2, 14, .8), inset 0 12px 24px rgba(0, 0, 0, .45); margin: 12px 12px 30px; }
+[data-tema="poveste"] #app[data-pag="opere"] .opera.deschisa { box-shadow: 0 0 0 1px rgba(181, 133, 47, .6), 0 20px 40px -18px rgba(0, 0, 0, .8); }
+@media (max-width: 860px) { [data-tema="poveste"] #app[data-pag="opere"] .grila-opere { margin: 10px 6px 24px; padding: 18px 12px 22px; box-shadow: 0 0 0 6px #5a3722, 0 0 0 8px #b38a45; } }
+
+/* ---------- Profil: camera călătorului (o fereastră boltită spre castelul de la apus) ---------- */
+[data-tema="poveste"] #app[data-pag="profil"] .pagina > .sheet:first-of-type { position: relative; padding-right: clamp(20px, 22%, 220px);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='200' viewBox='0 0 180 200'%3E%3Cdefs%3E%3ClinearGradient id='c' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%236d5a96'/%3E%3Cstop offset='.6' stop-color='%23f3b99a'/%3E%3Cstop offset='1' stop-color='%23f8d9a2'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M20 196V80a70 70 0 0 1 140 0v116z' fill='url(%23c)'/%3E%3Ccircle cx='120' cy='96' r='14' fill='%23fff1c4'/%3E%3Cpath d='M20 170c40-30 90-36 140-20v46H20z' fill='%2355744f'/%3E%3Cg fill='%233d2d5c'%3E%3Crect x='62' y='118' width='34' height='30'/%3E%3Crect x='56' y='104' width='10' height='44'/%3E%3Crect x='92' y='100' width='10' height='48'/%3E%3Cpath d='M54 104l7-14 7 14zM90 100l7-15 7 15z'/%3E%3C/g%3E%3Cpath d='M20 196V80a70 70 0 0 1 140 0v116' fill='none' stroke='%235a3722' stroke-width='10'/%3E%3Cpath d='M90 12v184M20 110h140' stroke='%235a3722' stroke-width='5'/%3E%3Cpath d='M14 196h152' stroke='%23b38a45' stroke-width='6'/%3E%3C/svg%3E"), var(--colt-ss), var(--colt-sd), var(--colt-js), var(--colt-jd), var(--hartie), linear-gradient(180deg, rgba(255, 252, 244, .9), rgba(240, 222, 188, .55));
+  background-position: right 22px bottom 12px, 6px 6px, calc(100% - 6px) 6px, 6px calc(100% - 6px), calc(100% - 6px) calc(100% - 6px), 0 0, 0 0;
+  background-size: auto 86%, 44px, 44px, 44px, 44px, auto, auto; background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, no-repeat, repeat, no-repeat; }
+@media (max-width: 860px) { [data-tema="poveste"] #app[data-pag="profil"] .pagina > .sheet:first-of-type { padding-right: 16px; background-image: var(--colt-ss), var(--colt-sd), var(--colt-js), var(--colt-jd), var(--hartie), linear-gradient(180deg, rgba(255, 252, 244, .9), rgba(240, 222, 188, .55));
+  background-position: 6px 6px, calc(100% - 6px) 6px, 6px calc(100% - 6px), calc(100% - 6px) calc(100% - 6px), 0 0, 0 0; background-size: 30px, 30px, 30px, 30px, auto, auto; background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, repeat, no-repeat; } }
+
+/* ---------- Părinți: un jurnal de progres calm — fără mișcare ambientală, fără decor în colțuri ---------- */
+[data-tema="poveste"] body.pagina-parinte #scena .decor:not(.glicina) { display: none; }
+[data-tema="poveste"] body.pagina-parinte #scena .voal { background: rgba(28, 14, 38, .45); }
+[data-tema="poveste"] body.pagina-parinte .sheet { box-shadow: 0 10px 26px -18px rgba(10, 2, 14, .8); }
