@@ -3,11 +3,24 @@
    Se încarcă înainte de app.js; funcțiile se apelează la desen. */
 "use strict";
 
-const MISCARE_REDUSA = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
+const MISCARE_REDUSA = () => matchMedia("(prefers-reduced-motion: reduce)").matches || document.documentElement.classList.contains("fara-miscare");
+/* comutatorul „Animații pornite / oprite” din site (pe lângă setarea sistemului) */
+function comutaMiscarea() {
+  const oprit = !document.documentElement.classList.contains("fara-miscare");
+  document.documentElement.classList.toggle("fara-miscare", oprit);
+  try { localStorage.setItem("animatii", oprit ? "oprite" : "pornite"); } catch { /* fără stocare */ }
+  toast(oprit ? "Animațiile au fost oprite. Totul funcționează la fel." : "Animațiile au fost pornite.");
+  draw();
+}
+function butonMiscare(cls) {
+  const oprit = document.documentElement.classList.contains("fara-miscare");
+  return h("button", { type: "button", class: "comuta-miscare " + (cls || ""), "aria-pressed": oprit ? "true" : "false", onclick: comutaMiscarea },
+    h("span", { "aria-hidden": "true" }, oprit ? "▶" : "❚❚"), oprit ? " Pornește animațiile" : " Oprește animațiile");
+}
 
 /* apelat la finalul fiecărui draw() */
 function dupaDesen() {
-  if (typeof asiguraScena === "function") asiguraScena();
+  if (typeof asiguraScena === "function") { asiguraScena(); actualizeazaScena(); }
   const app = document.getElementById("app");
   if (app && S.profil) { app.dataset.pag = S.pag || "acasa"; app.dataset.rol = S.profil.rol; }
   else if (app) { delete app.dataset.pag; delete app.dataset.rol; }
@@ -31,6 +44,19 @@ function pozitioneazaIndicator() {
   }
   ind.style.height = inalt + "px"; ind.style.opacity = "1";
   indicatorTop = sus;
+  pozitioneazaIndicatorJos();
+}
+/* bara de jos de pe telefon: aceeași idee, pe orizontală */
+let indicatorStanga = null;
+function pozitioneazaIndicatorJos() {
+  const bara = document.querySelector(".bottomnav"); if (!bara || getComputedStyle(bara).display === "none") return;
+  const activ = bara.querySelector(".nav-item.on"); let ind = bara.querySelector(".jos-indicator");
+  if (!ind) { ind = document.createElement("span"); ind.className = "jos-indicator"; ind.setAttribute("aria-hidden", "true"); bara.prepend(ind); }
+  if (!activ) { ind.style.opacity = "0"; return; }
+  const st = activ.offsetLeft, lat = activ.offsetWidth;
+  ind.style.transition = "none"; ind.style.transform = `translateX(${indicatorStanga == null || MISCARE_REDUSA() ? st : indicatorStanga}px)`; void ind.offsetWidth;
+  ind.style.transition = ""; ind.style.transform = `translateX(${st}px)`; ind.style.width = lat + "px"; ind.style.opacity = "1";
+  indicatorStanga = st;
 }
 
 // fonturile se încarcă după primul desen și schimbă înălțimea rândurilor: indicatorul se reașază

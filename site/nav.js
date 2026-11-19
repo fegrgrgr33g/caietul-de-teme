@@ -44,7 +44,12 @@ function schimbaPagina() {
   citesteRuta(); S.meniuMai = false; S.ultimaCheie = null;
   if (!S.profil) return;
   document.activeElement?.blur?.();
-  draw(); aplicaFocus(); window.scrollTo(0, 0);
+  // după desen, focusul ajunge pe titlul noii pagini (tastatura și cititoarele de ecran știu unde sunt)
+  const focusTitlu = () => { const t = document.querySelector(".pagina .titlu-pagina, .pagina .titlu-poveste, .pagina h2"); if (t) { t.tabIndex = -1; t.focus({ preventScroll: true }); } };
+  const deseneaza = () => { draw(); aplicaFocus(); window.scrollTo(0, 0); focusTitlu(); };
+  // tranziție fluidă între secțiuni (pagina veche se retrage ușor, cea nouă intră); fără ea dacă animațiile sunt oprite
+  if (document.startViewTransition && !(typeof MISCARE_REDUSA === "function" && MISCARE_REDUSA())) document.startViewTransition(deseneaza);
+  else deseneaza();
 }
 addEventListener("hashchange", () => { if (/^#demo/.test(location.hash)) return; schimbaPagina(); });
 
@@ -92,7 +97,8 @@ function cadru(pagini, mobil, continut, susMeniu) {
     grupe.map(g => h("div", { class: "nav-grup" }, h("div", { class: "nav-titlu" }, g.n), g.l.map(p => linkNav(p)))),
     h("div", { class: "nota-meniu" }, h("strong", null, elev ? "În ritmul tău." : "La catedră."),
       h("p", null, elev ? "Un loc pentru idei, lecturi și progresul tău la limba română." : "Teme, corecturi și progresul clasei, într-un singur caiet."),
-      elev ? h("a", { href: "#/opere" }, "Explorează biblioteca ↗") : h("a", { href: "#/tema-noua" }, "Pregătește o temă nouă ↗")));
+      elev ? h("a", { href: "#/opere" }, "Explorează biblioteca ↗") : h("a", { href: "#/tema-noua" }, "Pregătește o temă nouă ↗")),
+    typeof butonMiscare === "function" ? butonMiscare("in-meniu") : null);
   const deJos = pagini.filter(p => mobil.includes(p.k));
   const restul = pagini.filter(p => !mobil.includes(p.k));
   const restActiv = restul.some(p => p.k === S.pag);
@@ -103,7 +109,13 @@ function cadru(pagini, mobil, continut, susMeniu) {
       h("span", { class: "nav-ic", "aria-hidden": "true" }, iconita("mai")), h("span", { class: "nav-n" }, "Mai mult")));
   const foaie = S.meniuMai ? h("div", { class: "meniu-mai", onclick: e => { if (e.target === e.currentTarget) { S.meniuMai = false; draw(); } } },
     h("div", { class: "meniu-mai-in" }, susMeniu ? h("div", { class: "meniu-mai-sus" }, susMeniu.cloneNode(true)) : null,
-      h("div", { class: "meniu-mai-grila" }, restul.map(p => linkNav(p, " mare"))))) : null;
+      h("div", { class: "meniu-mai-grila" }, restul.map(p => linkNav(p, " mare"))),
+      // pe telefon, setările de aspect stau aici (antetul rămâne pe un singur rând)
+      h("div", { class: "meniu-mai-setari" }, h("div", { class: "nav-titlu" }, "Aspect"),
+        h("div", { class: "row" }, h("div", { class: "palete", role: "group", "aria-label": "Culorile site-ului" }, Object.entries(PALETE).map(([k, v]) =>
+          h("button", { class: "paleta-btn" + (k === citesteLocal("paleta-v3", "poveste") ? " on" : ""), "data-p": k, title: v, "aria-label": "Culori: " + v,
+            onclick: () => { aplicaPaleta(k); S.meniuMai = false; draw(); } }))),
+          typeof butonMiscare === "function" ? butonMiscare() : null)))) : null;
   if (foaie) { // clona selectorului de clasă are nevoie de evenimentul ei
     const sel = foaie.querySelector("select"); if (sel) sel.onchange = e => schimbaClasa(e.target.value);
   }
@@ -117,7 +129,8 @@ function capPagina(titlu, sub, actiuni, inapoi) {
     inapoi ? h("a", { href: "#/" + inapoi[0], class: "inapoi" }, "‹ " + inapoi[1]) : null,
     st ? h("div", { class: "eyebrow" }, st) : null,
     h("div", { class: "cap-rand" },
-      h("div", null, h("h2", { class: "titlu-pagina" }, titlu), sub ? h("p", { class: "muted small" }, sub) : null),
+      h("div", { class: "cap-text" }, typeof emblemaPagina === "function" ? emblemaPagina() : null,
+        h("div", null, h("h2", { class: "titlu-pagina" }, titlu), sub ? h("p", { class: "muted small" }, sub) : null)),
       actiuni || null));
 }
 /* file mici în interiorul unei pagini (de ex. BAC: Simulare / Plan de eseu / Corector) */

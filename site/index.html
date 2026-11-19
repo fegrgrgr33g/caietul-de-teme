@@ -21,6 +21,7 @@
     (function () {
       var p = "poveste"; try { p = localStorage.getItem("paleta-v3") || "poveste"; } catch (e) { /* fără stocare */ }
       var r = document.documentElement; r.dataset.paleta = p === "poveste" ? "atelier" : p; if (p === "poveste") r.dataset.tema = "poveste";
+      try { if (localStorage.getItem("animatii") === "oprite") r.classList.add("fara-miscare"); } catch (e) { /* fără stocare */ }
     })();
     // cartea apare doar la prima deschidere din sesiune; la refresh site-ul apare direct
     try {
