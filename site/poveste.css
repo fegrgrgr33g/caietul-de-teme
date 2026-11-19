@@ -641,3 +641,33 @@ html.fara-miscare::view-transition-old(*), html.fara-miscare::view-transition-ne
 #scena[data-pag="parinte"] :is(.decor, .particule, .strat) { display: none; }
 [data-tema="poveste"] #app[data-pag="parinte"] { max-width: 900px; margin: 0 auto; }
 [data-tema="poveste"] #app[data-pag="parinte"] h2 { font-family: var(--f-disp); font-size: 32px; }
+
+/* =====================================================================
+   CAPITOLELE CĂRȚII: obiecte 3D pe medalioane presate în hârtie (fără pete „generice”)
+   ===================================================================== */
+.capitol { perspective: 600px; }
+/* medalionul: un cerc presat în pagină, ca o gravură; doar o urmă de culoare a capitolului */
+.capitol::before { inset: 4px 50% auto 50%; width: 128px; height: 116px; margin-left: -64px; border-radius: 50%; opacity: 1; transform: none !important;
+  background: radial-gradient(circle at 50% 38%, color-mix(in srgb, var(--pata) 30%, #f6e9cf), color-mix(in srgb, var(--pata) 18%, #ead6b0) 70%);
+  box-shadow: inset 0 4px 9px rgba(110, 72, 30, .28), inset 0 -3px 5px rgba(255, 252, 240, .85), 0 1px 0 rgba(255, 255, 255, .8); }
+.capitol::after { display: none; }
+.cap-ilustr { width: 122px; height: 96px; position: relative; z-index: 1; transform-style: preserve-3d;
+  transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateZ(0); transition: transform .35s var(--ease); }
+.cap-ilustr svg { filter: none; transition: transform .35s var(--ease); }
+.capitol:hover .cap-ilustr svg { transform: translateY(-4px) scale(1.04); }
+.capitol:hover .cap-ilustr { transition-duration: .12s; }
+/* titlurile, toate la fel: aceeași literă, fără italic doar la unul */
+.cap-titlu, .capitol[data-ch="1"] .cap-titlu { font-style: normal; font-weight: 700; font-size: 24px; letter-spacing: .005em; margin-top: 10px; }
+.cap-sub { font-size: 16px; color: #6a5560; }
+/* butonul cu săgeată: în relief, se apasă la clic */
+.cap-sageata { width: 38px; height: 38px; font-size: 17px; color: #4a2a3c; border: 1px solid #c49a5c;
+  background: linear-gradient(180deg, #fffaf0, #f0dcb6); box-shadow: 0 2px 0 #b98e52, 0 4px 8px rgba(90, 60, 20, .25), inset 0 1px 0 #fff; }
+.capitol:hover .cap-sageata { transform: translate(2px, -1px); background: linear-gradient(180deg, #fffdf6, #f6e6c6); }
+.capitol:active .cap-sageata { transform: translateY(2px); box-shadow: 0 0 0 #b98e52, 0 1px 3px rgba(90, 60, 20, .25), inset 0 1px 0 #fff; }
+@media (max-width: 860px) {
+  .capitol::before { width: 100px; height: 90px; margin-left: -50px; }
+  .cap-ilustr { width: 96px; height: 76px; }
+  .cap-titlu, .capitol[data-ch="1"] .cap-titlu { font-size: 19px; }
+}
+html.fara-miscare .cap-ilustr { transform: none !important; }
+@media (prefers-reduced-motion: reduce) { .cap-ilustr { transform: none !important; } }
