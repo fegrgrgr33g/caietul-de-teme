@@ -572,8 +572,11 @@ function creeazaCarte(THREE) {
       const w = Math.max(200, loc.clientWidth), hh = Math.max(200, loc.clientHeight);
       if (w === S3.w && hh === S3.h) return; S3.w = w; S3.h = hh;
       renderer.setSize(w, hh, false); canvas.style.width = "100%"; canvas.style.height = "100%";
-      camera.aspect = w / hh; camera.fov = w / hh < 1 ? 40 : 34;
-      S3.departe = Math.max(1, 1.62 / (w / hh)); camera.updateProjectionMatrix();
+      // pe telefon cartea umple ecranul: camera mai aproape, pupitrul tăiat jos, lumânarea poate ieși din cadru
+      const asp = w / hh;
+      camera.aspect = asp; camera.fov = asp < 1.2 ? 38 : 34;
+      S3.departe = asp < 1.2 ? Math.max(.92, 1.18 / asp) : Math.max(1, 1.62 / asp); camera.updateProjectionMatrix();
+      renderer.setPixelRatio(Math.min(devicePixelRatio || 1, w < 700 ? 1.6 : 2)); renderer.setSize(w, hh, false);
       randeaza(); porneste();
     },
     deschide() { S3.pornita = true; S3.start = performance.now(); S3.intoarce = null; stare(0); pozitioneazaCamera(0, 0); randeaza(); porneste(); },

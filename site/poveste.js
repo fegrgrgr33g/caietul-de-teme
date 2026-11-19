@@ -370,7 +370,7 @@ function obiect3d(c) {
   if (!imgs.length) return desen();
   const cutie = h("span", { class: "obiect-3d o-" + c.ilustr },
     h("span", { class: "umbra-obiect" }),
-    imgs.map((f, i) => h("img", { src: "img/3d/" + f, alt: "", width: "256", height: "256", decoding: "async", loading: "eager", class: "strat-" + i,
+    imgs.map((f, i) => h("img", { src: "img/3d/" + f, alt: "", width: "256", height: "256", decoding: "async", loading: "lazy", class: "strat-" + i,
       onerror: e => { const box = e.target.closest(".obiect-3d"); if (box && !box.dataset.cazut) { box.dataset.cazut = "1"; box.replaceWith(desen()); } } })));
   return cutie;
 }
