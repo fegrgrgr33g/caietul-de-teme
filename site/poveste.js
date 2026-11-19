@@ -212,10 +212,32 @@ function acasaPoveste() {
       h("p", null, "Aici, temele, lecturile și provocările devin capitolele unei călătorii în lumea literaturii."),
       h("a", { class: "buton-calatorie", href: continua[0], title: continua[1], "aria-label": "Continuă călătoria: " + continua[1] },
         "Continuă călătoria", h("span", { "aria-hidden": "true" }, "→"))),
-    h("div", { class: "masa-cartii" }, h("div", { class: "decor pisica" }, (() => { const d = h("div"); d.innerHTML = pisicaSvg(); return d.firstChild; })()), carteCapitole()),
+    h("div", { class: "masa-cartii" }, h("div", { class: "carte-3d-loc", "aria-hidden": "true" }), carteCapitole(), capitole3D()),
     h("div", { class: "panouri-poveste" }, panouProvocari(deFacut), panouProgres(), panouInsigna()),
     h("div", { class: "rand-poveste" }, panouRezultateRecente(), panouRecomandare(deFacut)),
     noutatiElev()];
+}
+
+/* ---------- cartea 3D: lista capitolelor de sub ea (pentru tastatură, cititoare de ecran și telefon) ---------- */
+function capitole3D() {
+  const nr = ["I", "II", "III", "IV"];
+  return h("nav", { class: "capitole-3d", "aria-label": "Capitolele tale" }, CAPITOLE.map((c, i) => h("a", {
+    class: "cap-3d", href: "#/" + c.k,
+    onpointerenter: () => typeof evidentiaza3D === "function" && evidentiaza3D(i), onpointerleave: () => typeof evidentiaza3D === "function" && evidentiaza3D(-1),
+    onfocus: () => typeof evidentiaza3D === "function" && evidentiaza3D(i), onblur: () => typeof evidentiaza3D === "function" && evidentiaza3D(-1),
+    onclick: e => { if (typeof intoarceCapitol3D === "function" && intoarceCapitol3D(i, "#/" + c.k, e)) e.preventDefault(); } },
+    h("span", { class: "cap-3d-nr", "aria-hidden": "true" }, nr[i]), h("span", null, c.titlu))));
+}
+/* textul de sub fiecare capitol din carte: doar date reale */
+function infoCapitole() {
+  const lucr = S.predariElev || [], teme = S.temeElev || [];
+  const deFacut = teme.filter(t => !lucr.some(p => p.tema_id === t.id)), n = deFacut.length;
+  const urm = deFacut.filter(t => t.termen).sort((a, b) => String(a.termen).localeCompare(String(b.termen)))[0];
+  return [
+    n ? (n === 1 ? "O temă te așteaptă" : n + (n >= 20 ? " de" : "") + " teme te așteaptă") : "Toate temele sunt trimise",
+    urm ? "Următorul termen: " + fmtData(urm.termen) : "Niciun termen apropiat",
+    "Simulări, eseuri și subiecte",
+    typeof OPERE !== "undefined" ? OPERE.length + " opere cu fișe de lectură" : "Fișe de lectură"];
 }
 
 /* ---------- ultimele rezultate (doar note reale) ---------- */
@@ -377,7 +399,14 @@ function carteCapitole() {
       h("div", { class: "pagina-carte dr" }, colt("sd"), colt("jd"), capitol(CAPITOLE[2], 3), capitol(CAPITOLE[3], 4)),
       h("div", { class: "foaie-intoarsa", "aria-hidden": "true" }, h("span", { class: "umbra-foaie" })),
       // trei foi care se răsfoiesc când se deschide cartea
-      [1, 2, 3].map(i => h("div", { class: "foaie-deschidere d" + i, "aria-hidden": "true" }))),
+      [1, 2, 3].map(i => h("div", { class: "foaie-deschidere d" + i, "aria-hidden": "true" })),
+      // coperta de piele: la intrarea pe pagină se rotește pe cotor și deschide cartea
+      h("div", { class: "coperta-deschidere", "aria-hidden": "true" },
+        h("div", { class: "cop-fata" }, h("span", { class: "cop-rama" }), h("span", { class: "cop-emblema" }, "✦"),
+          h("span", { class: "cop-titlu" }, "Capitolele", h("br"), "tale"), h("span", { class: "cop-sub" }, "Povestea Cunoașterii")),
+        h("div", { class: "cop-spate" })),
+      // scânteia aurie care iese din cotor când se deschide
+      h("div", { class: "scanteie-cotor", "aria-hidden": "true" }, Array.from({ length: 14 }, (_, i) => h("i", { style: `--u:${i * 26}deg;--d:${50 + (i % 4) * 22}px;--w:${i * 25}ms` })))),
     h("h2", { class: "carte-titlu" }, h("span", { "aria-hidden": "true" }, "✦ "), "Capitolele tale", h("span", { "aria-hidden": "true" }, " ✦")),
     h("span", { class: "semn-carte", "aria-hidden": "true" }));
 }

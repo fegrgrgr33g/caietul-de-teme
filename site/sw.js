@@ -1,8 +1,8 @@
-/* Caietul de teme: service worker minimal, ca site-ul să se poată instala pe telefon.
-   Păstrează în cache doar fișierele site-ului; datele (Supabase) vin mereu de pe internet. */
-const CACHE = "caiet-v5";
+﻿/* Caietul de teme: service worker minimal, ca site-ul sÄƒ se poatÄƒ instala pe telefon.
+   PÄƒstreazÄƒ Ã®n cache doar fiÈ™ierele site-ului; datele (Supabase) vin mereu de pe internet. */
+const CACHE = "caiet-v6";
 const FISIERE = ["./", "index.html", "style.css", "atelier.css", "viu.css", "poveste.css", "poveste.js", "trei-d.js", "config.js", "continut.js", "liceu.js", "extra.js", "nav.js", "plus.js", "elevi.js", "bac.js", "capitole.js", "viu.js", "app.js", "manifest.json", "icon.svg", "img/3d/pergament.png", "img/3d/pana.png", "img/3d/calendar.png", "img/3d/toca.png", "img/3d/carti.png"];
-// bibliotecile și fonturile de pe alte site-uri: păstrate în cache, ca Opere/Limbă/Jocuri să meargă și fără internet
+// bibliotecile È™i fonturile de pe alte site-uri: pÄƒstrate Ã®n cache, ca Opere/LimbÄƒ/Jocuri sÄƒ meargÄƒ È™i fÄƒrÄƒ internet
 const STRAINE = ["https://cdn.jsdelivr.net/", "https://fonts.googleapis.com/", "https://fonts.gstatic.com/"];
 
 self.addEventListener("install", e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(FISIERE)).then(() => self.skipWaiting())); });
@@ -17,7 +17,7 @@ self.addEventListener("fetch", e => {
     return;
   }
   if (u.origin !== location.origin) return;
-  // întâi rețeaua (ca să fie mereu ultima versiune), cache-ul doar fără internet
+  // Ã®ntÃ¢i reÈ›eaua (ca sÄƒ fie mereu ultima versiune), cache-ul doar fÄƒrÄƒ internet
   e.respondWith(fetch(e.request).then(r => { const copie = r.clone(); caches.open(CACHE).then(c => c.put(e.request, copie)); return r; })
     .catch(() => caches.match(e.request)));
 });
