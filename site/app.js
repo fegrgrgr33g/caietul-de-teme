@@ -941,10 +941,22 @@ salveazaCiorna.t = {};
 // când revine internetul, ciornele rămase doar local se salvează în cont
 addEventListener("online", () => { for (const id of salveazaCiorna.reia || []) salveazaCiorna(id); });
 
-async function trimite(t) {
+async function trimite(t, opt = {}) {
   const R = { ...(S.raspunsuri[t.id] || {}) };
   const areRaspuns = ex => String(R[ex.id] ?? "").trim() || pozeDe(t.id, ex.id).length;
   if (!t.exercitii.some(areRaspuns)) { toast("Nu ai răspuns la niciun exercițiu."); return; }
+  // confirmare înainte de trimiterea finală, doar când e nevoie: exerciții fără răspuns sau ultima încercare
+  // (la expirarea timpului de lucru, trimiterea e automată, fără întrebare)
+  if (!opt.auto) {
+    const goale = t.exercitii.filter(ex => !areRaspuns(ex)).length;
+    const ultima = t.a_doua_incercare === false || !!(S.reia || {})[t.id];
+    if ((goale || ultima) && typeof confirmDialog === "function") {
+      const da = await confirmDialog({ titlu: "Trimiți tema?",
+        text: [goale ? `Ai ${goale} ${goale === 1 ? "exercițiu" : "exerciții"} fără răspuns.` : "", ultima ? "Este încercarea finală: după trimitere nu mai poți schimba răspunsurile." : "După trimitere, tema se corectează."].filter(Boolean).join(" "),
+        da: "Trimite tema", nu: "Mai lucrez" });
+      if (!da) return;
+    }
+  }
   if (S.demo) { trimiteDemo(t, R); return; }
   S.busy[t.id] = "Se trimit răspunsurile…"; render();
   let trimisaCuSucces = false;
@@ -1545,6 +1557,7 @@ function formularTema() {
       S.drafts.tema = null; S.newTema = false; toast("Tema a fost publicată pentru elevi."); await reincarca(); mergi("teme");
     } },
     h("h2", null, "Temă nouă"),
+    typeof pasiEditor === "function" ? pasiEditor(d) : null,
     importSubiect(),
     S.ultimImport ? h("div", { class: "row" }, h("span", { class: "muted small" }, `Subiect importat: ${S.ultimImport.titlu}`),
       h("button", { class: "btn ghost", type: "button", onclick: () => { salveazaInBanca(S.ultimImport); S.ultimImport = null; } }, "Salvează în banca de subiecte")) : null,
@@ -1569,6 +1582,7 @@ function formularTema() {
     h("label", { class: "row small", style: "gap:8px;cursor:pointer" },
       h("input", { type: "checkbox", checked: d.aDoua !== false, onchange: e => d.aDoua = e.target.checked }),
       "Elevii își pot îmbunătăți lucrarea o dată, după corectare (a doua încercare)"),
+    typeof previzualizareTema === "function" ? previzualizareTema(d) : null,
     h("div", { class: "row" }, h("button", { class: "btn", type: "submit" }, d.ciorna ? "Salvează ciorna" : d.programata ? "Programează tema" : "Publică tema"),
       h("button", { class: "btn ghost", type: "button", onclick: () => { S.newTema = false; mergi("teme"); } }, "Renunță")));
 }

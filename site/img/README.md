@@ -20,6 +20,23 @@ Desenele sunt stilizate. Pentru un aspect pictat, identic cu imaginea de referin
 | `carte-deschisa.webp` | Cartea deschisă **goală** (pagini fără texte și fără iconițe), văzută ușor de sus. | 2000 × 900 px | WebP cu transparență |
 | `insigne/*.webp` | Câte o insignă pentru fiecare realizare: `primul-pas`, `fara-greseala`, `nota-10`, `condei-de-aur`, `scriitor-atent`, `cititor`, `prima-simulare`, `teoretician`, `maratonist-bac`. | 256 × 280 px | WebP cu transparență |
 
+### Fundaluri pentru fiecare pagină (opționale)
+
+Acum fiecare pagină are atmosfera ei, desenată vectorial: lampioane, noapte cu lună, cărți care plutesc, zori. Pentru fundaluri pictate:
+
+| Fișier | Pagina | Ce conține |
+|---|---|---|
+| `fundal-biblioteca.webp` | Bibliotecă | Interior de bibliotecă gotică, cu rafturi, ferestre înalte și flori, **fără** texte. |
+| `fundal-harta.webp` | Pregătire BAC, Calendar | Hartă fantastică pe pergament (castel, drum, pădure), **fără** etichete scrise. |
+| `fundal-masa-de-scris.webp` | Temele mele, rezolvarea temei | Masă de lemn cu lumânări și pană, cu o zonă liniștită în centru. |
+| `carte-peisaj.webp` | Acasă | Carte deschisă cu un peisaj care „iese” din pagini, **fără** texte. |
+
+Mărime recomandată: 1920 × 1080 px, sub 300 KB fiecare, WebP. Ca să nu încetinească pornirea, se încarcă doar pe pagina lor, prin CSS:
+
+```css
+#scena[data-pag="opere"] .scena-ilustratie { background-image: url("img/fundal-biblioteca.webp"); }
+```
+
 ## Cum se folosesc
 
 Fundalul pictat se activează dintr-o singură linie în `poveste.css`, în blocul `:root[data-tema="poveste"]`:

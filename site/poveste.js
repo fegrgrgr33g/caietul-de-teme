@@ -78,6 +78,19 @@ function asiguraScena() {
 /* straturi în plus: atmosfera fiecărei pagini și viața din peisaj (se văd doar unde au sens, din CSS) */
 function adaugaStraturi(s) {
   const strat = (cls, html) => { const d = document.createElement("div"); d.className = "strat " + cls; d.innerHTML = html; s.append(d); };
+  // rama bibliotecii: arcadă gotică, coloane de lemn cu rafturi și felinare; prin ea se vede peisajul
+  let rafturi = "";
+  const cotoare = (x0, w) => { let o = "", x = x0; const cul = ["#7a2e44", "#3e3a6e", "#2f5e4c", "#8a5a2c", "#5a3a6e", "#a0763a"]; for (let r = 0; r < 7; r++) { x = x0 + 6; const y = 150 + r * 104; while (x < x0 + w - 12) { const bw = 8 + ((x * 7 + r * 13) % 9), bh = 70 + ((x * 3 + r * 5) % 22); o += `<rect x="${x}" y="${y + 86 - bh}" width="${bw}" height="${bh}" fill="${cul[(x + r) % 6]}" opacity=".9"/>`; x += bw + 2; } o += `<rect x="${x0}" y="${y + 86}" width="${w}" height="10" fill="#4a2e22"/>`; } return o; };
+  rafturi = cotoare(0, 130) + cotoare(1470, 130);
+  strat("rama-biblioteca", `<svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice">
+    <defs><linearGradient id="rb-lemn" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2a1a16"/><stop offset=".5" stop-color="#4a2e22"/><stop offset="1" stop-color="#2a1a16"/></linearGradient></defs>
+    <path fill-rule="evenodd" fill="#1c1220" d="M0 0 H1600 V900 H0 Z M140 900 V330 C140 140 470 40 800 26 C1130 40 1460 140 1460 330 V900 Z"/>
+    <path d="M140 900 V330 C140 140 470 40 800 26 C1130 40 1460 140 1460 330 V900" fill="none" stroke="#c9a062" stroke-width="5" opacity=".75"/>
+    <path d="M160 900 V336 C160 156 480 60 800 46 C1120 60 1440 156 1440 336 V900" fill="none" stroke="#c9a062" stroke-width="1.5" opacity=".4"/>
+    <rect x="0" y="0" width="140" height="900" fill="url(#rb-lemn)"/><rect x="1460" y="0" width="140" height="900" fill="url(#rb-lemn)"/>
+    ${rafturi}
+    <g class="felinar-arc"><path d="M520 60 v70" stroke="#2c1f1a" stroke-width="2"/><rect x="512" y="128" width="16" height="24" rx="3" fill="#ffc768" class="lumina-arc"/><circle cx="520" cy="146" r="22" fill="#ffc768" opacity=".12" class="lumina-arc"/></g>
+    <g class="felinar-arc"><path d="M1080 60 v90" stroke="#2c1f1a" stroke-width="2"/><rect x="1072" y="148" width="16" height="24" rx="3" fill="#ffc768" class="lumina-arc"/><circle cx="1080" cy="166" r="22" fill="#ffc768" opacity=".12" class="lumina-arc"/></g></svg>`);
   // păsări care trec rar pe cer
   strat("pasari", `<svg viewBox="0 0 60 20"><path d="M2 12 q8 -8 14 0 q6 -8 14 0" fill="none" stroke="#3a2448" stroke-width="2.2" stroke-linecap="round"/><path d="M34 6 q5 -5 9 0 q4 -5 9 0" fill="none" stroke="#3a2448" stroke-width="1.8" stroke-linecap="round"/></svg>`);
   // ceață care alunecă peste dealuri
@@ -192,7 +205,7 @@ function acasaPoveste() {
     .sort((a, b) => String(a.termen || "9999").localeCompare(String(b.termen || "9999")));
   notificariElev(); // termene și teme noi: notificările browserului + lista din „Noutăți”
   const t = deFacut[0];
-  const continua = t ? ["#/tema/" + encodeURIComponent(t.id), `Continuă cu „${t.titlu}”`] : ["#/bac", "Ai trimis toate temele: urmează o simulare BAC"];
+  const continua = t ? ["#/tema/" + encodeURIComponent(t.id), "Continuă cu " + inGhilimele(t.titlu)] : ["#/bac", "Ai trimis toate temele: urmează o simulare BAC"];
   return [
     h("section", { class: "erou-poveste", "aria-labelledby": "titlu-poveste" },
       h("h1", { id: "titlu-poveste", class: "titlu-poveste" }, "Povestea Cunoașterii"),
@@ -201,7 +214,36 @@ function acasaPoveste() {
         "Continuă călătoria", h("span", { "aria-hidden": "true" }, "→"))),
     h("div", { class: "masa-cartii" }, h("div", { class: "decor pisica" }, (() => { const d = h("div"); d.innerHTML = pisicaSvg(); return d.firstChild; })()), carteCapitole()),
     h("div", { class: "panouri-poveste" }, panouProvocari(deFacut), panouProgres(), panouInsigna()),
+    h("div", { class: "rand-poveste" }, panouRezultateRecente(), panouRecomandare(deFacut)),
     noutatiElev()];
+}
+
+/* ---------- ultimele rezultate (doar note reale) ---------- */
+function panouRezultateRecente() {
+  const corectate = S.predariElev.filter(p => notaFinala(p) != null).sort((a, b) => String(b.trimis_la).localeCompare(String(a.trimis_la))).slice(0, 3);
+  return h("section", { class: "panou-poveste mic", "aria-labelledby": "pr-titlu" },
+    h("h2", { id: "pr-titlu", class: "panou-titlu" }, "Ultimele rezultate"),
+    corectate.length ? h("ul", { class: "lista-rezultate" }, corectate.map(p => { const t = S.temeElev.find(x => x.id === p.tema_id), n = notaFinala(p);
+      return h("li", null, h("a", { href: "#/tema/" + encodeURIComponent(p.tema_id) }, h("span", { class: "rez-titlu" }, t ? t.titlu : "Temă"),
+        h("span", { class: "muted small" }, fmtData(p.trimis_la)), h("b", { class: "nota-medalion" + (n < 5 ? " fail" : "") }, fmtNota(n)))); }))
+      : h("p", { class: "muted small" }, "Notele apar aici după ce primele teme sunt corectate."),
+    h("a", { class: "link-btn small", href: "#/rezultate" }, "Cronica progresului →"));
+}
+/* ---------- activitatea recomandată: din termene și din greșelile reale ---------- */
+function panouRecomandare(deFacut) {
+  const urgenta = deFacut.find(t => { const z = zileRamase(t.termen); return z != null && z <= 1; });
+  let titlu, text, buton;
+  if (urgenta) { titlu = "Termină " + inGhilimele(urgenta.titlu); text = zileRamase(urgenta.termen) < 0 ? "Termenul a trecut; trimite-o cât poți de repede." : "Are termen foarte curând."; buton = ["Deschide tema", "#/tema/" + encodeURIComponent(urgenta.id)]; }
+  else {
+    const r = typeof recomandariBac === "function" ? recomandariBac()[0] : null;
+    if (r) { titlu = r.titlu; text = r.text; buton = [r.act[0][0], null, r.act[0][1]]; }
+    else if (deFacut[0]) { titlu = "Începe " + inGhilimele(deFacut[0].titlu); text = "E următoarea temă din listă."; buton = ["Deschide tema", "#/tema/" + encodeURIComponent(deFacut[0].id)]; }
+    else { titlu = "Recapitulează o operă"; text = "Fișele din bibliotecă te ajută să-ți împrospătezi lecturile pentru BAC."; buton = ["Deschide biblioteca", "#/opere"]; }
+  }
+  return h("section", { class: "panou-poveste mic recomandat", "aria-labelledby": "ra-titlu" },
+    h("h2", { id: "ra-titlu", class: "panou-titlu" }, h("span", { class: "stea-mica", "aria-hidden": "true" }, "✦ "), "Activitatea recomandată"),
+    h("b", { class: "rec-titlu" }, titlu), h("p", { class: "small" }, text),
+    buton[1] ? h("a", { class: "btn mic", href: buton[1] }, buton[0], " →") : h("button", { type: "button", class: "btn mic", onclick: buton[2] }, buton[0], " →"));
 }
 
 /* ---------- cartea deschisă: patru capitole, fiecare un link real ---------- */
@@ -381,6 +423,7 @@ function paginaRezultate() {
             h("td", { "data-label": "Corectare" }, p.nota_profesor != null ? h("span", { class: "sursa prof" }, "nota profesorului") : h("span", { class: "sursa auto" }, "calculată automat")),
             h("td", { "data-label": "Nota" }, h("span", { class: "nota" + (n < 5 ? " fail" : "") }, fmtNota(n)))); })))) : h("p", { class: "muted small" }, "Notele apar aici după ce temele sunt corectate."),
       note.length > 1 ? h("div", null, h("div", { class: "label" }, "Evoluția notelor (de la cea mai veche)"), sparkline(note.slice().reverse())) : null),
+    typeof feedbackPrimit === "function" ? feedbackPrimit() : null,
     statisticiTipuriView(),
     ist.length > 1 ? h("section", { class: "sheet stack", style: "--acc:var(--c5)" }, h("div", { class: "row", style: "justify-content:space-between" }, h("h3", null, "Antrenamentele BAC"),
       h("button", { type: "button", class: "link-btn small", onclick: () => { S.subBac = "progres"; mergi("bac"); } }, "Progresul BAC complet →")), graficNote(ist.slice().sort((a, b) => a.data - b.data))) : null,

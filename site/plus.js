@@ -156,7 +156,7 @@ setInterval(() => {
   if (ramas <= 0 && !S.busy[t.id] && !(S.trimisAuto || (S.trimisAuto = {}))[t.id]) {
     S.trimisAuto[t.id] = true; toast("Timpul s-a terminat. Răspunsurile tale se trimit acum.");
     if (!S.raspunsuri[t.id]) S.raspunsuri[t.id] = {};
-    trimite(t);
+    trimite(t, { auto: true });
   }
 }, 1000);
 
@@ -190,8 +190,8 @@ function explicaView(p, ex, r, raspunsAfisat, corectText) {
    ===================================================================== */
 function unelteCalendar(teme) {
   return h("div", { class: "row", style: "justify-content:space-between" },
-    h("div", { class: "seg" }, [["luna", "Lună"], ["sapt", "Săptămână"]].map(([k, n]) =>
-      h("button", { type: "button", class: (S.calVedere || "luna") === k ? "on" : "", onclick: () => { S.calVedere = k; draw(); } }, n))),
+    h("div", { class: "seg", role: "group", "aria-label": "Cum afișez calendarul" }, [["luna", "Lună"], ["sapt", "Săptămână"], ["agenda", "Agendă"]].map(([k, n]) =>
+      h("button", { type: "button", class: (S.calVedere || "luna") === k ? "on" : "", "aria-pressed": (S.calVedere || "luna") === k ? "true" : "false", onclick: () => { S.calVedere = k; draw(); } }, n))),
     h("button", { type: "button", class: "btn ghost", onclick: () => exportaIcs(teme) }, "Adaugă în Google Calendar (.ics)"));
 }
 function exportaIcs(teme) {

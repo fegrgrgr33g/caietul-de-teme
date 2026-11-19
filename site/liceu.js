@@ -122,8 +122,10 @@ function opereView() {
       h("p", { class: "muted small" }, "Fișe de recapitulare pentru operele de BAC. Bifează ce ai citit și scrie-ți impresiile în jurnal."),
       h("div", { class: "seg" }, [["toate", "Toate"], ["liric", "Poezie"], ["epic", "Proză"], ["dramatic", "Teatru"]].map(([k, n]) =>
         h("button", { type: "button", class: filtru === k ? "on" : "", onclick: () => { S.filtruOpere = k; render(); } }, n))),
-      filtreOpere()),
-    lista.length ? h("div", { class: "grila-opere" }, lista.map((o, i) => fisaOpera(o, citite, i))) : h("div", { class: "sheet empty" }, h("h2", null, "Nicio operă găsită"), h("p", { class: "muted" }, "Schimbă căutarea sau filtrele.")),
+      h("div", { class: "row", style: "justify-content:space-between" }, filtreOpere(), typeof comutatorVedereOpere === "function" ? comutatorVedereOpere() : null)),
+    !lista.length ? h("div", { class: "sheet empty" }, h("h2", null, "Nicio operă găsită"), h("p", { class: "muted" }, "Schimbă căutarea sau filtrele."))
+      : S.vedereOpere === "lista" && typeof listaOpere === "function" ? listaOpere(lista, citite)
+      : h("div", { class: "grila-opere" }, lista.map((o, i) => fisaOpera(o, citite, i))),
     curenteView()];
 }
 function fisaOpera(o, citite, i) {
