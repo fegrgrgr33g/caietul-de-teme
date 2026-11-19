@@ -241,30 +241,48 @@ function desenPagina(c, parte, info, aprins) {
     x.beginPath(); x.moveTo(14, 40); x.bezierCurveTo(24, 36, 36, 24, 40, 14); x.stroke();
     x.beginPath(); x.arc(26, 26, 5, 0, 7); x.fill(); x.restore();
   }
-  const cx = w / 2 + (parte ? 14 : -14);
+  // două capitole pe fiecare pagină, unul lângă altul (ca într-un atlas): obiectul colorat, titlul, informația reală
+  const coloana = k => m + (w - 2 * m) * (k ? .75 : .25) + (parte ? 8 : -8);
+  x.strokeStyle = "rgba(139,98,50,.55)"; x.lineWidth = 2; x.setLineDash([3, 9]); x.lineCap = "round";
+  x.beginPath(); x.moveTo(w / 2 + (parte ? 8 : -8), 150); x.lineTo(w / 2 + (parte ? 8 : -8), hh - 170); x.stroke(); x.setLineDash([]); x.lineCap = "butt";
   for (let k = 0; k < 2; k++) {
-    const i = parte * 2 + k, cap = CAP_3D[i], y0 = 110 + k * 590;
+    const i = parte * 2 + k, cap = CAP_3D[i], cx = coloana(k), lat = (w - 2 * m) / 2 - 40;
     if (aprins === i) { // capitolul de sub mouse: o lumină caldă și un chenar auriu
-      g = x.createRadialGradient(cx, y0 + 270, 40, cx, y0 + 270, 420); g.addColorStop(0, "rgba(255,214,130,.55)"); g.addColorStop(1, "rgba(255,214,130,0)");
-      x.fillStyle = g; x.fillRect(m + 14, y0 - 10, w - 2 * m - 28, 580);
-      x.strokeStyle = "#b5852f"; x.lineWidth = 3; x.setLineDash([2, 8]); x.lineCap = "round"; x.strokeRect(m + 34, y0 + 4, w - 2 * m - 68, 548); x.setLineDash([]); x.lineCap = "butt";
-      x.strokeStyle = cer; x.fillStyle = cer;
+      g = x.createRadialGradient(cx, 420, 30, cx, 420, 420); g.addColorStop(0, "rgba(255,214,130,.6)"); g.addColorStop(1, "rgba(255,214,130,0)");
+      x.fillStyle = g; x.fillRect(cx - lat / 2 - 20, 90, lat + 40, hh - 200);
+      x.strokeStyle = "#b5852f"; x.lineWidth = 3; x.setLineDash([2, 8]); x.lineCap = "round"; x.strokeRect(cx - lat / 2 - 6, 104, lat + 12, hh - 236); x.setLineDash([]); x.lineCap = "butt";
     }
-    x.textAlign = "center";
-    x.font = '600 30px "Cormorant Garamond", Georgia, serif'; x.fillStyle = "#7a2c3a";
-    x.fillText(("Capitolul " + cap.nr).toUpperCase().split("").join(String.fromCharCode(8202)), cx, y0 + 58);
-    x.save(); x.translate(cx, y0 + 200); x.strokeStyle = cer; x.fillStyle = cer; x.lineCap = "round"; x.lineJoin = "round";
-    if (aprins === i) x.scale(1.06, 1.06);
-    GRAVURI[cap.k](x); x.restore();
-    x.fillStyle = "#3a2210"; x.font = '700 76px "Cormorant Garamond", Georgia, serif'; x.fillText(cap.titlu, cx, y0 + 392);
-    x.fillStyle = "#5b3b1f"; x.font = 'italic 500 40px "Cormorant Garamond", Georgia, serif'; x.fillText(cap.sub, cx, y0 + 440);
-    x.strokeStyle = "#8a6232"; x.lineWidth = 1.6; x.beginPath(); x.moveTo(cx - 120, y0 + 466); x.lineTo(cx - 14, y0 + 466); x.moveTo(cx + 14, y0 + 466); x.lineTo(cx + 120, y0 + 466); x.stroke();
-    x.save(); x.translate(cx, y0 + 466); x.rotate(Math.PI / 4); x.strokeRect(-6, -6, 12, 12); x.restore();
-    if (info[i]) { x.fillStyle = "#7a2c3a"; x.font = '600 34px "Cormorant Garamond", Georgia, serif'; x.fillText(info[i], cx, y0 + 512); }
-    x.fillStyle = aprins === i ? "#7a4a12" : "rgba(90,60,30,.55)"; x.font = 'italic 600 30px "Cormorant Garamond", Georgia, serif'; x.fillText("Deschide capitolul ›", cx, y0 + 552);
+    x.textAlign = "center"; x.fillStyle = "#7a2c3a"; x.font = '600 26px "Cormorant Garamond", Georgia, serif';
+    x.fillText(("Capitolul " + cap.nr).toUpperCase().split("").join(String.fromCharCode(8202)), cx, 160);
+    // umbra obiectului pe hârtie, apoi obiectul (imagine 3D randată) sau gravura, dacă imaginea nu s-a încărcat
+    g = x.createRadialGradient(cx, 520, 10, cx, 520, 150); g.addColorStop(0, "rgba(90,55,20,.35)"); g.addColorStop(1, "rgba(90,55,20,0)");
+    x.save(); x.scale(1, .28); x.fillStyle = g; x.fillRect(cx - 160, 520 / .28 - 160, 320, 320); x.restore();
+    const imgs = (IMAGINI_CAP[cap.k] || []).filter(im => im.complete && im.naturalWidth);
+    const s = aprins === i ? 1.07 : 1;
+    if (imgs.length) for (const im of imgs) { const d = 290 * s; x.drawImage(im, cx - d / 2, 375 - d / 2, d, d); }
+    else { x.save(); x.translate(cx, 360); x.scale(s, s); x.strokeStyle = cer; x.fillStyle = cer; x.lineCap = "round"; x.lineJoin = "round"; GRAVURI[cap.k](x); x.restore(); }
+    // titlul (se micșorează până încape în coloană)
+    let fs = 66; x.font = `700 ${fs}px "Fraunces", "Cormorant Garamond", Georgia, serif`;
+    while (x.measureText(cap.titlu).width > lat && fs > 40) { fs -= 2; x.font = `700 ${fs}px "Fraunces", "Cormorant Garamond", Georgia, serif`; }
+    x.fillStyle = "#3a2210"; x.fillText(cap.titlu, cx, 640);
+    x.fillStyle = "#5b3b1f"; x.font = 'italic 500 38px "Cormorant Garamond", Georgia, serif'; x.fillText(cap.sub, cx, 690);
+    x.strokeStyle = "#8a6232"; x.lineWidth = 1.6; x.beginPath(); x.moveTo(cx - 110, 720); x.lineTo(cx - 14, 720); x.moveTo(cx + 14, 720); x.lineTo(cx + 110, 720); x.stroke();
+    x.save(); x.translate(cx, 720); x.rotate(Math.PI / 4); x.strokeRect(-6, -6, 12, 12); x.restore();
+    if (info[i]) { // informația reală, pe cel mult două rânduri
+      x.fillStyle = "#7a2c3a"; x.font = '600 31px "Cormorant Garamond", Georgia, serif';
+      const cuv = info[i].split(" "), rand = [""]; for (const c of cuv) { const t = (rand[rand.length - 1] + " " + c).trim(); if (x.measureText(t).width > lat && rand[rand.length - 1]) rand.push(c); else rand[rand.length - 1] = t; }
+      rand.slice(0, 2).forEach((t, j) => x.fillText(t, cx, 774 + j * 36));
+    }
+    x.fillStyle = aprins === i ? "#7a4a12" : "rgba(90,60,30,.6)"; x.font = 'italic 600 28px "Cormorant Garamond", Georgia, serif'; x.fillText("Deschide capitolul ›", cx, 880);
   }
-  x.fillStyle = "#6b4a28"; x.font = '600 52px "Cormorant Garamond", Georgia, serif'; x.fillText("❦", cx, 700 + 16);
-  x.font = 'italic 500 30px "Cormorant Garamond", Georgia, serif'; x.fillText(parte ? "13" : "12", cx, hh - 92);
+  x.fillStyle = "#6b4a28"; x.font = 'italic 500 28px "Cormorant Garamond", Georgia, serif'; x.fillText(parte ? "13" : "12", w / 2, hh - 86);
+}
+/* obiectele colorate ale capitolelor (Microsoft Fluent Emoji 3D, licență MIT, din img/3d/) */
+const IMAGINI_CAP = {};
+function incarcaImaginiCapitole(gata) {
+  const surse = { teme: ["pergament.png", "pana.png"], calendar: ["calendar.png"], bac: ["toca.png"], opere: ["carti.png"] };
+  let ramase = 0;
+  for (const [k, fisiere] of Object.entries(surse)) IMAGINI_CAP[k] = fisiere.map(f => { const im = new Image(); ramase++; im.onload = im.onerror = () => { if (--ramase === 0) gata(); }; im.src = "img/3d/" + f; return im; });
 }
 function desenSemn() { // semnul de carte: catifea vișinie, borduri aurii, emblema, capătul în coadă de rândunică
   const w = 256, hh = 1024, c = panza(w, hh), x = c.getContext("2d");
@@ -301,7 +319,7 @@ function desenRaza() {
 }
 
 /* ---------------- scena: pupitrul, cartea, lumânarea ---------------- */
-const CARTE = { W: 1, D: 1.36, cop: .028, panta: .3 };
+const CARTE = { W: 1.12, D: 1.22, cop: .028, panta: .3 };
 function blocSus(d) { // înălțimea foilor la distanța d de cotor: coboară în cotor, se arcuiește spre margine
   return .022 + .058 * (1 - Math.exp(-d / .07)) + .022 * Math.sin(Math.PI * Math.min(1, d / CARTE.W) * .92);
 }
@@ -333,16 +351,16 @@ function creeazaCarte(THREE) {
   const lemnInchis = new THREE.MeshStandardMaterial({ map: lemnInchisTex, roughness: .6 });
   const lemnSimplu = new THREE.MeshStandardMaterial({ map: texturaDin(THREE, desenLemn(256, 256, "#4a2814", "#1c0a03", 5)), roughness: .6 });
   const inclinat = new THREE.Group(); inclinat.rotation.x = CARTE.panta; scena.add(inclinat);
-  const tabla = new THREE.Mesh(new THREE.BoxGeometry(2.62, .07, 1.86), lemn); tabla.position.y = -.035; tabla.receiveShadow = true; tabla.castShadow = true; inclinat.add(tabla);
-  const buza = new THREE.Mesh(new THREE.BoxGeometry(2.62, .1, .07), lemn); buza.position.set(0, .015, .93); buza.castShadow = buza.receiveShadow = true; inclinat.add(buza);
-  for (const s of [-1, 1]) { const m = new THREE.Mesh(new THREE.BoxGeometry(.07, .05, 1.86), lemn); m.position.set(s * 1.31, -.01, 0); inclinat.add(m); }
+  const tabla = new THREE.Mesh(new THREE.BoxGeometry(2.86, .07, 1.74), lemn); tabla.position.y = -.035; tabla.receiveShadow = true; tabla.castShadow = true; inclinat.add(tabla);
+  const buza = new THREE.Mesh(new THREE.BoxGeometry(2.86, .1, .07), lemn); buza.position.set(0, .015, .87); buza.castShadow = buza.receiveShadow = true; inclinat.add(buza);
+  for (const s of [-1, 1]) { const m = new THREE.Mesh(new THREE.BoxGeometry(.07, .05, 1.74), lemn); m.position.set(s * 1.43, -.01, 0); inclinat.add(m); }
   const corp = new THREE.Mesh(new THREE.BoxGeometry(2.0, 1.8, 1.0), [lemnSimplu, lemnSimplu, lemnSimplu, lemnSimplu, lemnInchis, lemnSimplu]);
   corp.position.set(0, -1.32, -.05); corp.receiveShadow = true; scena.add(corp);
   const corniza = new THREE.Mesh(new THREE.BoxGeometry(2.2, .09, 1.16), lemn); corniza.position.set(0, -.42, -.05); corniza.receiveShadow = true; scena.add(corniza);
   const sprijin = new THREE.Mesh(new THREE.BoxGeometry(1.9, .5, .6), lemnSimplu); sprijin.position.set(0, -.2, -.38); scena.add(sprijin);
 
   // ---- raftul mic cu lumânarea, în stânga ----
-  const raft = new THREE.Group(); raft.position.set(1.2, -.46, 1.24); scena.add(raft);
+  const raft = new THREE.Group(); raft.position.set(1.36, -.46, 1.2); scena.add(raft);
   const blat = new THREE.Mesh(new THREE.CylinderGeometry(.34, .34, .06, 40), lemn); blat.receiveShadow = true; raft.add(blat);
   const picior = new THREE.Mesh(new THREE.CylinderGeometry(.06, .09, 1.6, 16), lemnSimplu); picior.position.y = -.83; raft.add(picior);
   const pieleTex = texturaDin(THREE, desenPiele(256, 256, 5));
@@ -370,7 +388,7 @@ function creeazaCarte(THREE) {
   raft.updateMatrixWorld(true); flacaraLumina.position.copy(raft.localToWorld(new THREE.Vector3(0, varf + .08, 0)));
 
   // ---- cartea ----
-  const carte = new THREE.Group(); carte.position.set(0, 0, .18); inclinat.add(carte);
+  const carte = new THREE.Group(); carte.position.set(0, 0, .17); inclinat.add(carte);
   const H = cop + blocSus(W) + .006; // înălțimea balamalei când cartea e închisă
   const pielePlan = mat(THREE, 0xffffff, { r: .6, map: texturaDin(THREE, desenPiele(512, 512, 9)) });
   const copertaTex = texturaDin(THREE, desenPiele(1024, 1400, 21, true));
@@ -378,7 +396,7 @@ function creeazaCarte(THREE) {
   const copertaMat = new THREE.MeshStandardMaterial({ map: copertaTex, roughness: .55, metalness: .1 });
   const muchieCap = new THREE.MeshStandardMaterial({ map: texturaDin(THREE, desenMuchii(false), [1, 5]), roughness: .95 });
   const muchieLat = new THREE.MeshStandardMaterial({ map: texturaDin(THREE, desenMuchii(true), [5, 1]), roughness: .95 });
-  const paginaPanza = [panza(1024, 1392), panza(1024, 1392)];
+  const paginaPanza = [panza(1024, 1115), panza(1024, 1115)];
   const paginaTex = paginaPanza.map(c => texturaDin(THREE, c));
   const paginaDos = paginaTex.map(t => { const d = t.clone(); d.wrapS = THREE.RepeatWrapping; d.repeat.x = -1; d.offset.x = 1; d.needsUpdate = true; return d; });
 
@@ -440,7 +458,7 @@ function creeazaCarte(THREE) {
   function asazaSemnul(t) {
     carte.updateMatrixWorld(true);
     vA.set(.03, cop + blocSus(.03) + .004, D / 2 - .05); carte.localToWorld(vA);
-    vB.set(.03, .07, .97); inclinat.localToWorld(vB);
+    vB.set(.03, .07, .91); inclinat.localToWorld(vB);
     const ab = vA.distanceTo(vB), L = 1.25, pos = semnGeo.attributes.position;
     for (let v = 0; v < pos.count; v++) {
       const rand = Math.floor(v / 2), s = rand / 28, lat = (v % 2 ? .1 : -.1), l = s * L;
@@ -478,8 +496,9 @@ function creeazaCarte(THREE) {
     for (const t of paginaTex) t.needsUpdate = true; for (const t of paginaDos) t.needsUpdate = true;
   }
   deseneazaPaginile();
-  // titlurile folosesc Cormorant Garamond: se redesenează când fontul e gata
-  if (document.fonts) Promise.all(['700 76px "Cormorant Garamond"', 'italic 500 40px "Cormorant Garamond"', '600 30px "Cormorant Garamond"'].map(f => document.fonts.load(f).catch(() => null)))
+  incarcaImaginiCapitole(() => { deseneazaPaginile(); randeaza(); });
+  // titlurile folosesc Fraunces și Cormorant Garamond: se redesenează când fonturile sunt gata
+  if (document.fonts) Promise.all(['700 66px "Fraunces"', '700 76px "Cormorant Garamond"', 'italic 500 40px "Cormorant Garamond"', '600 30px "Cormorant Garamond"'].map(f => document.fonts.load(f).catch(() => null)))
     .then(() => { deseneazaPaginile(); const c = copertaTex.image; const nou = desenPiele(1024, 1400, 21, true); c.getContext("2d").drawImage(nou, 0, 0); copertaTex.needsUpdate = true; randeaza(); });
 
   function stare(t) { // t: ms de la începutul deschiderii (Infinity = deschisă)
@@ -544,7 +563,7 @@ function creeazaCarte(THREE) {
     ray.setFromCamera(ndc, camera);
     const hit = ray.intersectObjects([st.pagina, dr.pagina])[0];
     if (!hit || !hit.uv) return -1;
-    return hit.object.userData.parte * 2 + (hit.uv.y > .5 ? 0 : 1);
+    return hit.object.userData.parte * 2 + (hit.uv.x < .5 ? 0 : 1);
   }
   function evidentiaza(i) {
     if (i === S3.aprins) return; S3.aprins = i; deseneazaPaginile();
