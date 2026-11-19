@@ -70,7 +70,70 @@ function asiguraScena() {
   <svg class="decor flori" viewBox="0 0 320 220">${flori()}</svg>
   <div class="decor felinar"><span class="halou"></span>${felinarSvg()}</div>
   <div class="particule">${Array.from({ length: 14 }, (_, i) => `<i style="--x:${(i * 37 + 11) % 96}%;--y:${(i * 53 + 7) % 88}%;--d:${9 + (i % 5) * 2.2}s;--w:${-(i * 1.7)}s;--s:${2 + (i % 3)}px"></i>`).join("")}</div>`;
+  adaugaStraturi(s);
   document.body.prepend(s);
+  texturaHartie();
+}
+
+/* straturi în plus: atmosfera fiecărei pagini și viața din peisaj (se văd doar unde au sens, din CSS) */
+function adaugaStraturi(s) {
+  const strat = (cls, html) => { const d = document.createElement("div"); d.className = "strat " + cls; d.innerHTML = html; s.append(d); };
+  // păsări care trec rar pe cer
+  strat("pasari", `<svg viewBox="0 0 60 20"><path d="M2 12 q8 -8 14 0 q6 -8 14 0" fill="none" stroke="#3a2448" stroke-width="2.2" stroke-linecap="round"/><path d="M34 6 q5 -5 9 0 q4 -5 9 0" fill="none" stroke="#3a2448" stroke-width="1.8" stroke-linecap="round"/></svg>`);
+  // ceață care alunecă peste dealuri
+  strat("ceata", "");
+  // licurici lângă flori (doar pe pagina principală)
+  strat("licurici", Array.from({ length: 8 }, (_, i) => `<i style="--x:${68 + (i * 7) % 30}%;--y:${70 + (i * 11) % 24}%;--d:${5 + i % 4}s;--w:${-i * .9}s"></i>`).join(""));
+  // noapte cu lună și stele (Pregătire BAC: „marea încercare” se dă sub stele)
+  strat("noapte", `<svg viewBox="0 0 1600 500" preserveAspectRatio="xMidYMin slice"><defs><radialGradient id="lu-h"><stop offset="0" stop-color="#fff6d8" stop-opacity=".55"/><stop offset="1" stop-color="#fff6d8" stop-opacity="0"/></radialGradient></defs>
+    <circle cx="1240" cy="110" r="90" fill="url(#lu-h)"/><circle cx="1240" cy="110" r="34" fill="#fbf1d0"/><circle cx="1228" cy="100" r="6" fill="#efe1b8"/><circle cx="1252" cy="122" r="4" fill="#efe1b8"/>
+    ${Array.from({ length: 46 }, (_, i) => `<circle class="st s${i % 3}" cx="${(i * 137) % 1600}" cy="${(i * 71) % 420}" r="${1 + (i % 3) * .5}" fill="#fff8e1"/>`).join("")}
+    <path class="cazatoare" d="M300 60 l120 40" stroke="#fff8e1" stroke-width="2" stroke-linecap="round"/></svg>`);
+  // raze de dimineață (Rezultate: „răsăritul” progresului)
+  strat("zori", "");
+  // cărți care plutesc (Bibliotecă)
+  strat("carti-zboara", [0, 1, 2].map(i => `<svg class="cz c${i}" viewBox="0 0 80 50"><path d="M40 12 C30 4 14 4 4 8 v34 c10 -4 26 -4 36 4 c10 -8 26 -8 36 -4 V8 C66 4 50 4 40 12Z" fill="${["#f3e3c0", "#efdcb4", "#f6e8c8"][i]}" stroke="#a7834f" stroke-width="2"/><path d="M40 12 v34" stroke="#a7834f" stroke-width="2"/><path d="M10 16 h22 M10 22 h20 M48 16 h22 M48 22 h18" stroke="#c4a77a" stroke-width="1.6"/></svg>`).join(""));
+  // ghirlandă de lampioane (Calendar: „planul aventurii”, ca la un târg de seară)
+  strat("lampioane", `<svg viewBox="0 0 1600 140" preserveAspectRatio="none"><path d="M0 20 Q400 120 800 40 T1600 30" fill="none" stroke="#3a2a22" stroke-width="2"/>
+    ${Array.from({ length: 12 }, (_, i) => { const x = 60 + i * 130, y = 30 + Math.sin(i * .8) * 26 + (i % 2) * 18; return `<g class="lp l${i % 3}"><line x1="${x}" y1="${y - 14}" x2="${x}" y2="${y}" stroke="#3a2a22"/><ellipse cx="${x}" cy="${y + 10}" rx="9" ry="12" fill="${["#f6b85c", "#e8806f", "#f1d07c"][i % 3]}"/></g>`; }).join("")}</svg>`);
+}
+
+/* textura de hârtie: generată o singură dată într-o imagine mică (mult mai rapidă decât un filtru SVG redesenat pe fiecare card) */
+function texturaHartie() {
+  try {
+    const c = document.createElement("canvas"); c.width = c.height = 120;
+    const x = c.getContext("2d"), img = x.createImageData(120, 120);
+    for (let i = 0; i < img.data.length; i += 4) { const v = Math.random(); img.data[i] = 115; img.data[i + 1] = 82; img.data[i + 2] = 46; img.data[i + 3] = v < .5 ? 0 : Math.round((v - .5) * 34); }
+    x.putImageData(img, 0, 0);
+    document.documentElement.style.setProperty("--hartie", `url(${c.toDataURL("image/png")})`);
+  } catch { /* rămâne textura implicită */ }
+}
+
+/* la fiecare desen: scena știe pe ce pagină suntem (pentru atmosfera ei) */
+function actualizeazaScena() {
+  const s = document.getElementById("scena"); if (!s) return;
+  s.dataset.pag = (S.profil && S.pag) || "intrare";
+  s.dataset.rol = (S.profil && S.profil.rol) || "";
+}
+
+/* o mică emblemă ilustrată lângă titlul fiecărei pagini */
+const EMBLEME = {
+  teme: `<path d="M30 52 C32 34 40 18 54 8 C50 26 42 40 32 54Z" fill="#e9cf9a" stroke="#6b4a6e" stroke-width="2"/><path d="M32 54 L50 14" stroke="#6b4a6e" stroke-width="1.5"/><rect x="10" y="44" width="22" height="16" rx="4" fill="#3a2a5c"/><rect x="14" y="40" width="14" height="6" rx="2" fill="#2a1d44"/>`,
+  calendar: `<circle cx="32" cy="32" r="24" fill="#f4e4c1" stroke="#a7783e" stroke-width="2.5"/><path d="M32 12 l5 20 -5 20 -5 -20z" fill="#8a2f45"/><path d="M12 32 l20 -4 20 4 -20 4z" fill="#a7783e" opacity=".8"/><circle cx="32" cy="32" r="3" fill="#3a2a22"/>`,
+  bac: `<path d="M10 54 h44 v-26 l-6 -6 v-10 h-6 v6 h-6 v-6 h-6 v6 h-6 v-6 h-6 v10 l-8 6z" fill="#3a2a5c"/><rect x="28" y="38" width="8" height="16" rx="4" fill="#ffd27a"/><path d="M32 6 v-4 l10 3 -10 3" fill="#c66a7e"/>`,
+  opere: `<rect x="8" y="14" width="10" height="40" fill="#8a2f45"/><rect x="20" y="10" width="9" height="44" fill="#3d3a6e"/><rect x="31" y="18" width="11" height="36" fill="#2f5e4c"/><rect x="44" y="12" width="8" height="42" fill="#a8742f" transform="rotate(8 48 34)"/><rect x="4" y="54" width="56" height="5" fill="#6a4630"/>`,
+  rezultate: `<path d="M32 8 l7 14 15 2 -11 10 3 15 -14 -7 -14 7 3 -15 -11 -10 15 -2z" fill="#e8bf5c" stroke="#a7783e" stroke-width="1.5"/><path d="M12 50 c-6 -8 -6 -18 0 -24 M52 50 c6 -8 6 -18 0 -24" stroke="#5f8a54" stroke-width="3" fill="none" stroke-linecap="round"/>`,
+  profil: `<circle cx="32" cy="24" r="12" fill="#f3e3c0" stroke="#a7783e" stroke-width="2"/><path d="M12 56 c2 -14 12 -20 20 -20 s18 6 20 20z" fill="#7a52a8"/><path d="M40 10 l8 -6" stroke="#c49a52" stroke-width="2"/>`,
+  clasament: `<path d="M20 10 h24 v12 a12 12 0 0 1 -24 0z" fill="#e8bf5c" stroke="#a7783e" stroke-width="2"/><path d="M20 14 h-8 a8 8 0 0 0 8 10 M44 14 h8 a8 8 0 0 1 -8 10" stroke="#a7783e" stroke-width="2" fill="none"/><rect x="28" y="34" width="8" height="10" fill="#a7783e"/><rect x="18" y="44" width="28" height="8" rx="2" fill="#3a2a5c"/>`,
+  limba: `<rect x="10" y="10" width="44" height="44" rx="6" fill="#f4e4c1" stroke="#a7783e" stroke-width="2"/><text x="32" y="44" text-anchor="middle" font-family="Georgia" font-size="30" fill="#8a2f45">Ă</text>`,
+  jocuri: `<rect x="12" y="12" width="40" height="40" rx="8" fill="#f4e4c1" stroke="#a7783e" stroke-width="2" transform="rotate(-8 32 32)"/><circle cx="24" cy="24" r="3.5" fill="#3a2a5c"/><circle cx="40" cy="40" r="3.5" fill="#3a2a5c"/><circle cx="32" cy="32" r="3.5" fill="#8a2f45"/>`,
+};
+function emblemaPagina() {
+  if (!estePoveste() || !S.profil || S.profil.rol !== "elev") return null;
+  const d = EMBLEME[S.pag]; if (!d) return null;
+  const s = h("span", { class: "emblema-pagina", "aria-hidden": "true" });
+  s.innerHTML = `<svg viewBox="0 0 64 64">${d}</svg>`;
+  return s;
 }
 function ciorchini() {
   // ramuri de glicină care atârnă din colțul de sus, cu frunze și flori în ciorchine
@@ -178,7 +241,9 @@ function carteCapitole() {
       h("div", { class: "pagina-carte st" }, colt("ss"), colt("js"), capitol(CAPITOLE[0], 1), capitol(CAPITOLE[1], 2)),
       h("div", { class: "cotor", "aria-hidden": "true" }),
       h("div", { class: "pagina-carte dr" }, colt("sd"), colt("jd"), capitol(CAPITOLE[2], 3), capitol(CAPITOLE[3], 4)),
-      h("div", { class: "foaie-intoarsa", "aria-hidden": "true" })),
+      h("div", { class: "foaie-intoarsa", "aria-hidden": "true" }, h("span", { class: "umbra-foaie" })),
+      // trei foi care se răsfoiesc când se deschide cartea
+      [1, 2, 3].map(i => h("div", { class: "foaie-deschidere d" + i, "aria-hidden": "true" }))),
     h("h2", { class: "carte-titlu" }, h("span", { "aria-hidden": "true" }, "✦ "), "Capitolele tale", h("span", { "aria-hidden": "true" }, " ✦")),
     h("span", { class: "semn-carte", "aria-hidden": "true" }));
 }

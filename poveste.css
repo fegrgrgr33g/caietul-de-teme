@@ -37,11 +37,11 @@
 #scena .particule i { position: absolute; left: var(--x); top: var(--y); width: var(--s); height: var(--s); border-radius: 50%; background: #ffe2a0;
   box-shadow: 0 0 8px 2px rgba(255, 210, 130, .55); opacity: 0; z-index: 4; }
 /* pe paginile de lucru, scena se estompează ca textul să rămână ușor de citit */
-[data-tema="poveste"] body:has(#app:not([data-pag="acasa"])) #scena .voal { background: rgba(28, 14, 38, .62); }
-[data-tema="poveste"] body:has(#app:not([data-pag="acasa"])) #scena :is(.glicina, .flori, .felinar) { opacity: .45; }
-[data-tema="poveste"] body:has(#app[data-rol="profesor"]) #scena .voal { background: rgba(28, 14, 38, .8); }
-[data-tema="poveste"] body:has(#app[data-rol="profesor"]) #scena :is(.decor, .particule) { display: none; }
-[data-tema="poveste"] body:has(.intrare) #scena .voal { background: rgba(28, 14, 38, .35); }
+#scena:not([data-pag="acasa"]) .voal { background: rgba(28, 14, 38, .62); }
+#scena:not([data-pag="acasa"]) :is(.glicina, .flori, .felinar) { opacity: .45; }
+#scena[data-rol="profesor"] .voal { background: rgba(28, 14, 38, .8) !important; }
+#scena[data-rol="profesor"] :is(.decor, .particule, .strat) { display: none; }
+#scena[data-pag="intrare"] .voal { background: rgba(28, 14, 38, .35); }
 
 /* animațiile ambientale: lente, discrete, se opresc la „mișcare redusă” */
 [data-tema="poveste"] #scena .fereastra { animation: lumina-castel 5s ease-in-out infinite; }
@@ -369,4 +369,139 @@
   #scena *, .pisica *, .carte-poveste, .carte-poveste *, .panou-poveste, .panou-poveste * { animation: none !important; transition: none !important; }
   #scena .particule { display: none; }
   .arc-poveste { stroke-dashoffset: var(--plin) !important; }
+}
+
+/* =====================================================================
+   FINISAJE: tranziții, cartea vie, atmosfera fiecărei pagini, telefon, fără animații
+   ===================================================================== */
+
+/* ---------- tranziții fluide între secțiuni (View Transitions; fără ele, rămâne intrarea treptată) ---------- */
+.pagina { view-transition-name: pagina; }
+::view-transition-old(root) { display: none; }
+::view-transition-new(root) { animation: none; }
+::view-transition-old(pagina) { animation: vt-iese .22s cubic-bezier(.22, 1, .36, 1) both; }
+::view-transition-new(pagina) { animation: vt-intra .34s cubic-bezier(.22, 1, .36, 1) both; }
+@keyframes vt-iese { to { opacity: 0; transform: translateY(-10px) scale(.99); } }
+@keyframes vt-intra { from { opacity: .4; transform: translateY(10px); } }
+.titlu-pagina:focus, .titlu-poveste:focus { outline: none; }
+
+/* ---------- cartea: colțul paginii se ridică la hover, foi care se răsfoiesc la deschidere ---------- */
+.pagina-carte::after { content: ""; position: absolute; bottom: 0; width: 22px; height: 22px; pointer-events: none; transition: width var(--t-lent) var(--ease), height var(--t-lent) var(--ease); }
+.pagina-carte.dr::after { right: 0; border-radius: 0 0 14px 0; background: linear-gradient(315deg, transparent 50%, #e2cb9c 50%, #fff7e4 78%); box-shadow: -3px -3px 6px rgba(80, 50, 20, .18); }
+.pagina-carte.st::after { left: 0; border-radius: 0 0 0 14px; background: linear-gradient(45deg, transparent 50%, #e2cb9c 50%, #fff7e4 78%); box-shadow: 3px -3px 6px rgba(80, 50, 20, .18); }
+.pagina-carte:hover::after { width: 44px; height: 44px; }
+.foaie-intoarsa .umbra-foaie { position: absolute; inset: 0; border-radius: inherit; background: linear-gradient(90deg, rgba(60, 30, 10, .35), transparent 30%, rgba(255, 255, 255, .35) 60%, transparent); opacity: 0; }
+.carte-poveste.intoarce .umbra-foaie { animation: umbra-foaie .48s ease both; }
+@keyframes umbra-foaie { 40% { opacity: 1; } 100% { opacity: .2; } }
+.foaie-deschidere { position: absolute; top: 12px; bottom: 16px; left: calc(50% + 1px); width: calc(50% - 26px); border-radius: 4px 12px 14px 4px; pointer-events: none; opacity: 0;
+  transform-origin: left center; backface-visibility: hidden; background: var(--hartie), linear-gradient(90deg, #e6d2a8, #fbf3e0 35%, #f4e7cb); box-shadow: 0 0 18px rgba(60, 30, 10, .25); }
+[data-tema="poveste"] #app.intra .foaie-deschidere { animation: rasfoieste .85s cubic-bezier(.45, .05, .25, 1) both; }
+[data-tema="poveste"] #app.intra .foaie-deschidere.d1 { animation-delay: .25s; }
+[data-tema="poveste"] #app.intra .foaie-deschidere.d2 { animation-delay: .38s; }
+[data-tema="poveste"] #app.intra .foaie-deschidere.d3 { animation-delay: .5s; }
+@keyframes rasfoieste { 0% { opacity: 1; transform: rotateY(0); } 85% { opacity: 1; } 100% { opacity: 0; transform: rotateY(-176deg); } }
+
+/* ---------- viața din peisaj ---------- */
+#scena .strat { position: absolute; inset: 0; z-index: 3; pointer-events: none; display: none; }
+#scena .pasari { display: block; inset: auto; top: 16%; left: -8%; width: 64px; height: 22px; opacity: .7; }
+#scena .ceata { display: block; inset: auto 0 22% 0; height: 140px; background: radial-gradient(ellipse 40% 60% at 30% 50%, rgba(255, 220, 230, .18), transparent 70%), radial-gradient(ellipse 35% 50% at 75% 60%, rgba(255, 230, 220, .14), transparent 70%); }
+#scena[data-pag="acasa"] .licurici { display: block; }
+#scena .licurici i { position: absolute; left: var(--x); top: var(--y); width: 4px; height: 4px; border-radius: 50%; background: #fff3b0; box-shadow: 0 0 10px 3px rgba(255, 236, 150, .6); opacity: 0; }
+[data-tema="poveste"] #scena .pasari { animation: zboara 46s linear -12s infinite; }
+[data-tema="poveste"] #scena .ceata { animation: ceata 38s ease-in-out infinite alternate; }
+[data-tema="poveste"] #scena .licurici i { animation: licurici var(--d) ease-in-out var(--w) infinite; }
+@keyframes zboara { 0% { transform: translate(0, 0) scale(1); } 50% { transform: translate(60vw, -30px) scale(.85); } 100% { transform: translate(122vw, 10px) scale(.7); } }
+@keyframes ceata { to { transform: translateX(-80px); opacity: .7; } }
+@keyframes licurici { 0%, 100% { opacity: 0; transform: translate(0, 0); } 40% { opacity: 1; } 60% { opacity: .8; transform: translate(10px, -14px); } }
+
+/* ---------- atmosfera fiecărei pagini ---------- */
+/* Temele mele: ora de aur, lumină caldă de felinar */
+#scena[data-pag="teme"] .voal, #scena[data-pag="tema"] .voal { background: linear-gradient(180deg, rgba(40, 16, 30, .5), rgba(50, 24, 20, .7)); }
+#scena[data-pag="tema"] .voal { background: rgba(36, 18, 24, .74); }
+#scena:is([data-pag="teme"], [data-pag="tema"]) .felinar { opacity: .85 !important; }
+/* Calendar: o ghirlandă de lampioane, ca la un târg de seară */
+#scena[data-pag="calendar"] .lampioane { display: block; inset: 0 0 auto 0; height: 140px; }
+#scena[data-pag="calendar"] .lampioane svg { width: 100%; height: 100%; }
+#scena .lp ellipse { filter: drop-shadow(0 0 6px rgba(255, 190, 110, .8)); }
+[data-tema="poveste"] #scena .lp { animation: lampion 5s ease-in-out infinite; transform-box: fill-box; transform-origin: 50% 0; }
+[data-tema="poveste"] #scena .lp.l1 { animation-delay: -1.7s; } [data-tema="poveste"] #scena .lp.l2 { animation-delay: -3.3s; }
+@keyframes lampion { 0%, 100% { transform: rotate(-4deg); } 50% { transform: rotate(4deg); } }
+/* Pregătire BAC: noapte cu lună și stele, „marea încercare” */
+#scena[data-pag="bac"] .scena-fundal { filter: brightness(.5) saturate(.75) hue-rotate(-14deg); }
+#scena[data-pag="bac"] .noapte { display: block; inset: 0 0 auto 0; height: 60%; }
+#scena[data-pag="bac"] .noapte svg { width: 100%; height: 100%; }
+#scena[data-pag="bac"] .voal { background: rgba(14, 8, 34, .45); }
+[data-tema="poveste"] #scena .noapte .st { animation: sclipire-stea 3.8s ease-in-out infinite; }
+[data-tema="poveste"] #scena .noapte .st.s1 { animation-delay: -1.2s; } [data-tema="poveste"] #scena .noapte .st.s2 { animation-delay: -2.5s; }
+#scena .cazatoare { opacity: 0; }
+[data-tema="poveste"] #scena .cazatoare { animation: cazatoare 14s ease-in 3s infinite; }
+@keyframes sclipire-stea { 0%, 100% { opacity: .35; } 50% { opacity: 1; } }
+@keyframes cazatoare { 0%, 92% { opacity: 0; transform: translate(0, 0); } 94% { opacity: 1; } 100% { opacity: 0; transform: translate(260px, 86px); } }
+/* Bibliotecă: interior cald, cărți care plutesc */
+#scena[data-pag="opere"] .voal { background: linear-gradient(180deg, rgba(46, 22, 28, .55), rgba(38, 18, 24, .72)); }
+#scena[data-pag="opere"] .carti-zboara { display: block; }
+#scena .cz { position: absolute; width: 74px; opacity: .55; filter: drop-shadow(0 6px 8px rgba(0, 0, 0, .3)); }
+#scena .cz.c0 { right: 8%; top: 22%; } #scena .cz.c1 { right: 22%; top: 12%; width: 54px; } #scena .cz.c2 { right: 4%; top: 46%; width: 60px; }
+[data-tema="poveste"] #scena .cz { animation: carte-pluteste 9s ease-in-out infinite; }
+[data-tema="poveste"] #scena .cz.c1 { animation-delay: -3s; animation-duration: 11s; } [data-tema="poveste"] #scena .cz.c2 { animation-delay: -6s; animation-duration: 10s; }
+@keyframes carte-pluteste { 0%, 100% { transform: translateY(0) rotate(-6deg); } 50% { transform: translateY(-18px) rotate(4deg); } }
+/* Rezultate: zorii unei zile noi, raze de lumină */
+#scena[data-pag="rezultate"] .zori { display: block; background: conic-gradient(from 200deg at 85% 100%, transparent 0 8deg, rgba(255, 214, 150, .14) 8deg 14deg, transparent 14deg 26deg, rgba(255, 214, 150, .12) 26deg 31deg, transparent 31deg 44deg, rgba(255, 214, 150, .1) 44deg 50deg, transparent 50deg); }
+#scena[data-pag="rezultate"] .voal { background: linear-gradient(180deg, rgba(40, 18, 40, .62), rgba(60, 30, 30, .5)); }
+#scena[data-pag="rezultate"] .scena-fundal { filter: brightness(1.08) saturate(1.1); }
+[data-tema="poveste"] #scena .zori { animation: raze 16s ease-in-out infinite alternate; }
+@keyframes raze { from { opacity: .7; } to { opacity: 1; } }
+/* paginile de lucru: peisajul stă pe loc (doar atmosfera paginii rămâne vie), ca să nu distragă */
+#scena:not([data-pag="acasa"]) :is(.ciorchine, .floare, .nori) { animation-play-state: paused !important; }
+#scena:not([data-pag="acasa"]) .particule { display: none; }
+#scena:not([data-pag="acasa"]) .pasari { opacity: .35; }
+
+/* emblema ilustrată de lângă titlul paginii */
+.cap-text { display: flex; align-items: center; gap: 16px; min-width: 0; }
+.emblema-pagina { flex: none; width: 64px; height: 64px; border-radius: 50%; display: grid; place-items: center; padding: 8px;
+  background: radial-gradient(circle at 40% 35%, #fffaf0, #f0dfba); border: 2px solid #d8b06a; box-shadow: 0 0 0 4px rgba(216, 176, 106, .25), 0 10px 22px -10px rgba(10, 4, 18, .8); }
+.emblema-pagina svg { width: 100%; height: 100%; }
+[data-tema="poveste"] #app.intra .emblema-pagina { animation: emblema .7s var(--ease) both; }
+@keyframes emblema { from { opacity: 0; transform: scale(.6) rotate(-20deg); } }
+
+/* ---------- meniul lateral: comutatorul de animații, nota ascunsă pe ecrane joase ---------- */
+.comuta-miscare { display: inline-flex; align-items: center; gap: 6px; padding: 8px 12px; border-radius: 99px; font-size: 13px; font-weight: 700; cursor: pointer;
+  background: var(--bg-2); color: var(--text); border: 1px solid var(--edge); min-height: 40px; }
+.comuta-miscare.in-meniu { margin-top: 12px; align-self: flex-start; background: transparent; color: #e7d3a6; border-color: rgba(216, 176, 106, .35); }
+.comuta-miscare.in-meniu:hover { background: rgba(216, 176, 106, .1); }
+@media (max-height: 820px) { .sidenav .nota-meniu { display: none; } }
+
+/* ---------- telefon: antet pe un rând, setările în „Mai mult”, indicator care alunecă ---------- */
+.meniu-mai-setari { display: none; }
+@media (max-width: 860px) {
+  body:has(.bottomnav) header.top .palete, body:has(.bottomnav) header.top .sunet-btn,
+  body:has(.bottomnav) header.top #role > .muted.small, body:has(.bottomnav) header.top #role > .badge { display: none; }
+  body:has(.bottomnav) header.top { flex-wrap: nowrap; margin-bottom: 14px; }
+  body:has(.bottomnav) header.top .brand h1 { font-size: 21px; }
+  body:has(.bottomnav) header.top .brand .sub { display: none; }
+  .meniu-mai-setari { display: flex; flex-direction: column; gap: 8px; padding-top: 12px; border-top: 1px solid var(--edge); }
+  .sidenav .comuta-miscare.in-meniu { display: none; }
+  .bottomnav { position: fixed; }
+  .jos-indicator { position: absolute; top: 6px; bottom: 6px; left: 0; border-radius: 16px; z-index: 0; pointer-events: none;
+    background: rgba(216, 176, 106, .16); border: 1px solid rgba(243, 217, 166, .55); box-shadow: 0 0 12px rgba(243, 217, 166, .3);
+    transition: transform var(--t-lent) var(--ease), width var(--t-lent) var(--ease), opacity var(--t) var(--ease); }
+  .bottomnav .nav-item { position: relative; z-index: 1; min-height: 52px; }
+  [data-paleta="atelier"] .bottomnav .nav-item.on { background: transparent; }
+  [data-paleta="atelier"] .bottomnav .nav-item.on::after { display: none; }
+  .meniu-mai-grila .nav-item { min-height: 48px; }
+  .cap-text { gap: 12px; }
+  .emblema-pagina { width: 48px; height: 48px; padding: 6px; }
+}
+.jos-indicator { display: none; }
+@media (max-width: 860px) { .jos-indicator { display: block; } }
+
+/* ---------- fără animații (setarea din site sau din sistem): totul rămâne vizibil și funcțional ---------- */
+html.fara-miscare *, html.fara-miscare *::before, html.fara-miscare *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+html.fara-miscare #scena :is(.particule, .licurici, .pasari, .cazatoare) { display: none !important; }
+html.fara-miscare .arc-poveste { stroke-dashoffset: var(--plin) !important; }
+html.fara-miscare::view-transition-old(*), html.fara-miscare::view-transition-new(*) { animation: none !important; }
+@media (prefers-reduced-motion: reduce) {
+  #scena :is(.licurici, .pasari, .cazatoare, .ceata) { display: none !important; }
+  .foaie-deschidere { display: none; }
+  ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
 }
