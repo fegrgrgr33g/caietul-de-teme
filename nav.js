@@ -41,15 +41,18 @@ function mergi(pag, id) {
   location.hash = nou; // hashchange desenează pagina
 }
 function schimbaPagina() {
-  citesteRuta(); S.meniuMai = false; S.ultimaCheie = null;
+  citesteRuta(); S.meniuMai = false; S.ultimaCheie = null; S.navInterna = (S.navInterna || 0) + 1;
   if (!S.profil) return;
   document.activeElement?.blur?.();
   // după desen, focusul ajunge pe titlul noii pagini (tastatura și cititoarele de ecran știu unde sunt)
   const focusTitlu = () => { const t = document.querySelector(".pagina .titlu-pagina, .pagina .titlu-poveste, .pagina h2"); if (t) { t.tabIndex = -1; t.focus({ preventScroll: true }); } };
   const deseneaza = () => { draw(); aplicaFocus(); window.scrollTo(0, 0); focusTitlu(); };
   // tranziție fluidă între secțiuni (pagina veche se retrage ușor, cea nouă intră); fără ea dacă animațiile sunt oprite
-  if (document.startViewTransition && !(typeof MISCARE_REDUSA === "function" && MISCARE_REDUSA())) document.startViewTransition(deseneaza);
-  else deseneaza();
+  if (document.startViewTransition && !(typeof MISCARE_REDUSA === "function" && MISCARE_REDUSA())) {
+    // la clicuri rapide, o tranziție nouă o întrerupe pe cea veche: e normal, nu e o eroare
+    const vt = document.startViewTransition(deseneaza);
+    for (const pr of [vt.ready, vt.finished, vt.updateCallbackDone]) pr && pr.catch(() => { /* tranziție întreruptă */ });
+  } else deseneaza();
 }
 addEventListener("hashchange", () => { if (/^#demo/.test(location.hash)) return; schimbaPagina(); });
 
@@ -81,7 +84,7 @@ function iconita(k) {
 /* ---------------- cadrul: meniu + pagină ---------------- */
 function linkNav(p, extra) {
   const activ = S.pag === p.k || (p.k === "teme" && (S.pag === "tema" || S.pag === "tema-noua")) || (p.k === "elevi" && S.pag === "elev");
-  return h("a", { href: "#/" + p.k, class: "nav-item" + (activ ? " on" : "") + (extra || ""), "aria-current": activ ? "page" : null,
+  return h("a", { href: "#/" + p.k, class: "nav-item" + (activ ? " on" : "") + (extra || ""), "aria-current": activ ? "page" : null, title: p.n,
     style: "--ic:" + p.c, onclick: () => sunetClic() },
     h("span", { class: "nav-ic", "aria-hidden": "true" }, iconita(p.k) || p.i), h("span", { class: "nav-n" }, p.n),
     p.badge ? h("span", { class: "nav-badge", "aria-label": p.badge + " noi" }, p.badge) : null);
@@ -90,7 +93,15 @@ function cadru(pagini, mobil, continut, susMeniu) {
   const grupe = [];
   for (const p of pagini) { let g = grupe.find(x => x.n === p.g); if (!g) grupe.push(g = { n: p.g, l: [] }); g.l.push(p); }
   const elev = S.profil && S.profil.rol === "elev";
+  const restrans = document.documentElement.classList.contains("meniu-restrans");
   const side = h("nav", { class: "sidenav", "aria-label": "Meniu" },
+    h("button", { type: "button", class: "restrange-meniu", "aria-pressed": restrans ? "true" : "false", title: restrans ? "Extinde meniul" : "Restrânge meniul",
+      "aria-label": restrans ? "Extinde meniul" : "Restrânge meniul", onclick: () => {
+        const r = !document.documentElement.classList.contains("meniu-restrans");
+        document.documentElement.classList.toggle("meniu-restrans", r);
+        try { localStorage.setItem("meniu", r ? "restrans" : "extins"); } catch { /* fără stocare */ }
+        draw();
+      } }, "«"),
     h("a", { href: "#/acasa", class: "nav-marca", "aria-label": "Caietul de teme, acasă", style: "text-decoration:none" },
       h("span", { class: "semn", "aria-hidden": "true" }, "✦"), h("span", null, h("strong", null, "Caietul de teme"), h("small", null, estePoveste() ? (elev ? "Povestea Cunoașterii" : "Catedra de română") : elev ? "ATELIER LITERAR" : "CATEDRA DE ROMÂNĂ"))),
     susMeniu || null,
@@ -119,7 +130,27 @@ function cadru(pagini, mobil, continut, susMeniu) {
   if (foaie) { // clona selectorului de clasă are nevoie de evenimentul ei
     const sel = foaie.querySelector("select"); if (sel) sel.onchange = e => schimbaClasa(e.target.value);
   }
-  return [h("div", { class: "cadru" }, side, h("div", { class: "pagina stack" }, continut)), jos, foaie].filter(Boolean);
+  return [h("div", { class: "cadru" }, side, h("div", { class: "pagina stack" }, firNavigare(), continut)), jos, foaie].filter(Boolean);
+}
+
+/* fir de navigare pe paginile de detaliu (temă, fișă de elev, temă nouă), cu buton de întoarcere */
+function firNavigare() {
+  if (!S.profil || !["tema", "elev", "tema-noua"].includes(S.pag)) return null;
+  const prof = S.profil.rol === "profesor";
+  let pasi;
+  if (S.pag === "tema") {
+    const t = (prof ? S.teme : S.temeElev || []).find(x => x.id === S.pagId);
+    pasi = prof ? [["acasa", "Clasa"], ["teme", "Teme"], [null, t ? t.titlu : "Tema"]] : [["acasa", "Acasă"], ["teme", "Temele mele"], [null, t ? t.titlu : "Tema"]];
+  } else if (S.pag === "elev") {
+    const m = S.membri.find(x => x.elev_id === S.pagId);
+    pasi = [["acasa", "Clasa"], ["elevi", "Elevii clasei"], [null, (m && m.profiles && m.profiles.nume) || "Elev"]];
+  } else pasi = [["acasa", "Clasa"], ["teme", "Teme"], [null, "Temă nouă"]];
+  const parinte = pasi[pasi.length - 2][0];
+  return h("nav", { class: "fir", "aria-label": "Unde te afli" },
+    // înapoi în istoric doar dacă am ajuns aici navigând în aplicație; altfel, la pagina-părinte (nu părăsim site-ul)
+    h("button", { type: "button", class: "inapoi-btn", onclick: () => { if ((S.navInterna || 0) > 0) history.back(); else mergi(parinte); } },
+      h("span", { "aria-hidden": "true" }, "‹"), "Înapoi"),
+    h("ol", null, pasi.map(([k, n]) => h("li", null, k ? h("a", { href: "#/" + k }, n) : h("span", { "aria-current": "page", title: n }, n)))));
 }
 
 /* titlul paginii, cu link înapoi când e o pagină „de detaliu” */
@@ -223,8 +254,10 @@ function randTemaElev(t, i) {
   const nMsg = (S.mesaje || []).filter(m => m.tema_id === t.id).length;
   // starea vizuală: finalizată (are notă), în evaluare (trimisă, fără notă încă), restantă (termen trecut) sau de făcut
   const z = zileRamase(t.termen);
-  const stare = p ? (fin != null ? "gata" : "evaluare") : z != null && z < 0 ? "restanta" : "de-facut";
-  return h("a", { href: "#/tema/" + encodeURIComponent(t.id), class: "rand-tema st-" + stare, "data-stare": { gata: "Finalizată", evaluare: "În evaluare", restanta: "Restantă", "de-facut": "De făcut" }[stare], style: "--acc:" + CULORI[i % 5] },
+  // „în lucru” = ciornă salvată (în cont sau pe acest dispozitiv) pentru o temă netrimisă
+  const areCiorna = !p && Object.values({ ...((S.ciorne || {})[t.id] || {}), ...(citesteJSON("ciorna-" + t.id, {}) || {}) }).some(v => String(v ?? "").trim());
+  const stare = p ? (fin != null ? "gata" : "evaluare") : z != null && z < 0 ? "restanta" : areCiorna ? "lucru" : "de-facut";
+  return h("a", { href: "#/tema/" + encodeURIComponent(t.id), class: "rand-tema st-" + stare, "data-stare": { gata: "Evaluată", evaluare: "Trimisă · în evaluare", restanta: "Restantă", lucru: "În lucru", "de-facut": "Neîncepută" }[stare], style: "--acc:" + CULORI[i % 5] },
     h("span", { class: "rt-bara", "aria-hidden": "true" }),
     h("span", { class: "rt-text" }, h("span", { class: "rt-titlu" }, t.titlu),
       h("span", { class: "muted small" }, [numeClasaElev(t.clasa_id), `${(t.exercitii || []).length} exerciții`, nMsg ? `${nMsg} mesaje` : ""].filter(Boolean).join(" · "))),
@@ -502,7 +535,7 @@ function paginaClasa(clasa) {
       h("div", { class: "stat" }, h("div", { class: "label" }, "Media clasei"), h("div", { class: "v nota" }, fmtNota(media))),
       h("div", { class: "stat" }, h("div", { class: "label" }, "De verificat"), h("div", { class: "v", style: nVerif ? "color:var(--warn)" : "" }, nVerif))),
     h("div", { class: "row" }, h("a", { href: "#/tema-noua", class: "btn" }, "+ Temă nouă"), h("a", { href: "#/teme", class: "btn ghost" }, "Vezi temele")),
-    anuntProfView(clasa)];
+    anuntProfView(clasa), typeof activitateRecenta === "function" ? activitateRecenta() : null].filter(Boolean);
   if (S.membri.length) {
     const al = alertaEleviView(); if (al) out.push(al);
     const gr = graficMediiView(); if (gr) out.push(gr);

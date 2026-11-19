@@ -17,7 +17,7 @@ function istoricAntrenamente() {
 function paginaBac() {
   const sub = S.subBac || "sim";
   const corp = sub === "plan" ? [planEseuView()] : sub === "corector" ? [corectorView()] : sub === "progres" ? progresBac()
-    : [recomandareScurta(), antrenamentView()].filter(Boolean);
+    : [typeof hartaBac === "function" ? hartaBac() : null, recomandareScurta(), antrenamentView()].filter(Boolean);
   return [capPagina("Pregătire pentru BAC", {
       sim: "Simulări și antrenamente cu subiecte noi, în stilul modelului oficial, corectate după barem.",
       plan: "Primești structura eseului pe cerințele de la BAC. Eseul îl scrii tu.",

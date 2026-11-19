@@ -1,7 +1,7 @@
 /* Caietul de teme: service worker minimal, ca site-ul să se poată instala pe telefon.
    Păstrează în cache doar fișierele site-ului; datele (Supabase) vin mereu de pe internet. */
 const CACHE = "caiet-v5";
-const FISIERE = ["./", "index.html", "style.css", "atelier.css", "viu.css", "poveste.css", "poveste.js", "config.js", "continut.js", "liceu.js", "extra.js", "nav.js", "plus.js", "elevi.js", "bac.js", "viu.js", "app.js", "manifest.json", "icon.svg"];
+const FISIERE = ["./", "index.html", "style.css", "atelier.css", "viu.css", "poveste.css", "poveste.js", "config.js", "continut.js", "liceu.js", "extra.js", "nav.js", "plus.js", "elevi.js", "bac.js", "capitole.js", "viu.js", "app.js", "manifest.json", "icon.svg"];
 // bibliotecile și fonturile de pe alte site-uri: păstrate în cache, ca Opere/Limbă/Jocuri să meargă și fără internet
 const STRAINE = ["https://cdn.jsdelivr.net/", "https://fonts.googleapis.com/", "https://fonts.gstatic.com/"];
 

@@ -306,3 +306,4 @@
 /* banda de sus: textul aliniat la stânga, ca în referință */
 [data-paleta="atelier"] .erou-text { text-align: left; }
 [data-paleta="atelier"] .erou-text .row, [data-paleta="atelier"] .erou-meta { justify-content: flex-start; }
+.rand-tema.st-lucru { --stare: #6f5596; }

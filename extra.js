@@ -52,6 +52,9 @@ const DEMO_PARINTE = { elev: "Ana Ionescu (exemplu)", teme: [
 
 async function paginaParinte(token) {
   const app = document.getElementById("app"); document.getElementById("role").replaceChildren();
+  // aceeași lume ilustrată, estompată: părinții citesc rapid informațiile
+  app.dataset.pag = "parinte"; app.dataset.rol = "parinte";
+  if (typeof asiguraScena === "function") { asiguraScena(); const sc = document.getElementById("scena"); if (sc) { sc.dataset.pag = "parinte"; sc.dataset.rol = "parinte"; } }
   app.replaceChildren(h("div", { class: "sheet empty" }, h("h2", null, "Se încarcă notele…")));
   let d = null;
   const formatBun = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(token);
@@ -97,7 +100,9 @@ function calendarView(rol) {
   const azi = new Date(); azi.setHours(0, 0, 0, 0);
   const C = S.cal || (S.cal = { an: azi.getFullYear(), luna: azi.getMonth() });
   const teme = rol === "profesor" ? S.teme : S.temeElev;
+  if (S.calVedere == null && innerWidth < 700) S.calVedere = "agenda"; // pe telefon, agenda e mai practică
   if (S.calVedere === "sapt") return calendarSaptamana(rol, teme);
+  if (S.calVedere === "agenda" && typeof calendarAgenda === "function") return calendarAgenda(rol, teme);
   const predate = id => rol === "profesor" ? S.predari.filter(p => p.tema_id === id).length : (S.predariElev.some(p => p.tema_id === id) ? 1 : 0);
   const prima = new Date(C.an, C.luna, 1), zile = new Date(C.an, C.luna + 1, 0).getDate();
   const start = (prima.getDay() + 6) % 7; // luni = 0
@@ -109,8 +114,11 @@ function calendarView(rol) {
   for (let z = 1; z <= zile; z++) {
     const data = new Date(C.an, C.luna, z), cheie = `${C.an}-${String(C.luna + 1).padStart(2, "0")}-${String(z).padStart(2, "0")}`;
     const lista = peZi[cheie] || [];
-    celule.push(h("div", { class: "zi" + (data.getTime() === azi.getTime() ? " azi" : "") + (lista.length ? " are" : "") + (lista.length >= 3 ? " are3" : lista.length === 2 ? " are2" : "") },
-      h("span", { class: "nr-zi" }, z),
+    const aleasa = (S.calZi || ziISO(azi)) === cheie;
+    celule.push(h("div", { class: "zi" + (data.getTime() === azi.getTime() ? " azi" : "") + (lista.length ? " are" : "") + (lista.length >= 3 ? " are3" : lista.length === 2 ? " are2" : "") + (aleasa ? " aleasa" : "") },
+      h("button", { type: "button", class: "nr-zi", "aria-pressed": aleasa ? "true" : "false",
+        "aria-label": `${data.toLocaleDateString("ro-RO", { weekday: "long", day: "numeric", month: "long" })}${lista.length ? `, ${lista.length} ${lista.length === 1 ? "termen" : "termene"}` : ""}`,
+        onclick: () => { S.calZi = cheie; draw(); } }, z),
       lista.map(t => {
         const n = predate(t.id), trecut = data < azi;
         const stare = rol === "profesor" ? (n >= Math.max(1, S.membri.length) ? "ok" : trecut ? "err" : "wait") : (n ? "ok" : trecut ? "err" : "wait");
@@ -118,15 +126,19 @@ function calendarView(rol) {
       })));
   }
   const viitoare = teme.filter(t => t.termen && new Date(t.termen + "T00:00:00") >= azi).sort((a, b) => a.termen.localeCompare(b.termen)).slice(0, 5);
+  const schimbaLuna = d => { C.luna += d; if (C.luna < 0) { C.luna = 11; C.an--; } if (C.luna > 11) { C.luna = 0; C.an++; } S.calDir = d; draw(); };
+  const dir = S.calDir; S.calDir = 0;
   return [
     unelteCalendar(teme),
+    h("div", { class: "calendar-layout" },
     h("section", { class: "sheet stack calendar", style: "--acc:var(--c4)" },
       h("div", { class: "row", style: "justify-content:space-between" },
-        h("button", { type: "button", class: "btn ghost", "aria-label": "Luna trecută", onclick: () => { C.luna--; if (C.luna < 0) { C.luna = 11; C.an--; } render(); } }, "‹"),
-        h("h2", { style: "text-transform:capitalize" }, numeLuna),
-        h("button", { type: "button", class: "btn ghost", "aria-label": "Luna viitoare", onclick: () => { C.luna++; if (C.luna > 11) { C.luna = 0; C.an++; } render(); } }, "›")),
-      h("div", { class: "grila-cal" }, ["Lu", "Ma", "Mi", "Jo", "Vi", "Sâ", "Du"].map(z => h("div", { class: "cap-zi" }, z)), celule),
+        h("button", { type: "button", class: "btn ghost", "aria-label": "Luna trecută", onclick: () => schimbaLuna(-1) }, "‹"),
+        h("h2", { style: "text-transform:capitalize", "aria-live": "polite" }, numeLuna),
+        h("button", { type: "button", class: "btn ghost", "aria-label": "Luna viitoare", onclick: () => schimbaLuna(1) }, "›")),
+      h("div", { class: "grila-cal" + (dir > 0 ? " glisare-dr" : dir < 0 ? " glisare-st" : "") }, ["Lu", "Ma", "Mi", "Jo", "Vi", "Sâ", "Du"].map(z => h("div", { class: "cap-zi" }, z)), celule),
       h("div", { class: "row small muted" }, h("span", { class: "chip ok" }, rol === "profesor" ? "toți au trimis" : "trimisă"), h("span", { class: "chip wait" }, "urmează"), h("span", { class: "chip err" }, rol === "profesor" ? "termen trecut, lipsesc lucrări" : "termen trecut"))),
+    typeof panouZiAleasa === "function" ? panouZiAleasa(rol, peZi, predate) : null),
     h("div", { class: "sheet" }, h("h3", null, "Termene apropiate"),
       viitoare.length ? h("div", { class: "stack", style: "gap:8px;margin-top:10px" }, viitoare.map(t => {
         const zile = Math.round((new Date(t.termen + "T00:00:00") - azi) / 86400000);
