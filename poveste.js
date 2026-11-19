@@ -252,26 +252,104 @@ const CAPITOLE = [
   { k: "calendar", titlu: "Calendar", sub: "Planul aventurii", pata: "#cfe5cf", ilustr: "calendar" },
   { k: "bac", titlu: "Pregătire BAC", sub: "Marea încercare", pata: "#f5ddb8", ilustr: "toca" },
   { k: "opere", titlu: "Bibliotecă", sub: "Lumea operelor", pata: "#f1c9d3", ilustr: "carti" }];
+/* Obiectele celor patru capitole, desenate cu volum: lumina vine din stânga-sus, fiecare obiect are fețe laterale,
+   umbră proprie pe hârtie și detalii de material (hârtie, lemn, metal, pânză). */
 const ILUSTRATII = {
-  pergament: `<svg viewBox="0 0 120 90"><path d="M14 30 h70 a8 8 0 0 1 0 16 h-6 v28 a8 8 0 0 1 -8 8 h-60 a8 8 0 0 1 0 -16 h6 v-28 a8 8 0 0 1 -2 -8z" fill="#f2e0b6" stroke="#a7783e" stroke-width="2.5"/>
-    <path d="M20 46 h50 M20 54 h44 M20 62 h48" stroke="#b99466" stroke-width="2" stroke-linecap="round"/><circle cx="16" cy="74" r="8" fill="#e5cd96" stroke="#a7783e" stroke-width="2.5"/>
-    <path d="M70 70 C80 40 98 16 116 6 C108 30 94 52 74 72Z" fill="#c9a36a" stroke="#6b4a6e" stroke-width="2"/><path d="M74 72 L104 18" stroke="#6b4a6e" stroke-width="1.6"/><path d="M70 70 l-6 10" stroke="#3a2a22" stroke-width="2.5" stroke-linecap="round"/></svg>`,
-  calendar: `<svg viewBox="0 0 120 90"><rect x="28" y="14" width="64" height="66" rx="7" fill="#fffaf0" stroke="#7a5a3a" stroke-width="2.5"/><rect x="28" y="14" width="64" height="16" rx="7" fill="#8a2f45"/>
-    <rect x="28" y="24" width="64" height="6" fill="#8a2f45"/><path d="M42 8 v12 M60 8 v12 M78 8 v12" stroke="#5a4636" stroke-width="4" stroke-linecap="round"/>
-    <g fill="#cbb38c">${[0, 1, 2, 3].map(c => [0, 1, 2].map(r => `<rect x="${36 + c * 13}" y="${38 + r * 12}" width="8" height="7" rx="1.5"/>`).join("")).join("")}</g>
-    <path d="M52 58 l8 8 18 -20" stroke="#3d8a5a" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
-  toca: `<svg viewBox="0 0 120 90"><path d="M60 14 L112 34 L60 54 L8 34Z" fill="#3a2a5c" stroke="#231839" stroke-width="2"/><path d="M60 14 L112 34 L60 40 L8 34Z" fill="#4c3a72"/>
-    <path d="M30 44 v18 c10 10 50 10 60 0 v-18 L60 54Z" fill="#2c2048"/><path d="M60 34 L96 44 v22" stroke="#d6a84a" stroke-width="2.5" fill="none"/>
-    <path d="M92 66 l4 14 4 -14z" fill="#d6a84a"/><circle cx="96" cy="66" r="3.5" fill="#e8bf5c"/><circle cx="60" cy="34" r="3" fill="#e8bf5c"/></svg>`,
-  carti: `<svg viewBox="0 0 120 90"><rect x="16" y="58" width="88" height="18" rx="3" fill="#6e2c43"/><rect x="16" y="62" width="88" height="3" fill="#d4a95c"/><rect x="100" y="60" width="4" height="14" fill="#efe2c7"/>
-    <rect x="22" y="40" width="78" height="18" rx="3" fill="#3d3a6e"/><rect x="22" y="44" width="78" height="3" fill="#d4a95c"/><rect x="96" y="42" width="4" height="14" fill="#efe2c7"/>
-    <rect x="30" y="22" width="66" height="18" rx="3" fill="#2f5e4c"/><rect x="30" y="26" width="66" height="3" fill="#d4a95c"/><rect x="92" y="24" width="4" height="14" fill="#efe2c7"/>
-    <path d="M78 22 v-14 l6 4 6 -4 v14" fill="#a8304c"/></svg>`,
+  pergament: `<svg viewBox="0 0 140 110"><defs>
+      <linearGradient id="pg-hartie" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fbf0d6"/><stop offset=".6" stop-color="#efdcb0"/><stop offset="1" stop-color="#dcc08a"/></linearGradient>
+      <linearGradient id="pg-sul" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b98a4c"/><stop offset=".28" stop-color="#f6e2b4"/><stop offset=".55" stop-color="#e0bf83"/><stop offset="1" stop-color="#94672e"/></linearGradient>
+      <radialGradient id="pg-capat" cx=".35" cy=".35" r=".7"><stop offset="0" stop-color="#9a6a3a"/><stop offset="1" stop-color="#4f3018"/></radialGradient>
+      <linearGradient id="pg-pana" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fffdf8"/><stop offset=".55" stop-color="#ece4f2"/><stop offset="1" stop-color="#b8a4cf"/></linearGradient>
+      <linearGradient id="pg-penita" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f3dfa6"/><stop offset=".5" stop-color="#b8893a"/><stop offset="1" stop-color="#6e4c1c"/></linearGradient>
+      <radialGradient id="pg-ceara" cx=".38" cy=".35" r=".7"><stop offset="0" stop-color="#c4566e"/><stop offset=".7" stop-color="#8d2f47"/><stop offset="1" stop-color="#5e1c2e"/></radialGradient>
+      <filter id="pg-umbra" x="-20%" y="-20%" width="140%" height="160%"><feDropShadow dx="2" dy="5" stdDeviation="3" flood-color="#5a3a1a" flood-opacity=".35"/></filter></defs>
+    <ellipse cx="66" cy="99" rx="48" ry="6" fill="#6b4a26" opacity=".22"/>
+    <g filter="url(#pg-umbra)">
+      <path d="M26 30 C46 27 74 28 98 30 L97 80 C74 82 46 81 25 83 Z" fill="url(#pg-hartie)"/>
+      <path d="M26 30 C46 27 74 28 98 30 L98 36 C74 34 46 33 26 36 Z" fill="#c9a66a" opacity=".35"/>
+      <path d="M34 45 C52 43.5 70 44 88 45 M34 53 C50 51.6 66 52 82 52.8 M34 61 C52 59.6 70 60 88 61 M34 69 C46 68 58 68.2 70 68.8" stroke="#8a6a44" stroke-width="1.6" stroke-linecap="round" fill="none" opacity=".75"/>
+      <rect x="18" y="20" width="88" height="13" rx="6.5" fill="url(#pg-sul)"/><ellipse cx="18" cy="26.5" rx="5" ry="6.5" fill="url(#pg-capat)"/><ellipse cx="106" cy="26.5" rx="5" ry="6.5" fill="url(#pg-capat)"/>
+      <rect x="22" y="22.5" width="78" height="2.4" rx="1.2" fill="#fff8e2" opacity=".75"/>
+      <rect x="17" y="78" width="90" height="13" rx="6.5" fill="url(#pg-sul)"/><ellipse cx="17" cy="84.5" rx="5" ry="6.5" fill="url(#pg-capat)"/><ellipse cx="107" cy="84.5" rx="5" ry="6.5" fill="url(#pg-capat)"/>
+      <rect x="21" y="80.5" width="80" height="2.4" rx="1.2" fill="#fff8e2" opacity=".75"/>
+      <circle cx="84" cy="70" r="8.5" fill="url(#pg-ceara)"/><path d="M80 70 l3 3 6 -7" stroke="#f2c9d1" stroke-width="1.6" fill="none" stroke-linecap="round" opacity=".85"/>
+      <path d="M77 66 c-2 -3 -1 -6 2 -7" stroke="#e98aa0" stroke-width="1.2" fill="none" opacity=".5"/></g>
+    <g filter="url(#pg-umbra)" transform="rotate(-8 108 50)">
+      <path d="M96 76 C99 56 108 30 128 10 C130 30 120 58 100 78 Z" fill="url(#pg-pana)"/>
+      <path d="M99 74 C103 60 112 38 126 14" stroke="#7d6a94" stroke-width="1.3" fill="none"/>
+      <path d="M104 62 l8 -3 M107 54 l9 -4 M110 46 l9 -5 M114 38 l8 -6 M101 70 l6 -1" stroke="#a796c0" stroke-width=".9" fill="none" opacity=".8"/>
+      <path d="M96 76 L92 90 L99 79 Z" fill="url(#pg-penita)"/><path d="M95.5 80 l-1.6 6" stroke="#4a3312" stroke-width=".8"/></g></svg>`,
+  calendar: `<svg viewBox="0 0 140 110"><defs>
+      <linearGradient id="cl-fata" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fffdf6"/><stop offset="1" stop-color="#efe2c8"/></linearGradient>
+      <linearGradient id="cl-lateral" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#d9c6a0"/><stop offset="1" stop-color="#b9a27a"/></linearGradient>
+      <linearGradient id="cl-cap" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b4566f"/><stop offset=".5" stop-color="#8a3550"/><stop offset="1" stop-color="#6a2238"/></linearGradient>
+      <linearGradient id="cl-inel" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#6b6b73"/><stop offset=".45" stop-color="#f2f2f5"/><stop offset="1" stop-color="#55555c"/></linearGradient>
+      <linearGradient id="cl-bifa" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5fbf83"/><stop offset="1" stop-color="#257a4a"/></linearGradient>
+      <filter id="cl-umbra" x="-20%" y="-20%" width="150%" height="160%"><feDropShadow dx="3" dy="5" stdDeviation="3" flood-color="#5a3a1a" flood-opacity=".33"/></filter></defs>
+    <ellipse cx="70" cy="100" rx="44" ry="6" fill="#6b4a26" opacity=".22"/>
+    <g filter="url(#cl-umbra)">
+      <path d="M100 24 L108 30 L108 92 L100 88 Z" fill="url(#cl-lateral)"/>
+      <path d="M36 88 L100 88 L108 92 L44 92 Z" fill="#c9b48c"/>
+      <path d="M38 89.5 h62 M40 91 h64" stroke="#fff6e2" stroke-width=".7" opacity=".8"/>
+      <rect x="36" y="24" width="64" height="64" rx="4" fill="url(#cl-fata)"/>
+      <path d="M36 28 a4 4 0 0 1 4 -4 h56 a4 4 0 0 1 4 4 v14 h-64 z" fill="url(#cl-cap)"/>
+      <rect x="40" y="27" width="56" height="2" rx="1" fill="#e9a5b6" opacity=".55"/>
+      ${[48, 62, 76, 90].map(x => `<rect x="${x - 3}" y="14" width="6" height="18" rx="3" fill="url(#cl-inel)"/><ellipse cx="${x}" cy="33" rx="3.6" ry="1.6" fill="#3a1220" opacity=".55"/>`).join("")}
+      <g>${[0, 1, 2, 3].map(r => [0, 1, 2, 3, 4].map(c => `<rect x="${42 + c * 11}" y="${48 + r * 9.5}" width="8" height="6.5" rx="1.4" fill="#ead9b6"/><rect x="${42 + c * 11}" y="${48 + r * 9.5}" width="8" height="1.4" rx=".7" fill="#c9b28a" opacity=".6"/>`).join("")).join("")}</g>
+      <rect x="64" y="57.5" width="8" height="6.5" rx="1.4" fill="#f6c6d2"/>
+      <path d="M93 88 L100 81 L100 88 Z" fill="#d8c19a"/><path d="M93 88 L100 81" stroke="#fff6e2" stroke-width=".8"/></g>
+    <g filter="url(#cl-umbra)"><path d="M58 70 l9 9 22 -26" stroke="#1d5a36" stroke-width="10" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity=".35" transform="translate(1.5 2)"/>
+      <path d="M58 70 l9 9 22 -26" stroke="url(#cl-bifa)" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M60 69 l7 7 20 -23" stroke="#bdf0cf" stroke-width="1.6" fill="none" stroke-linecap="round" opacity=".7"/></g></svg>`,
+  toca: `<svg viewBox="0 0 140 110"><defs>
+      <linearGradient id="tc-sus" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6e5c9e"/><stop offset=".5" stop-color="#4a3a74"/><stop offset="1" stop-color="#2e2350"/></linearGradient>
+      <linearGradient id="tc-muchie" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a2048"/><stop offset="1" stop-color="#171128"/></linearGradient>
+      <linearGradient id="tc-corp" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2c2148"/><stop offset=".35" stop-color="#4b3b72"/><stop offset=".7" stop-color="#2f2450"/><stop offset="1" stop-color="#1c142f"/></linearGradient>
+      <linearGradient id="tc-aur" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fbe3a2"/><stop offset=".5" stop-color="#d4a34a"/><stop offset="1" stop-color="#8f6420"/></linearGradient>
+      <radialGradient id="tc-buton" cx=".35" cy=".35" r=".7"><stop offset="0" stop-color="#fff0c4"/><stop offset="1" stop-color="#b8862f"/></radialGradient>
+      <filter id="tc-umbra" x="-20%" y="-20%" width="150%" height="170%"><feDropShadow dx="2" dy="6" stdDeviation="3.2" flood-color="#2a1a3a" flood-opacity=".38"/></filter></defs>
+    <ellipse cx="70" cy="100" rx="46" ry="6" fill="#4a3060" opacity=".22"/>
+    <g filter="url(#tc-umbra)">
+      <path d="M42 54 L42 74 C52 86 88 86 98 74 L98 54 Z" fill="url(#tc-corp)"/>
+      <path d="M46 74 C58 82 82 82 94 74" stroke="#6a5a94" stroke-width="1.5" fill="none" opacity=".55"/>
+      <path d="M70 18 L126 40 L70 62 L14 40 Z" fill="url(#tc-sus)"/>
+      <path d="M14 40 L70 62 L70 66 L14 44 Z" fill="url(#tc-muchie)"/><path d="M126 40 L70 62 L70 66 L126 44 Z" fill="#231a3c"/>
+      <path d="M70 21 L120 40 L70 24.5 L20 40 Z" fill="#8f7cc0" opacity=".35"/>
+      <path d="M70 40 C86 44 104 46 110 50 L110 76" stroke="url(#tc-aur)" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+      <path d="M106 76 h8 l2 16 c-4 3 -8 3 -12 0 z" fill="url(#tc-aur)"/>
+      <path d="M107.5 80 v12 M110 80 v13 M112.5 80 v12" stroke="#8f6420" stroke-width=".8" opacity=".7"/>
+      <rect x="105" y="72" width="10" height="5" rx="2" fill="url(#tc-aur)"/>
+      <ellipse cx="70" cy="40" rx="5" ry="3" fill="url(#tc-buton)"/><ellipse cx="68.5" cy="39" rx="1.6" ry=".9" fill="#fff8e0" opacity=".9"/></g></svg>`,
+  carti: `<svg viewBox="0 0 140 110"><defs>
+      <linearGradient id="ct-pagini" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fbf2dc"/><stop offset="1" stop-color="#e2cfa4"/></linearGradient>
+      <linearGradient id="ct-r" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a8405c"/><stop offset=".5" stop-color="#7d2a43"/><stop offset="1" stop-color="#561a2d"/></linearGradient>
+      <linearGradient id="ct-v" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5a5296"/><stop offset=".5" stop-color="#3e3870"/><stop offset="1" stop-color="#28234c"/></linearGradient>
+      <linearGradient id="ct-g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4f8a6c"/><stop offset=".5" stop-color="#2f6049"/><stop offset="1" stop-color="#1d4031"/></linearGradient>
+      <linearGradient id="ct-aur" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#8f6420"/><stop offset=".5" stop-color="#f3d58e"/><stop offset="1" stop-color="#8f6420"/></linearGradient>
+      <filter id="ct-umbra" x="-20%" y="-20%" width="150%" height="170%"><feDropShadow dx="2" dy="4" stdDeviation="2.4" flood-color="#3a2410" flood-opacity=".35"/></filter></defs>
+    <ellipse cx="70" cy="101" rx="50" ry="6" fill="#6b4a26" opacity=".22"/>
+    ${[["ct-r", 22, 74, 96, 0], ["ct-v", 28, 54, 86, -3], ["ct-g", 34, 34, 74, 4]].map(([g, x, y, w, rot]) => `<g filter="url(#ct-umbra)" transform="rotate(${rot} ${x + w / 2} ${y + 9})">
+      <path d="M${x + 6} ${y - 6} h${w} l-6 6 h-${w} z" fill="url(#${g})" opacity=".85"/><path d="M${x + 7} ${y - 5} h${w - 2}" stroke="#fff" stroke-width=".8" opacity=".25"/>
+      <rect x="${x}" y="${y}" width="${w}" height="18" rx="2.5" fill="url(#${g})"/>
+      <path d="M${x + w} ${y} l6 -6 v18 l-6 6 z" fill="url(#ct-pagini)"/>
+      <path d="M${x + w + 1.5} ${y + 2} l3 -3 M${x + w + 1.5} ${y + 6} l3 -3 M${x + w + 1.5} ${y + 10} l3 -3 M${x + w + 1.5} ${y + 14} l3 -3" stroke="#c4a87a" stroke-width=".6"/>
+      <rect x="${x + 10}" y="${y + 3}" width="${w - 20}" height="1.6" fill="url(#ct-aur)"/><rect x="${x + 10}" y="${y + 13.4}" width="${w - 20}" height="1.6" fill="url(#ct-aur)"/>
+      <rect x="${x + w / 2 - 10}" y="${y + 7}" width="20" height="4" rx="1" fill="url(#ct-aur)" opacity=".85"/>
+      <rect x="${x + 2}" y="${y + 1.2}" width="${w - 4}" height="1.4" rx=".7" fill="#fff" opacity=".18"/></g>`).join("")}
+    <path d="M90 34 v-14 l4 3 4 -3 v14" fill="#b03a56" filter="url(#ct-umbra)"/><path d="M91 21 v12" stroke="#e48aa0" stroke-width=".8" opacity=".6"/></svg>`,
 };
 const ORNAMENT_COLT = `<svg viewBox="0 0 60 60" aria-hidden="true"><path d="M4 56 C4 30 14 14 40 6 M4 56 C14 40 26 34 44 34 M14 46 c6 -2 10 -8 10 -14 M30 20 c4 2 8 2 12 -2" fill="none" stroke="#c49a52" stroke-width="2" stroke-linecap="round"/><circle cx="40" cy="6" r="3" fill="#c49a52"/><circle cx="44" cy="34" r="2.5" fill="#c49a52"/><path d="M20 30 c-4 -6 -2 -12 4 -14 c0 6 -2 10 -4 14z" fill="#b58fd0" opacity=".8"/></svg>`;
 
 function carteCapitole() {
+  // obiectul se înclină ușor după mouse, ca un obiect real pus pe pagină (nu și cu animațiile oprite)
+  const inclina = e => {
+    if (MISCARE_REDUSA() || e.pointerType === "touch") return;
+    const r = e.currentTarget.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5;
+    e.currentTarget.style.setProperty("--ry", (x * 18).toFixed(1) + "deg"); e.currentTarget.style.setProperty("--rx", (-y * 14).toFixed(1) + "deg");
+  };
+  const reseteaza = e => { e.currentTarget.style.removeProperty("--rx"); e.currentTarget.style.removeProperty("--ry"); };
   const capitol = (c, nr) => h("a", { class: "capitol", href: "#/" + c.k, style: "--pata:" + c.pata, "data-ch": nr,
+      onpointermove: inclina, onpointerleave: reseteaza,
       onclick: e => intoarcePagina(e, c.k, nr > 2 ? "dr" : "st") },
     h("span", { class: "cap-ilustr", "aria-hidden": "true" }, (() => { const s = h("span"); s.innerHTML = ILUSTRATII[c.ilustr]; return s.firstChild; })()),
     h("span", { class: "cap-titlu" }, c.titlu), h("span", { class: "cap-sub" }, c.sub),
